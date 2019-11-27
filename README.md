@@ -102,7 +102,7 @@ va * ( M1 * M2 ) = vc
 > 요약 130
 
 ## 19.11.27
-<code> ~ 136 page </code>
+<code> ~ 191 page </code>
 
 ### 기본 지식
 
