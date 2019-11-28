@@ -56,7 +56,11 @@ void CDevice::Clear_BackBuffer()
 
 BOOL CDevice::Create_Device()
 {
-	UINT createDeviceFlags = D3D11_CREATE_DEVICE_DEBUG;
+	UINT createDeviceFlags = 0;
+	
+#ifdef DEBUG | _DEBUG
+	createDeviceFlags = D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
 	D3D_FEATURE_LEVEL featureLevel;
 

@@ -12,10 +12,15 @@
 #include <cassert>
 
 #include <d3d11.h>
-#include <xnamath.h>
+#include <DirectXMath.h>
+#include <DirectXPackedVector.h>
 #include <D3DX11.h>
 #include <dxgi.h>
 
 #include "DX11_StudyProject.h"
 
 using namespace std;
+
+using namespace DirectX;
+
+using namespace PackedVector;
