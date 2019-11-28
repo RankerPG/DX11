@@ -10,7 +10,9 @@
 
 ### vector
 - 직교화 : 그람 슈미트 직교화
-<pre><사진추가></pre>
+<div>
+ <img src="Image/외적.PNG" width = 400 height = 50/>
+</div>
 
 - 2차원 벡터의 수직인 벡터를 구하는 방법 : u(ux,uy) ┴ v(-uy, ux) = u·v = ux * -uy + uy * ux
 
@@ -130,9 +132,22 @@ va * ( M1 * M2 ) = vc
 나열, 창모드와 전체모드 전환 등 그래픽에 관련된 작업을 처리한다. 다른 그래픽 API에서도 사용할 수 있도록
 DX와 분리하였다.
 
+## 19.11.28
+<code> ~ 228 page </code>
+
+### 렌더링 파이프라인
+
+- 입력 조립기 ( IA input assembler ) : 기하 자료를 읽어서 기하학적 도형을 조립하는 단계
+
+- 뷰 변환 행렬은 가상 카메라의 로컬 공간에서 월드 공간으로 가는 월드 변환 행렬 ( W = RT )를 구하고 이를
+역행렬하여 구할 수 있다.
+<div>
+ <img src="Image/뷰행렬.PNG" width = 800 height = 200/>
+</div>
 
 
-
-
-
+- 수평 시야각을 구하는 공식
+<div>
+ <img src="Image/수평 시야각.PNG" width = 400 height = 100/>
+</div>
 
