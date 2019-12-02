@@ -1,6 +1,7 @@
 #include "MainFrame.h"
 #include "device.h"
 #include "timer.h"
+#include "box.h"
 
 CMainFrame::CMainFrame(CDevice* p_Device)
 	: m_pDevice(p_Device)
@@ -23,17 +24,28 @@ void CMainFrame::Init()
 	}
 
 	m_pMainTimer->Reset();
+
+	m_pBox.reset(new CBox(m_pDevice->Get_Device(), m_pDevice->Get_Context()));
+
+	m_pBox->Init();
 }
 
 void CMainFrame::Update()
 {
 	m_pMainTimer->Tick();
 	Calculate_FPS();
+
+	m_pBox->Update();
 }
 
 void CMainFrame::Render()
 {
-	m_pDevice->Clear_BackBuffer();
+	m_pDevice->Begin_Render();
+
+	// ±×¸®±â
+	m_pBox->Render();
+
+	m_pDevice->End_Render();
 }
 
 void CMainFrame::Release()

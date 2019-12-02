@@ -43,14 +43,17 @@ BOOL CDevice::Init_Device(UINT p_dwSizeX, UINT p_dwSizeY)
 	return TRUE;
 }
 
-void CDevice::Clear_BackBuffer()
+void CDevice::Begin_Render()
 {
 	assert(m_pContext);
 	assert(m_pSwapChain);
 
 	m_pContext->ClearRenderTargetView(m_pRenderTargetView, (float*)&m_ClearColor);
 	m_pContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.f, 0);
+}
 
+void CDevice::End_Render()
+{
 	m_pSwapChain->Present(0, 0);
 }
 

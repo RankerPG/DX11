@@ -25,6 +25,9 @@
     <Filter Include="00. MainFrame">
       <UniqueIdentifier>{84157665-6619-4ac4-b74e-2bc76969f02e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97.Shader">
+      <UniqueIdentifier>{116464f4-46be-4f20-915f-62dbb2f9036d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -48,6 +51,9 @@
     <ClInclude Include="Header\MainFrame.h">
       <Filter>00. MainFrame</Filter>
     </ClInclude>
+    <ClInclude Include="Header\Box.h">
+      <Filter>99.Default\헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX11_StudyProject.cpp">
@@ -62,6 +68,9 @@
     <ClCompile Include="code\MainFrame.cpp">
       <Filter>00. MainFrame</Filter>
     </ClCompile>
+    <ClCompile Include="code\Box.cpp">
+      <Filter>99.Default\소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX11_StudyProject.rc">
@@ -75,5 +84,10 @@
     <Image Include="DX11_StudyProject.ico">
       <Filter>99.Default\리소스 파일</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\Default.fx">
+      <Filter>97.Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

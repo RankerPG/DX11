@@ -1,3 +1,3 @@
-﻿  Device.cpp
-C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\DX11_StudyProject\code\Device.cpp(61,1): warning C4067: 전처리기 지시문 다음에 예기치 않은 토큰이 있습니다. 줄 바꿈 문자가 필요합니다.
+﻿  Box.cpp
+C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\DX11_StudyProject\code\Box.cpp(100,1): warning C4067: 전처리기 지시문 다음에 예기치 않은 토큰이 있습니다. 줄 바꿈 문자가 필요합니다.
   DX11_StudyProject.vcxproj -> C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\x64\Debug\DX11_StudyProject.exe

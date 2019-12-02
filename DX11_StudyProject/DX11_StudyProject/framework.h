@@ -16,6 +16,8 @@
 #include <DirectXPackedVector.h>
 #include <D3DX11.h>
 #include <dxgi.h>
+#include <d3dx11effect.h>
+#include <d3dcompiler.h>
 
 #include "DX11_StudyProject.h"
 

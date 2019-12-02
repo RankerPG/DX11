@@ -4,6 +4,7 @@
 
 class CDevice;
 class CTimer;
+class CBox;
 
 class CMainFrame
 {
@@ -22,6 +23,7 @@ private:
 private:
 	CDevice*				m_pDevice;
 	shared_ptr<CTimer>		m_pMainTimer;
+	shared_ptr<CBox>		m_pBox;
 
 private:
 	UINT					m_dwFrameCnt;

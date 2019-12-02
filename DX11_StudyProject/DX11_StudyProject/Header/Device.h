@@ -32,13 +32,14 @@ private:
 	~CDevice();
 
 public:
-	inline const ID3D11Device* const Get_Device() const { return m_pDeivce; } //가지고 있을 땐 AddRef 필요
-	inline const ID3D11DeviceContext* const Get_Context() const { return m_pContext; } //가지고 있을 땐 AddRef 필요
+	inline ID3D11Device* Get_Device() { return m_pDeivce; } //가지고 있을 땐 AddRef 필요
+	inline ID3D11DeviceContext* Get_Context() { return m_pContext; } //가지고 있을 땐 AddRef 필요
 
 public:
 	BOOL Init_Device(UINT p_dwSizeX, UINT p_dwSizeY);
 
-	void Clear_BackBuffer();
+	void Begin_Render();
+	void End_Render();
 
 private:
 	BOOL Create_Device();

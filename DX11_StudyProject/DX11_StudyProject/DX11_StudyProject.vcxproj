@@ -75,7 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)\include;./;./header;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)\Samples\C++\Effects11\Inc;$(DXSDK_DIR)\include;./;./header</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(DXSDK_DIR)\lib\x64;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="DX11_StudyProject.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Header\Box.h" />
     <ClInclude Include="Header\Device.h" />
     <ClInclude Include="Header\MainFrame.h" />
     <ClInclude Include="Header\Timer.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="code\Box.cpp" />
     <ClCompile Include="code\Device.cpp" />
     <ClCompile Include="code\MainFrame.cpp" />
     <ClCompile Include="code\Timer.cpp" />
@@ -177,6 +179,11 @@
   <ItemGroup>
     <Image Include="DX11_StudyProject.ico" />
     <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shader\Default.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
