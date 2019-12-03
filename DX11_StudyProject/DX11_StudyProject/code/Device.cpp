@@ -61,7 +61,7 @@ BOOL CDevice::Create_Device()
 {
 	UINT createDeviceFlags = 0;
 	
-#ifdef DEBUG | _DEBUG
+#ifdef _DEBUG
 	createDeviceFlags = D3D11_CREATE_DEVICE_DEBUG;
 #endif
 

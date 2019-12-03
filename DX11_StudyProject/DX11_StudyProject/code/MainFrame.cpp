@@ -34,8 +34,9 @@ void CMainFrame::Update()
 {
 	m_pMainTimer->Tick();
 	Calculate_FPS();
+	float deltaTime = m_pMainTimer->Get_DeltaTime();
 
-	m_pBox->Update();
+	m_pBox->Update(deltaTime);
 }
 
 void CMainFrame::Render()
