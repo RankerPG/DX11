@@ -152,7 +152,7 @@ DX와 분리하였다.
 </div>
 
 ## 19.12.02
-<code> ~ 228 page </code>
+<code> ~ 309 page </code>
 
 NDC ( normalized device coodinates ) : 뷰 영역의 좌표를 정규화된 좌표로 변환한 좌표
 
