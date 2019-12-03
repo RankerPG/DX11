@@ -4,15 +4,12 @@
 #include "Shader.h"
 #include "transform.h"
 
-CBox::CBox(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
-	: m_pDevice(p_Device)
-	, m_pContext(p_Context)
+CBox::CBox(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMAP* p_hashMap)
+	: CObject(p_Device, p_Context, p_hashMap)
 	, m_pMesh(nullptr)
 	, m_pTransform(nullptr)
 	, m_pShader(nullptr)
 {
-	m_pDevice->AddRef();
-	m_pContext->AddRef();
 }
 
 CBox::~CBox()
@@ -22,18 +19,17 @@ CBox::~CBox()
 
 void CBox::Init()
 {
+	assert(m_pMapComponent);
+
 	// 메쉬 생성
-	m_pMesh.reset(new CFigureMesh(m_pDevice, m_pContext));
-	m_pMesh->Init_Mesh();
+	m_pMesh = static_cast<CMesh*>(m_pMapComponent->find("CubeMesh")->second->Clone());
 
 	// 트랜스폼 생성
-	m_pTransform.reset(new CTransform(m_pDevice, m_pContext));
+	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
+	m_pTransform->Set_Trans(XMVectorSet(0.f, 1.f, 0.f, 1.f));
 
 	// 쉐이더 생성
-	m_pShader.reset(new CShader(m_pDevice, m_pContext));
-	m_pShader->Create_VertexShader(L"./Shader/Default.fx", "vs_main", "vs_5_0");
-	m_pShader->Create_PixelShader(L"./Shader/Default.fx", "ps_main", "ps_5_0");
-	m_pShader->Create_ConstantBuffer((void*)&m_pTransform->Get_World(), sizeof(m_pTransform->Get_World()));
+	m_pShader = static_cast<CShader*>(m_pMapComponent->find("DefaultShader")->second->Clone());
 }
 
 void CBox::Update(float p_deltaTime)
@@ -56,19 +52,16 @@ void CBox::Render()
 	XMVECTOR target = XMVectorZero();
 	XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
-	XMMATRIX matView = XMMatrixLookAtLH(pos, target, up);
-
-	XMMATRIX matProj = XMMatrixPerspectiveFovLH(XM_PIDIV4, 1280.f / 720.f, 1.f, 1000.f);
-	
-	XMMATRIX matWVP = m_pTransform->Get_World() * matView * matProj;
+	XMMATRIX matWVP = m_pTransform->Get_World() * g_matView * g_matProj;
 
 	m_pShader->Update_ConstantBuffer((void*)&matWVP, sizeof(XMMATRIX));
 
-	m_pContext->DrawIndexed(36, 0, 0);
+	m_pMesh->Draw_Mesh();
 }
 
 void CBox::Release()
 {
-	m_pDevice->Release();
-	m_pContext->Release();
+	SAFE_DELETE(m_pMesh);
+	SAFE_DELETE(m_pTransform);
+	SAFE_DELETE(m_pShader);
 }

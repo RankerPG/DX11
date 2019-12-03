@@ -1,3 +1,2 @@
-﻿  MainFrame.cpp
-C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\DX11_StudyProject\code\timer.h(12): warning C4172: 지역 변수 또는 임시의 주소를 반환하고 있습니다.
+﻿  Camera.cpp
   DX11_StudyProject.vcxproj -> C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\x64\Debug\DX11_StudyProject.exe

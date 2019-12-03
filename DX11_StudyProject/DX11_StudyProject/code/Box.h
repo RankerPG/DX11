@@ -1,31 +1,28 @@
 #pragma once
 
-#include "framework.h"
+#include "Object.h"
 
 class CMesh;
 class CTransform;
 class CShader;
 
-class CBox
+class CBox : public CObject
 {
 public:
-	CBox(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);
+	CBox(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMAP* p_hashMap);
 	~CBox();
 
 public:
-	void Init();
-	void Update(float p_deltaTime);
-	void Render();
+	virtual void Init();
+	virtual void Update(float p_deltaTime);
+	virtual void Render();
 
 private:
-	void Release();
+	virtual void Release();
 
 private:
-	ID3D11Device*					m_pDevice;
-	ID3D11DeviceContext*			m_pContext;
-
-	shared_ptr<CMesh>				m_pMesh;
-	shared_ptr<CTransform>			m_pTransform;
-	shared_ptr<CShader>				m_pShader;
+	CMesh*			m_pMesh;
+	CTransform*		m_pTransform;
+	CShader*		m_pShader;
 };
 

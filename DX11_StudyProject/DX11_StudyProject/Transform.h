@@ -6,7 +6,11 @@ class CTransform : public CComponent
 {
 public:
 	explicit CTransform(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);
+	CTransform(const CTransform& rhs);
 	virtual ~CTransform();
+
+public:
+	inline virtual CComponent* Clone() { return new CTransform(*this); }
 
 public:
 	inline void Set_Scale(XMVECTOR p_Scale) { m_vScale = p_Scale; }

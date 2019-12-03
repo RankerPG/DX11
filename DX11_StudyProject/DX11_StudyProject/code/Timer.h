@@ -9,7 +9,7 @@ public:
 	~CTimer() = default;
 
 public:
-	inline const float& Get_DeltaTime() const { return (float)m_DeltaTime; }
+	inline const float Get_DeltaTime() const { return (float)m_DeltaTime; }
 	
 	float Get_TotalTime();
 

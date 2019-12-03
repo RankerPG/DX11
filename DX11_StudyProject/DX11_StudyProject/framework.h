@@ -11,6 +11,9 @@
 #include <tchar.h>
 #include <cassert>
 
+#include <vector>
+#include <unordered_map>
+
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
@@ -19,10 +22,16 @@
 #include <d3dx11effect.h>
 #include <d3dcompiler.h>
 
-#include "DX11_StudyProject.h"
+#include "Functor.h"
 
 using namespace std;
 
 using namespace DirectX;
 
 using namespace PackedVector;
+
+//
+extern HWND g_hWnd;
+
+extern XMMATRIX g_matView;
+extern XMMATRIX g_matProj;

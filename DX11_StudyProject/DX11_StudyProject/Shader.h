@@ -6,7 +6,11 @@ class CShader : public CComponent
 {
 public:
 	explicit CShader(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);
+	CShader(const CShader& rhs);
 	virtual ~CShader();
+
+public:
+	inline virtual CComponent* Clone() { return new CShader(*this); }
 
 public:
 	inline ID3D11InputLayout* Get_Layout() const { return m_pInputLayout; }

@@ -46,6 +46,15 @@
     <Filter Include="95. Component\03. Transform">
       <UniqueIdentifier>{2d06b2de-1d9b-49f4-8b6c-fafec21ec76a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. Object\00. Terrain">
+      <UniqueIdentifier>{4b32b6e1-de37-4196-a49b-48267e869d94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\01. Box">
+      <UniqueIdentifier>{6d507c81-8ec5-4e4c-a394-84610696a604}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\02. Camera">
+      <UniqueIdentifier>{2484d0e5-85b3-4d48-88f7-43563e03d6ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -72,9 +81,6 @@
     <ClInclude Include="framework.h">
       <Filter>96. global</Filter>
     </ClInclude>
-    <ClInclude Include="code\Box.h">
-      <Filter>02. Object</Filter>
-    </ClInclude>
     <ClInclude Include="FigureMesh.h">
       <Filter>95. Component\01. Mesh</Filter>
     </ClInclude>
@@ -90,6 +96,24 @@
     <ClInclude Include="Component.h">
       <Filter>95. Component</Filter>
     </ClInclude>
+    <ClInclude Include="code\GeometryGenerator.h">
+      <Filter>95. Component\01. Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Box.h">
+      <Filter>02. Object\01. Box</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
+      <Filter>02. Object\00. Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>02. Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Functor.h">
+      <Filter>96. global</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>02. Object\02. Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX11_StudyProject.cpp">
@@ -103,9 +127,6 @@
     </ClCompile>
     <ClCompile Include="code\Timer.cpp">
       <Filter>98.Timer</Filter>
-    </ClCompile>
-    <ClCompile Include="code\Box.cpp">
-      <Filter>02. Object</Filter>
     </ClCompile>
     <ClCompile Include="FigureMesh.cpp">
       <Filter>95. Component\01. Mesh</Filter>
@@ -121,6 +142,21 @@
     </ClCompile>
     <ClCompile Include="Component.cpp">
       <Filter>95. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryGenerator.cpp">
+      <Filter>95. Component\01. Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Box.cpp">
+      <Filter>02. Object\01. Box</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>02. Object\00. Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>02. Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>02. Object\02. Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

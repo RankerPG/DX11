@@ -157,8 +157,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="code\Box.h" />
     <ClInclude Include="code\Device.h" />
+    <ClInclude Include="code\GeometryGenerator.h" />
     <ClInclude Include="code\MainFrame.h" />
     <ClInclude Include="code\Mesh.h" />
     <ClInclude Include="code\struct.h" />
@@ -167,12 +169,17 @@
     <ClInclude Include="DX11_StudyProject.h" />
     <ClInclude Include="FigureMesh.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Functor.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="code\Box.cpp" />
     <ClCompile Include="code\Device.cpp" />
     <ClCompile Include="code\MainFrame.cpp" />
@@ -181,7 +188,9 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DX11_StudyProject.cpp" />
     <ClCompile Include="FigureMesh.cpp" />
+    <ClCompile Include="GeometryGenerator.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
