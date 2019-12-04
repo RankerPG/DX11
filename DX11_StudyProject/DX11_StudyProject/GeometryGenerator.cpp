@@ -11,25 +11,91 @@ CGeometryGenerator::~CGeometryGenerator()
 {
 }
 
-void CGeometryGenerator::Create_Cube(ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt)
+void CGeometryGenerator::Create_Cube(float p_width, float p_height, float p_depth, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt)
 {
-	// 버텍스 버퍼 생성
-	Vertex vertices[] =
+	MeshData data;
+	data.Vertices.resize(24);
+
+	float w2 = 0.5f * p_width;
+	float h2 = 0.5f * p_height;
+	float d2 = 0.5f * p_depth;
+
+	// Fill in the front face vertex data.
+	data.Vertices[0] = VertexData(-w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	data.Vertices[1] = VertexData(-w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	data.Vertices[2] = VertexData(+w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	data.Vertices[3] = VertexData(+w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+
+	// Fill in the back face vertex data.
+	data.Vertices[4] = VertexData(-w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+	data.Vertices[5] = VertexData(+w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	data.Vertices[6] = VertexData(+w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	data.Vertices[7] = VertexData(-w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
+	// Fill in the top face vertex data.
+	data.Vertices[8] = VertexData(-w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	data.Vertices[9] = VertexData(-w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	data.Vertices[10] = VertexData(+w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	data.Vertices[11] = VertexData(+w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+
+	// Fill in the bottom face vertex data.
+	data.Vertices[12] = VertexData(-w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+	data.Vertices[13] = VertexData(+w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	data.Vertices[14] = VertexData(+w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	data.Vertices[15] = VertexData(-w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+
+	// Fill in the left face vertex data.
+	data.Vertices[16] = VertexData(-w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f);
+	data.Vertices[17] = VertexData(-w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f);
+	data.Vertices[18] = VertexData(-w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f);
+	data.Vertices[19] = VertexData(-w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f);
+
+	// Fill in the right face vertex data.
+	data.Vertices[20] = VertexData(+w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+	data.Vertices[21] = VertexData(+w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+	data.Vertices[22] = VertexData(+w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+	data.Vertices[23] = VertexData(+w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+
+	UINT i[36];
+
+	// Fill in the front face index data
+	i[0] = 0; i[1] = 1; i[2] = 2;
+	i[3] = 0; i[4] = 2; i[5] = 3;
+
+	// Fill in the back face index data
+	i[6] = 4; i[7] = 5; i[8] = 6;
+	i[9] = 4; i[10] = 6; i[11] = 7;
+
+	// Fill in the top face index data
+	i[12] = 8; i[13] = 9; i[14] = 10;
+	i[15] = 8; i[16] = 10; i[17] = 11;
+
+	// Fill in the bottom face index data
+	i[18] = 12; i[19] = 13; i[20] = 14;
+	i[21] = 12; i[22] = 14; i[23] = 15;
+
+	// Fill in the left face index data
+	i[24] = 16; i[25] = 17; i[26] = 18;
+	i[27] = 16; i[28] = 18; i[29] = 19;
+
+	// Fill in the right face index data
+	i[30] = 20; i[31] = 21; i[32] = 22;
+	i[33] = 20; i[34] = 22; i[35] = 23;
+
+	data.Indices.assign(&i[0], &i[36]);
+
+	NORMALVERTEX vertices[24];
+
+	for (int i = 0; i < 24; ++i)
 	{
-		{ XMFLOAT4(-1.f, -1.f, -1.f, 1.f), XMFLOAT4(1.f, 1.f, 1.f, 1.f) },
-		{ XMFLOAT4(-1.f, +1.f, -1.f, 1.f), XMFLOAT4(0.f, 0.f, 0.f, 1.f) },
-		{ XMFLOAT4(+1.f, +1.f, -1.f, 1.f), XMFLOAT4(1.f, 0.f, 0.f, 1.f) },
-		{ XMFLOAT4(+1.f, -1.f, -1.f, 1.f), XMFLOAT4(0.f, 1.f, 0.f, 1.f) },
-		{ XMFLOAT4(-1.f, -1.f, +1.f, 1.f), XMFLOAT4(0.f, 0.f, 1.f, 1.f) },
-		{ XMFLOAT4(-1.f, +1.f, +1.f, 1.f), XMFLOAT4(1.f, 1.f, 0.f, 1.f) },
-		{ XMFLOAT4(+1.f, +1.f, +1.f, 1.f), XMFLOAT4(0.f, 1.f, 1.f, 1.f) },
-		{ XMFLOAT4(+1.f, -1.f, +1.f, 1.f), XMFLOAT4(1.f, 0.f, 1.f, 1.f) },
-	};
+		vertices[i].pos = data.Vertices[i].pos;
+		vertices[i].nrm = data.Vertices[i].nrm;
+	}
 
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
 	bd.Usage = D3D11_USAGE_IMMUTABLE;
-	bd.ByteWidth = sizeof(Vertex) * 8;
+	bd.ByteWidth = sizeof(NORMALVERTEX) * 24;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 	D3D11_SUBRESOURCE_DATA subData;
@@ -43,33 +109,11 @@ void CGeometryGenerator::Create_Cube(ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, U
 		return;
 	}
 
-	// 인덱스 버퍼 생성
-	UINT indices[] =
-	{
-		0, 1, 2,
-		0, 2, 3,
-
-		4, 6, 5,
-		4, 7, 6,
-
-		4, 5, 1,
-		4, 1, 0,
-
-		3, 2, 6,
-		3, 6, 7,
-
-		1, 5, 6,
-		1, 6, 2,
-
-		4, 0, 3,
-		4, 3, 7
-	};
-
 	bd.Usage = D3D11_USAGE_IMMUTABLE;
 	bd.ByteWidth = sizeof(UINT) * 36;
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
-	subData.pSysMem = indices;
+	subData.pSysMem = i;
 
 	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, p_IB)))
 	{
@@ -79,41 +123,6 @@ void CGeometryGenerator::Create_Cube(ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, U
 	}
 
 	*p_dwIdxCnt = 36;
-
-	//MeshData data;
-	//data.Vertices.resize(8);
-
-	//data.Vertices[0].pos = XMFLOAT3(-1.f, -1.f, -1.f);
-	//data.Vertices[0].nrm = XMFLOAT3(0.f, 0.f, -1.f);
-	//data.Vertices[0].uv = XMFLOAT2(0.f, 1.f);
-
-	//data.Vertices[1].pos = XMFLOAT3(-1.f, +1.f, -1.f);
-	//data.Vertices[1].nrm = XMFLOAT3(0.f, 0.f, -1.f);
-	//data.Vertices[1].uv = XMFLOAT2(0.f, 0.f);
-
-	//data.Vertices[2].pos = XMFLOAT3(+1.f, +1.f, -1.f);
-	//data.Vertices[2].nrm = XMFLOAT3(0.f, 0.f, -1.f);
-	//data.Vertices[2].uv = XMFLOAT2(1.f, 0.f);
-
-	//data.Vertices[3].pos = XMFLOAT3(+1.f, -1.f, -1.f);
-	//data.Vertices[3].nrm = XMFLOAT3(0.f, 0.f, -1.f);
-	//data.Vertices[3].uv = XMFLOAT2(1.f, 1.f);
-
-	//data.Vertices[4].pos = XMFLOAT3(-1.f, -1.f, +1.f);
-	//data.Vertices[4].nrm = XMFLOAT3(0.f, 0.f, 1.f);
-	//data.Vertices[4].uv = XMFLOAT2(1.f, 1.f);
-
-	//data.Vertices[5].pos = XMFLOAT3(-1.f, +1.f, +1.f);
-	//data.Vertices[5].nrm = XMFLOAT3(0.f, 0.f, 1.f);
-	//data.Vertices[5].uv = XMFLOAT2(1.f, 0.f);
-
-	//data.Vertices[6].pos = XMFLOAT3(+1.f, +1.f, +1.f);
-	//data.Vertices[6].nrm = XMFLOAT3(0.f, 0.f, 1.f);
-	//data.Vertices[6].uv = XMFLOAT2(0.f, 0.f);
-
-	//data.Vertices[7].pos = XMFLOAT3(+1.f, -1.f, +1.f);
-	//data.Vertices[7].nrm = XMFLOAT3(0.f, 0.f, 1.f);
-	//data.Vertices[7].uv = XMFLOAT2(0.f, 1.f);
 }
 
 void CGeometryGenerator::Create_Terrain(float p_width, float p_depth, UINT n, UINT m, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt)
@@ -174,43 +183,19 @@ void CGeometryGenerator::Create_Terrain(float p_width, float p_depth, UINT n, UI
 		}
 	}
 
-	vector<Vertex> vertices(vtxCnt);
+	vector<NORMALVERTEX> vertices(vtxCnt);
 
 	for (UINT i = 0; i < vtxCnt; ++i)
 	{
-		XMFLOAT4 p = data.Vertices[i].pos;
-		//p.y = Get_Height(p.x, p.z);
-		vertices[i].pos = p;
-
-		//if (p.y < -10.f)
-		//{
-		//	vertices[i].col = XMFLOAT4(1.f, 0.96f, 0.62f, 1.f);
-		//}
-		//else if (p.y < 5.f)
-		//{
-		//	vertices[i].col = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.f);
-		//}
-		//else if (p.y < 12.f)
-		//{
-		//	vertices[i].col = XMFLOAT4(0.1f, 0.48f, 0.19f, 1.f);
-		//}
-		//else if (p.y < 20.f)
-		//{
-		//	vertices[i].col = XMFLOAT4(0.45f, 0.39f, 0.34f, 1.f);
-		//}
-		//else
-		//{
-		//	vertices[i].col = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-		//}
-
-		vertices[i].col = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+		vertices[i].pos = data.Vertices[i].pos;
+		vertices[i].nrm = data.Vertices[i].nrm;
 	}
 
 	//
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
 	bd.Usage = D3D11_USAGE_IMMUTABLE;
-	bd.ByteWidth = sizeof(Vertex) * vtxCnt;
+	bd.ByteWidth = sizeof(NORMALVERTEX) * vtxCnt;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 	D3D11_SUBRESOURCE_DATA subData;
@@ -274,6 +259,7 @@ void CGeometryGenerator::Create_Sphere(float p_radius, UINT p_sliceCount, UINT p
 			v.pos.x = p_radius * sinf(phi) * cosf(theta);
 			v.pos.y = p_radius * cosf(phi);
 			v.pos.z = p_radius * sinf(phi) * sinf(theta);
+			v.pos.w = 1.f;
 
 			// Partial derivative of P with respect to theta
 			v.tangent.x = -p_radius * sinf(phi) * sinf(theta);
@@ -349,19 +335,19 @@ void CGeometryGenerator::Create_Sphere(float p_radius, UINT p_sliceCount, UINT p
 
 	UINT vtxCnt = data.Vertices.size();
 
-	vector<Vertex> vertices(vtxCnt);
+	vector<NORMALVERTEX> vertices(vtxCnt);
 
 	for (UINT i = 0; i < vtxCnt; ++i)
 	{
 		vertices[i].pos = data.Vertices[i].pos;
-		vertices[i].col = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+		vertices[i].nrm = data.Vertices[i].nrm;
 	}
 
 	//
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
 	bd.Usage = D3D11_USAGE_IMMUTABLE;
-	bd.ByteWidth = sizeof(Vertex) * vtxCnt;
+	bd.ByteWidth = sizeof(NORMALVERTEX) * vtxCnt;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 	D3D11_SUBRESOURCE_DATA subData;

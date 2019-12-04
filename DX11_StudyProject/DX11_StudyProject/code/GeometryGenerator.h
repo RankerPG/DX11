@@ -40,7 +40,7 @@ public:
 	virtual CComponent* Clone() { return nullptr; }
 
 public:
-	void Create_Cube(ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
+	void Create_Cube(float p_width, float p_height, float p_depth, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
 	void Create_Terrain(float p_width, float p_depth, UINT m, UINT n, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
 	void Create_Sphere(float p_radius, UINT p_sliceCount, UINT p_stackCount, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
 

@@ -2,6 +2,7 @@
 #include "DX11_StudyProject.h"
 #include "MainFrame.h"
 #include "Device.h"
+#include "Input.h"
 
 #define MAX_LOADSTRING 100
 
@@ -33,17 +34,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-	CDevice* pDevice = CDevice::Get_Instance();
-
-	mainFrame = new CMainFrame(pDevice);
-	shared_ptr<CMainFrame> shared_mainFrame(mainFrame);
-
-    if (!InitInstance (hInstance, nCmdShow))
+	if (!InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
     }
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DX11STUDYPROJECT));
+
+	CDevice* pDevice = CDevice::Get_Instance();
+	CInput* pInput = CInput::Get_Instance();
+	pInput->Init_Input_Device(hInst, g_hWnd);
+
+	mainFrame = new CMainFrame(pDevice);
+	shared_ptr<CMainFrame> shared_mainFrame(mainFrame);
 
 	mainFrame->Init();
 
@@ -59,12 +62,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		else
 		{
+			pInput->Update_InputDev_State();
 			mainFrame->Update();
 			mainFrame->Render();
 		}
     }
 
 	pDevice->Release_Instance();
+	pInput->Release_Instance();
 
     return (int) msg.wParam;
 }

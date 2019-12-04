@@ -23,6 +23,7 @@
 #include <d3dcompiler.h>
 
 #include "Functor.h"
+#include "struct.h"
 
 using namespace std;
 

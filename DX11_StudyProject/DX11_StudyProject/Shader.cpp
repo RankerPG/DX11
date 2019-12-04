@@ -4,7 +4,6 @@ CShader::CShader(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
 	: CComponent(p_Device, p_Context)
 	, m_pVS(nullptr)
 	, m_pPS(nullptr)
-	, m_pCB(nullptr)
 	, m_pInputLayout(nullptr)
 {
 }
@@ -13,12 +12,10 @@ CShader::CShader(const CShader& rhs)
 	: CComponent(rhs.m_pDevice, rhs.m_pContext)
 	, m_pVS(rhs.m_pVS)
 	, m_pPS(rhs.m_pPS)
-	, m_pCB(rhs.m_pCB)
 	, m_pInputLayout(rhs.m_pInputLayout)
 {
 	m_pVS->AddRef();
 	m_pPS->AddRef();
-	m_pCB->AddRef();
 	m_pInputLayout->AddRef();
 }
 
@@ -26,11 +23,10 @@ CShader::~CShader()
 {
 	m_pVS->Release();
 	m_pPS->Release();
-	m_pCB->Release();
 	m_pInputLayout->Release();
 }
 
-void CShader::Create_VertexShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR p_version)
+void CShader::Create_VertexShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR p_version, int p_LayoutType)
 {
 	ID3D10Blob* compiledVS = nullptr;
 	ID3D10Blob* compilationMsgs = nullptr;
@@ -62,7 +58,7 @@ void CShader::Create_VertexShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCST
 		return;
 	}
 
-	Create_InputLayout(compiledVS);
+	Create_InputLayout(compiledVS, p_LayoutType);
 
 	compiledVS->Release();
 }
@@ -102,7 +98,7 @@ void CShader::Create_PixelShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR
 	compiledPS->Release();
 }
 
-void CShader::Create_ConstantBuffer(LPVOID p_data, UINT p_size)
+void CShader::Create_ConstantBuffer(LPVOID p_data, UINT p_size, ID3D11Buffer** p_CB)
 {
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
@@ -116,7 +112,7 @@ void CShader::Create_ConstantBuffer(LPVOID p_data, UINT p_size)
 	sd.SysMemPitch = 0;
 	sd.SysMemSlicePitch = 0;
 
-	if (FAILED(m_pDevice->CreateBuffer(&bd, &sd, &m_pCB)))
+	if (FAILED(m_pDevice->CreateBuffer(&bd, &sd, p_CB)))
 	{
 		MessageBox(g_hWnd, L"Create Constant Buffer Failed!!", 0, 0);
 		return;
@@ -129,14 +125,14 @@ void CShader::Update_Shader()
 	m_pContext->PSSetShader(m_pPS, nullptr, 0);
 }
 
-void CShader::Update_ConstantBuffer(LPVOID p_data, UINT p_size)
+void CShader::Update_ConstantBuffer(LPVOID p_data, UINT p_size, ID3D11Buffer* p_CB, UINT p_slot)
 {
 	ID3D11Resource* resource = nullptr;
 
 	D3D11_MAPPED_SUBRESOURCE mr;
 	ZeroMemory(&mr, sizeof(mr));
 
-	if (FAILED(m_pContext->Map(m_pCB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
+	if (FAILED(m_pContext->Map(p_CB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
 	{
 		MessageBox(g_hWnd, L"Update Constant Buffer Failed!!", 0, 0);
 		return;
@@ -144,23 +140,42 @@ void CShader::Update_ConstantBuffer(LPVOID p_data, UINT p_size)
 
 	memcpy(mr.pData, p_data, p_size);
 
-	m_pContext->Unmap(m_pCB, 0);
+	m_pContext->Unmap(p_CB, 0);
 
-	m_pContext->VSSetConstantBuffers(0, 1, &m_pCB);
+	m_pContext->VSSetConstantBuffers(p_slot, 1, &p_CB);
+	m_pContext->PSSetConstantBuffers(p_slot, 1, &p_CB);
 }
 
 void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 {
-	D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+	if (0 == p_LayoutType)
 	{
-		{ "POSITION",	0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0,	D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{ "COLOR",		0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16,	D3D11_INPUT_PER_VERTEX_DATA, 0},
-	};
+		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+		{
+			{ "POSITION",	0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0,	D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{ "COLOR",		0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 16,	D3D11_INPUT_PER_VERTEX_DATA, 0},
+		};
 
-	if (FAILED(m_pDevice->CreateInputLayout(vertexDesc, 2, p_CompileVS->GetBufferPointer(),
-		p_CompileVS->GetBufferSize(), &m_pInputLayout)))
+		if (FAILED(m_pDevice->CreateInputLayout(vertexDesc, 2, p_CompileVS->GetBufferPointer(),
+			p_CompileVS->GetBufferSize(), &m_pInputLayout)))
+		{
+			MessageBox(g_hWnd, L"Create InputLayout Failed!!", 0, 0);
+			return;
+		}
+	}
+	else if (1 == p_LayoutType)
 	{
-		MessageBox(g_hWnd, L"Create InputLayout Failed!!", 0, 0);
-		return;
+		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+		{
+			{ "POSITION",	0, DXGI_FORMAT_R32G32B32A32_FLOAT,	 0, 0,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",		0, DXGI_FORMAT_R32G32B32_FLOAT,		 0, 16,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		if (FAILED(m_pDevice->CreateInputLayout(vertexDesc, 2, p_CompileVS->GetBufferPointer(),
+			p_CompileVS->GetBufferSize(), &m_pInputLayout)))
+		{
+			MessageBox(g_hWnd, L"Create InputLayout Failed!!", 0, 0);
+			return;
+		}
 	}
 }

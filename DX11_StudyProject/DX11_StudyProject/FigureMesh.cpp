@@ -20,7 +20,7 @@ CFigureMesh::~CFigureMesh()
 
 void CFigureMesh::Init_Mesh()
 {
-	m_dwStride = sizeof(Vertex);
+	m_dwStride = sizeof(NORMALVERTEX);
 	m_dwOffset = 0;
 
 	CGeometryGenerator generator(m_pDevice, m_pContext);
@@ -28,10 +28,10 @@ void CFigureMesh::Init_Mesh()
 	switch (m_dwType)
 	{
 	case 0:
-		generator.Create_Cube(&m_pVB, &m_pIB, &m_dwIdxCnt);
+		generator.Create_Cube(1.f, 1.f, 1.f, &m_pVB, &m_pIB, &m_dwIdxCnt);
 		break;
 	case 1:
-		generator.Create_Sphere(5.f, 20, 10, &m_pVB, &m_pIB, &m_dwIdxCnt);
+		generator.Create_Sphere(1.f, 40, 20, &m_pVB, &m_pIB, &m_dwIdxCnt);
 		break;
 	case 2:
 		generator.Create_Terrain(128.f, 128.f, 129, 129, &m_pVB, &m_pIB, &m_dwIdxCnt);

@@ -2,11 +2,16 @@
 
 #include "Object.h"
 
+class CInput;
+
 class CCamera : public CObject
 {
 public:
 	CCamera(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMAP* p_hashMap);
 	~CCamera();
+
+public:
+	inline const XMVECTOR& Get_ViewPos() { return m_vPos; }
 
 public:
 	virtual void Init();
@@ -22,5 +27,9 @@ private:
 	XMVECTOR m_vUp;
 	
 	XMMATRIX m_matView;
+
+	CInput* m_pInput;
+
+	BOOL	m_bCameraFix;
 };
 

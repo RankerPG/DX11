@@ -4,9 +4,6 @@
     <Filter Include="98.Timer">
       <UniqueIdentifier>{4c727099-4093-4d57-8b85-fc4ce4c14a37}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01. DXDevice">
-      <UniqueIdentifier>{03125e9d-33f2-47ec-bfdf-df560d49da87}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00. MainFrame">
       <UniqueIdentifier>{84157665-6619-4ac4-b74e-2bc76969f02e}</UniqueIdentifier>
     </Filter>
@@ -52,8 +49,20 @@
     <Filter Include="02. Object\01. Box">
       <UniqueIdentifier>{6d507c81-8ec5-4e4c-a394-84610696a604}</UniqueIdentifier>
     </Filter>
-    <Filter Include="02. Object\02. Camera">
+    <Filter Include="01. Device">
+      <UniqueIdentifier>{03125e9d-33f2-47ec-bfdf-df560d49da87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Device\00. DXDevice">
+      <UniqueIdentifier>{d59d0600-be82-4e8a-9032-4a8276b76d1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01. Device\01. DXInput">
+      <UniqueIdentifier>{fbc13dcc-45c0-4780-8211-74d047a13c0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\99. Camera">
       <UniqueIdentifier>{2484d0e5-85b3-4d48-88f7-43563e03d6ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\03. Sphere">
+      <UniqueIdentifier>{78ba0b9d-8a39-4547-a6f7-e726937d0b80}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -68,9 +77,6 @@
     </ClInclude>
     <ClInclude Include="code\MainFrame.h">
       <Filter>00. MainFrame</Filter>
-    </ClInclude>
-    <ClInclude Include="code\Device.h">
-      <Filter>01. DXDevice</Filter>
     </ClInclude>
     <ClInclude Include="code\Timer.h">
       <Filter>98.Timer</Filter>
@@ -112,7 +118,16 @@
       <Filter>96. global</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>02. Object\02. Camera</Filter>
+      <Filter>02. Object\99. Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Device.h">
+      <Filter>01. Device\00. DXDevice</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>01. Device\01. DXInput</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>02. Object\03. Sphere</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -121,9 +136,6 @@
     </ClCompile>
     <ClCompile Include="code\MainFrame.cpp">
       <Filter>00. MainFrame</Filter>
-    </ClCompile>
-    <ClCompile Include="code\Device.cpp">
-      <Filter>01. DXDevice</Filter>
     </ClCompile>
     <ClCompile Include="code\Timer.cpp">
       <Filter>98.Timer</Filter>
@@ -156,7 +168,16 @@
       <Filter>02. Object</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>02. Object\02. Camera</Filter>
+      <Filter>02. Object\99. Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Device.cpp">
+      <Filter>01. Device\00. DXDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>01. Device\01. DXInput</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>02. Object\03. Sphere</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -176,5 +197,13 @@
     <FxCompile Include="Shader\Default.fx">
       <Filter>97.fx</Filter>
     </FxCompile>
+    <FxCompile Include="Shader\Light.fx">
+      <Filter>97.fx</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Shader\UpdateList.txt">
+      <Filter>00. MainFrame</Filter>
+    </Text>
   </ItemGroup>
 </Project>

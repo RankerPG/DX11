@@ -9,6 +9,10 @@ CTerrain::CTerrain(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHA
 	, m_pMesh(nullptr)
 	, m_pTransform(nullptr)
 	, m_pShader(nullptr)
+	, m_pCB(nullptr)
+	, m_pCBMtrl(nullptr)
+	, m_mat(TRANSMATRIX())
+	, m_mtrl(MATERIAL())
 {
 }
 
@@ -28,7 +32,13 @@ void CTerrain::Init()
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
 
 	// ½¦ÀÌ´õ »ý¼º
-	m_pShader = static_cast<CShader*>(m_pMapComponent->find("DefaultShader")->second->Clone());
+	m_pShader = static_cast<CShader*>(m_pMapComponent->find("LightShader")->second->Clone());
+	m_pShader->Create_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), &m_pCB);
+	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
+
+	m_mtrl.diffuse = XMFLOAT4(0.f, 1.f, 0.5f, 1.f);
+	m_mtrl.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.f);
+	m_mtrl.specular = XMFLOAT4(1.f, 1.f, 1.f, 128.f);
 }
 
 void CTerrain::Update(float p_deltaTime)
@@ -45,13 +55,12 @@ void CTerrain::Render()
 
 	m_pShader->Update_Shader();
 
-	XMVECTOR pos = XMVectorSet(0.f, 10.f, -20.f, 1.f);
-	XMVECTOR target = XMVectorZero();
-	XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World());
+	XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(m_pTransform->Get_World()));
+	XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * g_matView * g_matProj);
 
-	XMMATRIX matWVP = m_pTransform->Get_World() * g_matView * g_matProj;
-
-	m_pShader->Update_ConstantBuffer((void*)&matWVP, sizeof(XMMATRIX));
+	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
+	m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 
 	m_pMesh->Draw_Mesh();
 }
@@ -61,4 +70,7 @@ void CTerrain::Release()
 	SAFE_DELETE(m_pMesh);
 	SAFE_DELETE(m_pTransform);
 	SAFE_DELETE(m_pShader);
+
+	SAFE_RELEASE(m_pCB);
+	SAFE_RELEASE(m_pCBMtrl);
 }

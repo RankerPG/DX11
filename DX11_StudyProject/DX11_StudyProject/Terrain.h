@@ -24,4 +24,11 @@ private:
 	CMesh*				m_pMesh;
 	CTransform*			m_pTransform;
 	CShader*			m_pShader;
+
+private: //constant buffer
+	ID3D11Buffer* m_pCB;
+	ID3D11Buffer* m_pCBMtrl;
+
+	TRANSMATRIX		m_mat;
+	MATERIAL		m_mtrl;
 };

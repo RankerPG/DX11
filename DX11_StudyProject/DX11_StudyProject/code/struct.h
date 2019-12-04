@@ -5,8 +5,41 @@
 
 using namespace DirectX;
 
-struct Vertex
+struct VERTEX
 {
 	XMFLOAT4 pos;
 	XMFLOAT4 col;
+};
+
+struct NORMALVERTEX
+{
+	XMFLOAT4 pos;
+	XMFLOAT3 nrm;
+};
+
+struct TRANSMATRIX
+{
+	XMFLOAT4X4 matWorld;
+	XMFLOAT4X4 matWorldRT;
+	XMFLOAT4X4 matWVP;
+};
+
+struct LIGHT
+{
+	XMFLOAT3A direction;
+	XMFLOAT4 diffuse;
+	XMFLOAT4 ambient;
+	XMFLOAT4 specular;
+};
+
+struct MATERIAL
+{
+	XMFLOAT4 diffuse;
+	XMFLOAT4 ambient;
+	XMFLOAT4 specular; // w = power
+};
+
+struct PERFRAME
+{
+	XMFLOAT3A viewPos;
 };
