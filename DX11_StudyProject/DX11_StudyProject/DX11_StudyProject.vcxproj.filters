@@ -7,9 +7,6 @@
     <Filter Include="00. MainFrame">
       <UniqueIdentifier>{84157665-6619-4ac4-b74e-2bc76969f02e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="97.fx">
-      <UniqueIdentifier>{116464f4-46be-4f20-915f-62dbb2f9036d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="96. global">
       <UniqueIdentifier>{41fbf8f5-21ab-47d2-a7d3-af9ec8f091e3}</UniqueIdentifier>
     </Filter>
@@ -64,6 +61,18 @@
     <Filter Include="02. Object\03. Sphere">
       <UniqueIdentifier>{78ba0b9d-8a39-4547-a6f7-e726937d0b80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. Object\04. Visible">
+      <UniqueIdentifier>{d8af3862-0c54-4051-a8fd-0afc0684cdab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Component\04. Texture">
+      <UniqueIdentifier>{06f9f8b8-9419-4974-ba8c-6e082d62a5b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97. fx">
+      <UniqueIdentifier>{116464f4-46be-4f20-915f-62dbb2f9036d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Component\04. Texture\Loader">
+      <UniqueIdentifier>{c8afd9b5-183e-40ef-98e6-cec3c76cf664}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -87,20 +96,8 @@
     <ClInclude Include="framework.h">
       <Filter>96. global</Filter>
     </ClInclude>
-    <ClInclude Include="FigureMesh.h">
-      <Filter>95. Component\01. Mesh</Filter>
-    </ClInclude>
     <ClInclude Include="code\Mesh.h">
       <Filter>95. Component\01. Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>95. Component\02. Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="Transform.h">
-      <Filter>95. Component\03. Transform</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.h">
-      <Filter>95. Component</Filter>
     </ClInclude>
     <ClInclude Include="code\GeometryGenerator.h">
       <Filter>95. Component\01. Mesh</Filter>
@@ -108,26 +105,50 @@
     <ClInclude Include="code\Box.h">
       <Filter>02. Object\01. Box</Filter>
     </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>02. Object\00. Terrain</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>02. Object</Filter>
-    </ClInclude>
-    <ClInclude Include="Functor.h">
-      <Filter>96. global</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>02. Object\99. Camera</Filter>
-    </ClInclude>
     <ClInclude Include="code\Device.h">
       <Filter>01. Device\00. DXDevice</Filter>
     </ClInclude>
-    <ClInclude Include="Input.h">
+    <ClInclude Include="code\Camera.h">
+      <Filter>02. Object\99. Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Component.h">
+      <Filter>95. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="code\FigureMesh.h">
+      <Filter>95. Component\01. Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Functor.h">
+      <Filter>96. global</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Input.h">
       <Filter>01. Device\01. DXInput</Filter>
     </ClInclude>
-    <ClInclude Include="Sphere.h">
+    <ClInclude Include="code\Object.h">
+      <Filter>02. Object</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Shader.h">
+      <Filter>95. Component\02. Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Sphere.h">
       <Filter>02. Object\03. Sphere</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Terrain.h">
+      <Filter>02. Object\00. Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Transform.h">
+      <Filter>95. Component\03. Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Visible.h">
+      <Filter>02. Object\04. Visible</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Texture.h">
+      <Filter>95. Component\04. Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="code\DDSTextureLoader.h">
+      <Filter>95. Component\04. Texture\Loader</Filter>
+    </ClInclude>
+    <ClInclude Include="code\WICTextureLoader.h">
+      <Filter>95. Component\04. Texture\Loader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -140,44 +161,56 @@
     <ClCompile Include="code\Timer.cpp">
       <Filter>98.Timer</Filter>
     </ClCompile>
-    <ClCompile Include="FigureMesh.cpp">
-      <Filter>95. Component\01. Mesh</Filter>
-    </ClCompile>
     <ClCompile Include="code\Mesh.cpp">
-      <Filter>95. Component\01. Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>95. Component\02. Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>95. Component\03. Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>95. Component</Filter>
-    </ClCompile>
-    <ClCompile Include="GeometryGenerator.cpp">
       <Filter>95. Component\01. Mesh</Filter>
     </ClCompile>
     <ClCompile Include="code\Box.cpp">
       <Filter>02. Object\01. Box</Filter>
     </ClCompile>
-    <ClCompile Include="Terrain.cpp">
-      <Filter>02. Object\00. Terrain</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>02. Object</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>02. Object\99. Camera</Filter>
-    </ClCompile>
     <ClCompile Include="code\Device.cpp">
       <Filter>01. Device\00. DXDevice</Filter>
     </ClCompile>
-    <ClCompile Include="Input.cpp">
+    <ClCompile Include="code\Camera.cpp">
+      <Filter>02. Object\99. Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Component.cpp">
+      <Filter>95. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="code\FigureMesh.cpp">
+      <Filter>95. Component\01. Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="code\GeometryGenerator.cpp">
+      <Filter>95. Component\01. Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Input.cpp">
       <Filter>01. Device\01. DXInput</Filter>
     </ClCompile>
-    <ClCompile Include="Sphere.cpp">
+    <ClCompile Include="code\Object.cpp">
+      <Filter>02. Object</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Shader.cpp">
+      <Filter>95. Component\02. Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Sphere.cpp">
       <Filter>02. Object\03. Sphere</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Terrain.cpp">
+      <Filter>02. Object\00. Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Transform.cpp">
+      <Filter>95. Component\03. Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Visible.cpp">
+      <Filter>02. Object\04. Visible</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>95. Component\04. Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="code\DDSTextureLoader.cpp">
+      <Filter>95. Component\04. Texture\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="code\WICTextureLoader.cpp">
+      <Filter>95. Component\04. Texture\Loader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,16 +227,19 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shader\Default.fx">
-      <Filter>97.fx</Filter>
-    </FxCompile>
-    <FxCompile Include="Shader\Light.fx">
-      <Filter>97.fx</Filter>
-    </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Shader\UpdateList.txt">
+    <Text Include="..\..\UpdateList.txt">
       <Filter>00. MainFrame</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shader\Default.fx">
+      <Filter>97. fx</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\Light.fx">
+      <Filter>97. fx</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\Texture.fx">
+      <Filter>97. fx</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

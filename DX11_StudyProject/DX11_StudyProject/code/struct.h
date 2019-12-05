@@ -17,6 +17,13 @@ struct NORMALVERTEX
 	XMFLOAT3 nrm;
 };
 
+struct TEXVERTEX
+{
+	XMFLOAT4 pos;
+	XMFLOAT3 nrm;
+	XMFLOAT2 uv;
+};
+
 struct TRANSMATRIX
 {
 	XMFLOAT4X4 matWorld;
@@ -27,6 +34,15 @@ struct TRANSMATRIX
 struct LIGHT
 {
 	XMFLOAT3A direction;
+	XMFLOAT4 diffuse;
+	XMFLOAT4 ambient;
+	XMFLOAT4 specular;
+};
+
+struct POINTLIGHT
+{
+	XMFLOAT3 position;
+	float	 Range;
 	XMFLOAT4 diffuse;
 	XMFLOAT4 ambient;
 	XMFLOAT4 specular;
