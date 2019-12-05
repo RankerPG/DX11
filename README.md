@@ -1,7 +1,7 @@
 # DX11
 >내용 정리
 <pre>
-현재 : 342
+현재 : 417
 목표는 12.15 까지 다 읽기.
 하루에 70 페이지씩 읽어야 되는데 실습도 해야되서 12.15 까지는 빠듯할듯..
 </pre>
@@ -227,7 +227,7 @@ static float2 aggressivePackArray[8] = (float2[8])array;
 ```
 
 ## 19.12.05
-<code> ~ 376 page </code>
+<code> ~ 417 page </code>
 
 - MaxLOD = D3D11_FLOAT32_MAX
 
