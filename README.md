@@ -226,7 +226,10 @@ float4 array[4];
 static float2 aggressivePackArray[8] = (float2[8])array;
 ```
 
+## 19.12.05
+<code> ~ 376 page </code>
 
+- MaxLOD = D3D11_FLOAT32_MAX
 
 
 
