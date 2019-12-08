@@ -24,13 +24,14 @@ struct Material
 
 SamplerState smpLinear : register (s0);
 
-Texture2D g_DiffuseTex;
+Texture2D g_DiffuseTex : register (t0);
 
 cbuffer cbData : register (b0)
 {
 	float4x4 g_matWorld;
 	float4x4 g_matWorldInvT;
 	float4x4 g_matWVP;
+	float4x4 g_matTex;
 };
 
 cbuffer cbLight : register (b1)
@@ -80,7 +81,7 @@ VertexOut vs_main(VertexIn i)
 
 	o.nrmW = nrmW;
 
-	o.uv = i.uv;
+	o.uv = mul(float4(i.uv, 0.f, 1.f), g_matTex).xy;
 
 	return o;
 }

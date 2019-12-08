@@ -12,6 +12,7 @@ class CCamera;
 class CSphere;
 class CShader;
 class CVisible;
+class CLake;
 
 class CMainFrame
 {
@@ -34,11 +35,14 @@ private:
 	void Create_Device();
 	void Create_Components();
 	void Create_RasterizerState();
-	void Create_Sampler();
+	void Create_SamplerState();
+	void Create_BlendState();
 	void Create_Object();
 
-	void Update_State();
-	void Update_Sampler();
+	void Update_RasterizerState();
+	void Update_SamplerState();
+	void Update_BlendState(BOOL isBlending);
+
 	void Update_LightShader();
 	void Update_TextureShader();
 	void Update_Input();
@@ -48,9 +52,9 @@ private:
 	CInput*					m_pInput;
 	ID3D11Device*			m_pDevice;
 	ID3D11DeviceContext*	m_pContext;
-	ID3D11RasterizerState*	m_pState;
-	ID3D11RasterizerState*  m_pStateWireFrame;
+	ID3D11RasterizerState*	m_pState[2];
 	ID3D11SamplerState*		m_pSampler;
+	ID3D11BlendState*		m_pBlend[2];
 
 	COMHASHMAP				m_mapComponent;
 
@@ -60,6 +64,7 @@ private:
 	shared_ptr<CTerrain>	m_pTerrain;
 	shared_ptr<CSphere>		m_pSphere;
 	shared_ptr<CVisible>	m_pVisible;
+	shared_ptr<CLake>		m_pLake;
 
 private:
 	CShader*				m_pLightShader;

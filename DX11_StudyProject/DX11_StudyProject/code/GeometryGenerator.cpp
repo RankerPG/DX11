@@ -317,6 +317,59 @@ void CGeometryGenerator::Create_TexSphere(float p_radius, UINT p_sliceCount, UIN
 	*p_dwIdxCnt = idxCnt;
 }
 
+void CGeometryGenerator::Create_TexQuad(ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt)
+{
+	MeshData data;
+
+	Get_QuadData(data);
+
+	UINT vtxCnt = (UINT)data.Vertices.size();
+
+	vector<TEXVERTEX> vertices(vtxCnt);
+
+	for (UINT i = 0; i < vtxCnt; ++i)
+	{
+		vertices[i].pos = data.Vertices[i].pos;
+		vertices[i].nrm = data.Vertices[i].nrm;
+		vertices[i].uv = data.Vertices[i].uv;
+	}
+
+	//
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
+	bd.Usage = D3D11_USAGE_IMMUTABLE;
+	bd.ByteWidth = sizeof(TEXVERTEX) * vtxCnt;
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA subData;
+	subData.pSysMem = &vertices[0];
+	subData.SysMemPitch = 0;
+	subData.SysMemSlicePitch = 0;
+
+	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, p_VB)))
+	{
+		MessageBox(g_hWnd, L"Create Vertex Buffer Failed!!", 0, 0);
+		return;
+	}
+
+	UINT idxCnt = (UINT)data.Indices.size();
+
+	bd.Usage = D3D11_USAGE_IMMUTABLE;
+	bd.ByteWidth = sizeof(UINT) * idxCnt;
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	subData.pSysMem = &data.Indices[0];
+
+	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, p_IB)))
+	{
+		(*p_VB)->Release();
+		MessageBox(g_hWnd, L"Create Index Buffer Failed!!", 0, 0);
+		return;
+	}
+
+	*p_dwIdxCnt = idxCnt;
+}
+
 void CGeometryGenerator::Get_CubeData(float p_width, float p_height, float p_depth, MeshData& p_data)
 {
 	p_data.Vertices.resize(24);
@@ -417,11 +470,80 @@ void CGeometryGenerator::Get_TerrainData(float p_width, float p_depth, float p_m
 			float u = du * x;
 			float v = dv * z;
 
-			p_data.Vertices[x + z * n].pos = XMFLOAT4(posX, 0.f, posZ, 1.f);
-			p_data.Vertices[x + z * n].nrm = XMFLOAT3(0.f, 1.f, 0.f);
+			float posY = 0.f;
+
+			if (-10.f < posX && 10.f > posX && -10.f < posZ && 10.f > posZ)
+				posY = -2.f;
+
+			p_data.Vertices[x + z * n].pos = XMFLOAT4(posX, posY, posZ, 1.f);
+			p_data.Vertices[x + z * n].nrm = XMFLOAT3(0.f, 0.f, 0.f);
 			p_data.Vertices[x + z * n].tangent = XMFLOAT3(1.f, 0.f, 0.f);
 			p_data.Vertices[x + z * n].uv = XMFLOAT2(u, v);
 		}
+	}
+
+	vector<UINT> vecNrmCnt(vtxCnt);
+
+	for (UINT z = 0; z < m - 1; ++z)
+	{
+		for (UINT x = 0; x < n - 1; ++x)
+		{
+			UINT index = z * n + x;
+			XMVECTOR p0 = XMLoadFloat4(&p_data.Vertices[index].pos);
+			XMVECTOR p1 = XMLoadFloat4(&p_data.Vertices[index+1].pos);
+			XMVECTOR p2 = XMLoadFloat4(&p_data.Vertices[index+n].pos);
+			XMVECTOR p3 = XMLoadFloat4(&p_data.Vertices[index+n+1].pos);
+
+			XMVECTOR v1 = XMVector3Normalize(p1 - p0);
+			XMVECTOR v2 = XMVector3Normalize(p2 - p0);
+
+			XMVECTOR nrm = XMVector3Cross(v1, v2);
+			XMFLOAT4 vNrm;
+			XMStoreFloat4(&vNrm, nrm);
+
+			p_data.Vertices[index].nrm.x += vNrm.x;
+			p_data.Vertices[index].nrm.y += vNrm.y;
+			p_data.Vertices[index].nrm.z += vNrm.z;
+
+			p_data.Vertices[index + 1].nrm.x += vNrm.x;
+			p_data.Vertices[index + 1].nrm.y += vNrm.y;
+			p_data.Vertices[index + 1].nrm.z += vNrm.z;
+
+			p_data.Vertices[index + n].nrm.x += vNrm.x;
+			p_data.Vertices[index + n].nrm.y += vNrm.y;
+			p_data.Vertices[index + n].nrm.z += vNrm.z;
+
+			//
+			v1 = XMVector3Normalize(p1 - p3);
+			v2 = XMVector3Normalize(p2 - p3);
+
+			nrm = XMVector3Cross(v2, v1);
+			XMStoreFloat4(&vNrm, nrm);
+
+			p_data.Vertices[index + 1].nrm.x += vNrm.x;
+			p_data.Vertices[index + 1].nrm.y += vNrm.y;
+			p_data.Vertices[index + 1].nrm.z += vNrm.z;
+
+			p_data.Vertices[index + n].nrm.x += vNrm.x;
+			p_data.Vertices[index + n].nrm.y += vNrm.y;
+			p_data.Vertices[index + n].nrm.z += vNrm.z;
+
+			p_data.Vertices[index + n + 1].nrm.x += vNrm.x;
+			p_data.Vertices[index + n + 1].nrm.y += vNrm.y;
+			p_data.Vertices[index + n + 1].nrm.z += vNrm.z;
+
+			++vecNrmCnt[index];
+			vecNrmCnt[index + 1] += 2;
+			vecNrmCnt[index + n] += 2;
+			++vecNrmCnt[index + n + 1];
+		}
+	}
+
+	for (UINT i = 0; i < vtxCnt; ++i)
+	{
+		p_data.Vertices[i].nrm.x /= vecNrmCnt[i];
+		p_data.Vertices[i].nrm.y /= vecNrmCnt[i];
+		p_data.Vertices[i].nrm.z /= vecNrmCnt[i];
 	}
 
 	p_data.Indices.resize(faceCnt * 3);
@@ -524,6 +646,44 @@ void CGeometryGenerator::Get_SphereData(float p_radius, UINT p_sliceCount, UINT 
 		p_data.Indices.push_back(baseIndex + i);
 		p_data.Indices.push_back(baseIndex + i + 1);
 	}
+}
+
+void CGeometryGenerator::Get_QuadData(MeshData& p_data)
+{
+	p_data.Vertices.resize(4);
+	p_data.Indices.resize(6);
+
+	p_data.Vertices[0] = VertexData(
+		-0.5f, -0.5f, 0.0f,
+		0.0f, 0.0f, -1.0f,
+		1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f);
+
+	p_data.Vertices[1] = VertexData(
+		-0.5f, +0.5f, 0.0f,
+		0.0f, 0.0f, -1.0f,
+		1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f);
+
+	p_data.Vertices[2] = VertexData(
+		+0.5f, +0.5f, 0.0f,
+		0.0f, 0.0f, -1.0f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f);
+
+	p_data.Vertices[3] = VertexData(
+		+0.5f, -0.5f, 0.0f,
+		0.0f, 0.0f, -1.0f,
+		1.0f, 0.0f, 0.0f,
+		1.0f, 1.0f);
+
+	p_data.Indices[0] = 0;
+	p_data.Indices[1] = 1;
+	p_data.Indices[2] = 2;
+
+	p_data.Indices[3] = 0;
+	p_data.Indices[4] = 2;
+	p_data.Indices[5] = 3;
 }
 
 CGeometryGenerator* CGeometryGenerator::Create_GeometryGenerator(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)

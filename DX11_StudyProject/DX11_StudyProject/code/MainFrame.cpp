@@ -11,6 +11,7 @@
 #include "Input.h"
 #include "Visible.h"
 #include "Texture.h"
+#include "Lake.h"
 
 XMMATRIX g_matView, g_matProj;
 
@@ -19,15 +20,16 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pInput(CInput::Get_Instance())
 	, m_pDevice(nullptr)
 	, m_pContext(nullptr)
-	, m_pState(nullptr)
-	, m_pStateWireFrame(nullptr)
+	, m_pState{nullptr, nullptr}
 	, m_pSampler(nullptr)
+	, m_pBlend{nullptr, nullptr}
 	, m_pCamera(nullptr)
 	, m_pMainTimer(new CTimer())
 	, m_pBox(nullptr)
 	, m_pTerrain(nullptr)
 	, m_pSphere(nullptr)
 	, m_pVisible(nullptr)
+	, m_pLake(nullptr)
 	, m_pLightShader(nullptr)
 	, m_pTextureShader(nullptr)
 	, m_pCBLight(nullptr)
@@ -51,10 +53,15 @@ void CMainFrame::Init()
 {
 	Create_Device();
 	Create_Components();
+
 	Create_RasterizerState();
-	Create_Sampler();
-	Update_State();
-	Update_Sampler();
+	Create_SamplerState();
+	Create_BlendState();
+
+	Update_RasterizerState();
+	Update_SamplerState();
+	Update_BlendState(FALSE);
+
 	Create_Object();
 }
 
@@ -71,6 +78,7 @@ void CMainFrame::Update()
 	m_pTerrain->Update(deltaTime);
 	m_pSphere->Update(deltaTime);
 	m_pVisible->Update(deltaTime);
+	m_pLake->Update(deltaTime);
 }
 
 void CMainFrame::Render()
@@ -79,11 +87,18 @@ void CMainFrame::Render()
 
 	Update_LightShader();
 	Update_TextureShader();
+	Update_BlendState(FALSE);
 
 	// ±×¸®±â
 	m_pTerrain->Render();
 	m_pSphere->Render();
 	m_pBox->Render();
+
+	Update_BlendState(TRUE);
+	// ¾ËÆÄ ºí·»µù
+	m_pLake->Render();
+
+	// ÄÃ·¯ °´Ã¼
 	m_pVisible->Render();
 
 	m_pGraphicDevice->End_Render();
@@ -97,9 +112,12 @@ void CMainFrame::Release()
 	SAFE_RELEASE(m_pCBPointLight);
 	SAFE_RELEASE(m_pCBPerFrame);
 
-	SAFE_RELEASE(m_pState);
-	SAFE_RELEASE(m_pStateWireFrame);
+	SAFE_RELEASE(m_pState[0]);
+	SAFE_RELEASE(m_pState[1]);
 	SAFE_RELEASE(m_pSampler);
+	SAFE_RELEASE(m_pBlend[0]);
+	SAFE_RELEASE(m_pBlend[1]);
+
 	SAFE_RELEASE(m_pDevice);
 	SAFE_RELEASE(m_pContext);
 }
@@ -198,6 +216,10 @@ void CMainFrame::Create_Components()
 	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("TerrainTexMesh", pMesh));
 	
+	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 6);
+	pMesh->Init_Mesh();
+	m_mapComponent.insert(make_pair("QuadTexMesh", pMesh));
+
 	// Æ®·£½ºÆû
 	CTransform* pTransform = CTransform::Create_Transform(m_pDevice, m_pContext);
 	m_mapComponent.insert(make_pair("Transform", pTransform));
@@ -211,6 +233,9 @@ void CMainFrame::Create_Components()
 
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Terrain.png");
 	m_mapComponent.insert(make_pair("TerrainTexture", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Water2.dds", FALSE);
+	m_mapComponent.insert(make_pair("WaterTexture", pTexture));
 }
 
 void CMainFrame::Create_RasterizerState()
@@ -223,7 +248,7 @@ void CMainFrame::Create_RasterizerState()
 	rd.FrontCounterClockwise = FALSE;
 	rd.DepthClipEnable = TRUE;
 
-	if (FAILED(m_pDevice->CreateRasterizerState(&rd, &m_pState)))
+	if (FAILED(m_pDevice->CreateRasterizerState(&rd, &m_pState[0])))
 	{
 		MessageBox(g_hWnd, L"Create RasterizerState Failed!!", 0, 0);
 		return;
@@ -231,14 +256,14 @@ void CMainFrame::Create_RasterizerState()
 
 	rd.FillMode = D3D11_FILL_WIREFRAME;
 
-	if (FAILED(m_pDevice->CreateRasterizerState(&rd, &m_pStateWireFrame)))
+	if (FAILED(m_pDevice->CreateRasterizerState(&rd, &m_pState[1])))
 	{
 		MessageBox(g_hWnd, L"Create RasterizerState Failed!!", 0, 0);
 		return;
 	}
 }
 
-void CMainFrame::Create_Sampler()
+void CMainFrame::Create_SamplerState()
 {
 	D3D11_SAMPLER_DESC sd;
 	ZeroMemory(&sd, sizeof(D3D11_SAMPLER_DESC));
@@ -261,7 +286,55 @@ void CMainFrame::Create_Sampler()
 	
 	if (FAILED(m_pDevice->CreateSamplerState(&sd, &m_pSampler)))
 	{
-		MessageBox(g_hWnd, L"Create Sampler Failed!!", 0, 0);
+		MessageBox(g_hWnd, L"Create SamplerState Failed!!", 0, 0);
+		return;
+	}
+}
+
+void CMainFrame::Create_BlendState()
+{
+	D3D11_BLEND_DESC bd;
+	ZeroMemory(&bd, sizeof(D3D11_BLEND_DESC));
+
+	bd.AlphaToCoverageEnable = FALSE;
+	bd.IndependentBlendEnable = FALSE;
+
+	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
+	ZeroMemory(&rtbd, sizeof(D3D11_RENDER_TARGET_BLEND_DESC));
+
+	rtbd.BlendEnable = FALSE;
+	rtbd.BlendOp = D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlend = D3D11_BLEND_ONE;
+	rtbd.DestBlend = D3D11_BLEND_ZERO;
+	rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlendAlpha = D3D11_BLEND_ONE;
+	rtbd.DestBlendAlpha = D3D11_BLEND_ZERO;
+	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	
+	bd.RenderTarget[0] = rtbd;
+
+	if (FAILED(m_pDevice->CreateBlendState(&bd, &m_pBlend[0])))
+	{
+		MessageBox(g_hWnd, L"Create BlendState Failed!!", 0, 0);
+		return;
+	}
+
+	//
+	rtbd.BlendEnable = TRUE;
+	rtbd.BlendOp = D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlend = D3D11_BLEND_ZERO;
+	rtbd.DestBlend = D3D11_BLEND_SRC_COLOR;
+	rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+	rtbd.DestBlendAlpha = D3D11_BLEND_ZERO;
+	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+
+	bd.RenderTarget[0] = rtbd;
+
+	if (FAILED(m_pDevice->CreateBlendState(&bd, &m_pBlend[1])))
+	{
+		MessageBox(g_hWnd, L"Create BlendState Failed!!", 0, 0);
 		return;
 	}
 }
@@ -285,23 +358,41 @@ void CMainFrame::Create_Object()
 
 	m_pVisible.reset(new CVisible(m_pDevice, m_pContext, &m_mapComponent));
 	m_pVisible->Init();
+
+	m_pLake.reset(new CLake(m_pDevice, m_pContext, &m_mapComponent));
+	m_pLake->Init();
 }
 
-void CMainFrame::Update_State()
+void CMainFrame::Update_RasterizerState()
 {
 	if (TRUE == m_isWireFrame)
 	{
-		m_pContext->RSSetState(m_pStateWireFrame);
+		m_pContext->RSSetState(m_pState[1]);
 	}
 	else
 	{
-		m_pContext->RSSetState(m_pState);
+		m_pContext->RSSetState(m_pState[0]);
 	}
 }
 
-void CMainFrame::Update_Sampler()
+void CMainFrame::Update_SamplerState()
 {
 	m_pContext->PSSetSamplers(0, 1, &m_pSampler);
+}
+
+void CMainFrame::Update_BlendState(BOOL isBlending)
+{
+	float factor[] = { 0.f, 0.f, 0.f, 0.f };
+
+	if (TRUE == isBlending)
+	{
+		m_pContext->OMSetBlendState(m_pBlend[1], factor, 0xffffffff);
+	}
+	else
+	{
+		m_pContext->OMSetBlendState(m_pBlend[0], factor, 0xffffffff);
+	}
+
 }
 
 void CMainFrame::Update_LightShader()
@@ -328,6 +419,6 @@ void CMainFrame::Update_Input()
 	{
 		m_isWireFrame ^= TRUE;
 
-		Update_State();
+		Update_RasterizerState();
 	}
 }

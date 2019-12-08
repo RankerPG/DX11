@@ -32,7 +32,7 @@ void CBox::Init()
 
 	// 트랜스폼 생성
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
-	m_pTransform->Set_Trans(XMVectorSet(0.f, 1.f, 0.f, 1.f));
+	//m_pTransform->Set_Trans(XMVectorSet(0.f, 1.f, 0.f, 1.f));
 
 	// 쉐이더 생성
 	m_pShader = static_cast<CShader*>(m_pMapComponent->find("TextureShader")->second->Clone());
@@ -66,6 +66,7 @@ void CBox::Render()
 	XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World());
 	XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(m_pTransform->Get_World()));
 	XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * g_matView * g_matProj);
+	XMStoreFloat4x4(&m_mat.matTex, m_pTransform->Get_Tex());
 
 	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
 	m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);

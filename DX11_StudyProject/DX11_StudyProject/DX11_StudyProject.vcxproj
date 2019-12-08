@@ -75,7 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)\Samples\C++\Effects11\Inc;$(DXSDK_DIR)\include;./;./code;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)\Samples\C++\Effects11\Inc;$(DXSDK_DIR)\include;./;./code;../Shader;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(DXSDK_DIR)\lib\x64;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,7 +83,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)\include;./;./code;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)\include;./;./code;../Shader;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(DXSDK_DIR)\lib\x64;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -166,6 +166,7 @@
     <ClInclude Include="code\Functor.h" />
     <ClInclude Include="code\GeometryGenerator.h" />
     <ClInclude Include="code\Input.h" />
+    <ClInclude Include="code\Lake.h" />
     <ClInclude Include="code\MainFrame.h" />
     <ClInclude Include="code\Mesh.h" />
     <ClInclude Include="code\Object.h" />
@@ -192,18 +193,19 @@
     <ClCompile Include="code\FigureMesh.cpp" />
     <ClCompile Include="code\GeometryGenerator.cpp" />
     <ClCompile Include="code\Input.cpp" />
+    <ClCompile Include="code\Lake.cpp" />
     <ClCompile Include="code\MainFrame.cpp" />
     <ClCompile Include="code\Mesh.cpp" />
     <ClCompile Include="code\Object.cpp" />
     <ClCompile Include="code\Shader.cpp" />
     <ClCompile Include="code\Sphere.cpp" />
     <ClCompile Include="code\Terrain.cpp" />
+    <ClCompile Include="code\Texture.cpp" />
     <ClCompile Include="code\Timer.cpp" />
     <ClCompile Include="code\Transform.cpp" />
     <ClCompile Include="code\Visible.cpp" />
     <ClCompile Include="code\WICTextureLoader.cpp" />
     <ClCompile Include="DX11_StudyProject.cpp" />
-    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX11_StudyProject.rc" />

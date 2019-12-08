@@ -29,6 +29,7 @@ struct TRANSMATRIX
 	XMFLOAT4X4 matWorld;
 	XMFLOAT4X4 matWorldRT;
 	XMFLOAT4X4 matWVP;
+	XMFLOAT4X4 matTex;
 };
 
 struct LIGHT

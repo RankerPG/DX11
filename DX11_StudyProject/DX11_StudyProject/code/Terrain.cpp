@@ -63,6 +63,7 @@ void CTerrain::Render()
 	XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World());
 	XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(m_pTransform->Get_World()));
 	XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * g_matView * g_matProj);
+	XMStoreFloat4x4(&m_mat.matTex, m_pTransform->Get_Tex());
 
 	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
 	m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);

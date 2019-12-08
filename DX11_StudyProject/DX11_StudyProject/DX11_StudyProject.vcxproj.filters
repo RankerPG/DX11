@@ -1,14 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="98.Timer">
-      <UniqueIdentifier>{4c727099-4093-4d57-8b85-fc4ce4c14a37}</UniqueIdentifier>
-    </Filter>
     <Filter Include="00. MainFrame">
       <UniqueIdentifier>{84157665-6619-4ac4-b74e-2bc76969f02e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="96. global">
-      <UniqueIdentifier>{41fbf8f5-21ab-47d2-a7d3-af9ec8f091e3}</UniqueIdentifier>
     </Filter>
     <Filter Include="99. Default">
       <UniqueIdentifier>{96f97bc6-0792-409a-82e9-9e16e7e31307}</UniqueIdentifier>
@@ -73,6 +67,15 @@
     <Filter Include="95. Component\04. Texture\Loader">
       <UniqueIdentifier>{c8afd9b5-183e-40ef-98e6-cec3c76cf664}</UniqueIdentifier>
     </Filter>
+    <Filter Include="98. Timer">
+      <UniqueIdentifier>{4c727099-4093-4d57-8b85-fc4ce4c14a37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Component\96. global">
+      <UniqueIdentifier>{41fbf8f5-21ab-47d2-a7d3-af9ec8f091e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\05. Lake">
+      <UniqueIdentifier>{97d1ffc2-802a-42a0-b288-0576bc56e5b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -88,13 +91,13 @@
       <Filter>00. MainFrame</Filter>
     </ClInclude>
     <ClInclude Include="code\Timer.h">
-      <Filter>98.Timer</Filter>
+      <Filter>98. Timer</Filter>
     </ClInclude>
     <ClInclude Include="code\struct.h">
-      <Filter>96. global</Filter>
+      <Filter>95. Component\96. global</Filter>
     </ClInclude>
     <ClInclude Include="framework.h">
-      <Filter>96. global</Filter>
+      <Filter>95. Component\96. global</Filter>
     </ClInclude>
     <ClInclude Include="code\Mesh.h">
       <Filter>95. Component\01. Mesh</Filter>
@@ -118,7 +121,7 @@
       <Filter>95. Component\01. Mesh</Filter>
     </ClInclude>
     <ClInclude Include="code\Functor.h">
-      <Filter>96. global</Filter>
+      <Filter>95. Component\96. global</Filter>
     </ClInclude>
     <ClInclude Include="code\Input.h">
       <Filter>01. Device\01. DXInput</Filter>
@@ -150,6 +153,9 @@
     <ClInclude Include="code\WICTextureLoader.h">
       <Filter>95. Component\04. Texture\Loader</Filter>
     </ClInclude>
+    <ClInclude Include="code\Lake.h">
+      <Filter>02. Object\05. Lake</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX11_StudyProject.cpp">
@@ -159,7 +165,7 @@
       <Filter>00. MainFrame</Filter>
     </ClCompile>
     <ClCompile Include="code\Timer.cpp">
-      <Filter>98.Timer</Filter>
+      <Filter>98. Timer</Filter>
     </ClCompile>
     <ClCompile Include="code\Mesh.cpp">
       <Filter>95. Component\01. Mesh</Filter>
@@ -203,14 +209,17 @@
     <ClCompile Include="code\Visible.cpp">
       <Filter>02. Object\04. Visible</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>95. Component\04. Texture</Filter>
-    </ClCompile>
     <ClCompile Include="code\DDSTextureLoader.cpp">
       <Filter>95. Component\04. Texture\Loader</Filter>
     </ClCompile>
     <ClCompile Include="code\WICTextureLoader.cpp">
       <Filter>95. Component\04. Texture\Loader</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Texture.cpp">
+      <Filter>95. Component\04. Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Lake.cpp">
+      <Filter>02. Object\05. Lake</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -235,10 +244,10 @@
     <FxCompile Include="..\Shader\Default.fx">
       <Filter>97. fx</Filter>
     </FxCompile>
-    <FxCompile Include="..\Shader\Light.fx">
+    <FxCompile Include="..\Shader\Texture.fx">
       <Filter>97. fx</Filter>
     </FxCompile>
-    <FxCompile Include="..\Shader\Texture.fx">
+    <FxCompile Include="..\Shader\Light.fx">
       <Filter>97. fx</Filter>
     </FxCompile>
   </ItemGroup>

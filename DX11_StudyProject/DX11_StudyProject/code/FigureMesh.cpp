@@ -48,6 +48,10 @@ void CFigureMesh::Init_Mesh()
 		generator->Create_TexTerrain(128.f, 128.f, 20.f, 129, 129, &m_pVB, &m_pIB, &m_dwIdxCnt);
 		m_dwStride = sizeof(TEXVERTEX);
 		break;
+	case 6:
+		generator->Create_TexQuad(&m_pVB, &m_pIB, &m_dwIdxCnt);
+		m_dwStride = sizeof(TEXVERTEX);
+		break;
 	}
 }
 
