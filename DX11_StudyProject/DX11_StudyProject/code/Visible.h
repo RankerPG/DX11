@@ -18,7 +18,7 @@ public:
 public:
 	virtual void Init();
 	virtual void Update(float p_deltaTime);
-	virtual void Render();
+	virtual void Render(XMMATRIX* p_matReflect = nullptr);
 
 private:
 	virtual void Release();

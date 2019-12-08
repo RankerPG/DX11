@@ -32,7 +32,8 @@ void CBox::Init()
 
 	// 트랜스폼 생성
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
-	//m_pTransform->Set_Trans(XMVectorSet(0.f, 1.f, 0.f, 1.f));
+	m_pTransform->Set_Scale(XMVectorSet(1.5f, 1.5f, 1.5f, 1.f));
+	m_pTransform->Set_Trans(XMVectorSet(0.f, 1.f, 0.f, 1.f));
 
 	// 쉐이더 생성
 	m_pShader = static_cast<CShader*>(m_pMapComponent->find("TextureShader")->second->Clone());
@@ -44,7 +45,7 @@ void CBox::Init()
 	m_mtrl.specular = XMFLOAT4(1.f, 1.f, 1.f, 32.f);
 
 	// 텍스쳐 복사
-	m_pTexture = static_cast<CTexture*>(m_pMapComponent->find("BoxTexture")->second->Clone());
+	m_pTexture = static_cast<CTexture*>(m_pMapComponent->find("WireTexture")->second->Clone());
 }
 
 void CBox::Update(float p_deltaTime)
@@ -54,7 +55,7 @@ void CBox::Update(float p_deltaTime)
 	m_pTransform->Update_Transform();
 }
 
-void CBox::Render()
+void CBox::Render(XMMATRIX* p_matReflect)
 {
 	m_pContext->IASetVertexBuffers(0, 1, m_pMesh->Get_VertexBuffer(), &m_pMesh->Get_Stride(), &m_pMesh->Get_Offset());
 	m_pContext->IASetIndexBuffer(m_pMesh->Get_IndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
@@ -63,9 +64,19 @@ void CBox::Render()
 
 	m_pShader->Update_Shader();
 
-	XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World());
+	if (nullptr == p_matReflect)
+	{
+		XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World());
+		XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * g_matView * g_matProj);
+	}
+	else
+	{
+		XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World() * (*p_matReflect));
+		XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * (*p_matReflect) * g_matView * g_matProj);
+	}
+
 	XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(m_pTransform->Get_World()));
-	XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * g_matView * g_matProj);
+
 	XMStoreFloat4x4(&m_mat.matTex, m_pTransform->Get_Tex());
 
 	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);

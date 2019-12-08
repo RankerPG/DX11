@@ -59,4 +59,7 @@ struct MATERIAL
 struct PERFRAME
 {
 	XMFLOAT3A viewPos;
+	XMFLOAT4 fogColor;
+	float fogStart;
+	float fogRange;
 };

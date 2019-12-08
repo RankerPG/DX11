@@ -36,14 +36,14 @@ void CLake::Init()
 	m_pTransform->Set_Rotation(XMVectorSet(XM_PIDIV2, 0.f, 0.f, 0.f));
 	m_pTransform->Set_Trans(XMVectorSet(0.f, -0.2f, 0.f, 1.f));
 
-	m_pTransform->Set_TexScale(XMVectorSet(10.f, 10.f, 0.f, 0.f));
+	m_pTransform->Set_TexScale(XMVectorSet(2.f, 2.f, 0.f, 0.f));
 
 	// 쉐이더 생성
 	m_pShader = static_cast<CShader*>(m_pMapComponent->find("TextureShader")->second->Clone());
 	m_pShader->Create_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), &m_pCB);
 	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
 
-	m_mtrl.diffuse = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	m_mtrl.diffuse = XMFLOAT4(1.f, 1.f, 1.f, 0.5f);
 	m_mtrl.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.f);
 	m_mtrl.specular = XMFLOAT4(1.f, 1.f, 1.f, 1024.f);
 
@@ -58,7 +58,7 @@ void CLake::Update(float p_deltaTime)
 	m_pTransform->Update_Transform();
 }
 
-void CLake::Render()
+void CLake::Render(XMMATRIX* p_matReflect)
 {
 	m_pContext->IASetVertexBuffers(0, 1, m_pMesh->Get_VertexBuffer(), &m_pMesh->Get_Stride(), &m_pMesh->Get_Offset());
 	m_pContext->IASetIndexBuffer(m_pMesh->Get_IndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
@@ -76,6 +76,8 @@ void CLake::Render()
 	m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
+
+
 
 	m_pMesh->Draw_Mesh();
 }

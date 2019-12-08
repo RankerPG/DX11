@@ -20,9 +20,10 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pInput(CInput::Get_Instance())
 	, m_pDevice(nullptr)
 	, m_pContext(nullptr)
-	, m_pState{nullptr, nullptr}
+	, m_pState{nullptr, nullptr, nullptr, nullptr}
 	, m_pSampler(nullptr)
 	, m_pBlend{nullptr, nullptr}
+	, m_pDepthStencil{nullptr, nullptr}
 	, m_pCamera(nullptr)
 	, m_pMainTimer(new CTimer())
 	, m_pBox(nullptr)
@@ -57,6 +58,7 @@ void CMainFrame::Init()
 	Create_RasterizerState();
 	Create_SamplerState();
 	Create_BlendState();
+	Create_DepthStencilState();
 
 	Update_RasterizerState();
 	Update_SamplerState();
@@ -85,21 +87,11 @@ void CMainFrame::Render()
 {
 	m_pGraphicDevice->Begin_Render();
 
-	Update_LightShader();
-	Update_TextureShader();
-	Update_BlendState(FALSE);
+	Render_Default();
 
-	// 그리기
-	m_pTerrain->Render();
-	m_pSphere->Render();
-	m_pBox->Render();
+	Render_Stencil();
 
-	Update_BlendState(TRUE);
-	// 알파 블렌딩
-	m_pLake->Render();
-
-	// 컬러 객체
-	m_pVisible->Render();
+	Render_Color();
 
 	m_pGraphicDevice->End_Render();
 }
@@ -187,6 +179,10 @@ void CMainFrame::Create_Components()
 	m_PointLight.ambient = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
 	m_PointLight.specular = XMFLOAT4(1.f, 0.f, 0.f, 1.f);
 
+	m_PerFrame.fogColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.f);
+	m_PerFrame.fogStart = 5.f;
+	m_PerFrame.fogRange = 70.f;
+
 	m_pTextureShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Texture.fx", "vs_main", "ps_main", 2);
 	m_mapComponent.insert(make_pair("TextureShader", pShader));
 	// 상수 버퍼는 라이트 쉐이더와 공유
@@ -228,6 +224,9 @@ void CMainFrame::Create_Components()
 	CTexture* pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/WoodBox.dds", FALSE);
 	m_mapComponent.insert(make_pair("BoxTexture", pTexture));
 
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/WireFence.dds");
+	m_mapComponent.insert(make_pair("WireTexture", pTexture));
+
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/earth.bmp");
 	m_mapComponent.insert(make_pair("EarthTexture", pTexture));
 
@@ -254,9 +253,25 @@ void CMainFrame::Create_RasterizerState()
 		return;
 	}
 
-	rd.FillMode = D3D11_FILL_WIREFRAME;
+	rd.FrontCounterClockwise = TRUE;
 
 	if (FAILED(m_pDevice->CreateRasterizerState(&rd, &m_pState[1])))
+	{
+		MessageBox(g_hWnd, L"Create RasterizerState Failed!!", 0, 0);
+		return;
+	}
+
+	rd.FillMode = D3D11_FILL_WIREFRAME;
+	rd.FrontCounterClockwise = FALSE;
+	if (FAILED(m_pDevice->CreateRasterizerState(&rd, &m_pState[2])))
+	{
+		MessageBox(g_hWnd, L"Create RasterizerState Failed!!", 0, 0);
+		return;
+	}
+
+	rd.FrontCounterClockwise = TRUE;
+
+	if (FAILED(m_pDevice->CreateRasterizerState(&rd, &m_pState[3])))
 	{
 		MessageBox(g_hWnd, L"Create RasterizerState Failed!!", 0, 0);
 		return;
@@ -322,12 +337,11 @@ void CMainFrame::Create_BlendState()
 	//
 	rtbd.BlendEnable = TRUE;
 	rtbd.BlendOp = D3D11_BLEND_OP_ADD;
-	rtbd.SrcBlend = D3D11_BLEND_ZERO;
-	rtbd.DestBlend = D3D11_BLEND_SRC_COLOR;
+	rtbd.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	rtbd.DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
 	rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	rtbd.SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
 	rtbd.DestBlendAlpha = D3D11_BLEND_ZERO;
-	rtbd.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 
 
 	bd.RenderTarget[0] = rtbd;
@@ -335,6 +349,81 @@ void CMainFrame::Create_BlendState()
 	if (FAILED(m_pDevice->CreateBlendState(&bd, &m_pBlend[1])))
 	{
 		MessageBox(g_hWnd, L"Create BlendState Failed!!", 0, 0);
+		return;
+	}
+
+	////
+	//rtbd.BlendEnable = TRUE;
+	//rtbd.BlendOp = D3D11_BLEND_OP_ADD;
+	//rtbd.SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	//rtbd.DestBlend = D3D11_BLEND_SRC_COLOR;
+	//rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	//rtbd.SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+	//rtbd.DestBlendAlpha = D3D11_BLEND_ZERO;
+
+
+	//bd.RenderTarget[0] = rtbd;
+
+	//if (FAILED(m_pDevice->CreateBlendState(&bd, &m_pBlend[2])))
+	//{
+	//	MessageBox(g_hWnd, L"Create BlendState Failed!!", 0, 0);
+	//	return;
+	//}
+}
+
+void CMainFrame::Create_DepthStencilState()
+{
+	D3D11_DEPTH_STENCIL_DESC dsd;
+	ZeroMemory(&dsd, sizeof(D3D11_DEPTH_STENCIL_DESC));
+
+	dsd.DepthEnable = TRUE;
+	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsd.DepthFunc = D3D11_COMPARISON_LESS;
+	dsd.StencilEnable = FALSE;
+
+	if (FAILED(m_pDevice->CreateDepthStencilState(&dsd, &m_pDepthStencil[0])))
+	{
+		MessageBox(g_hWnd, L"Create DepthStencilState Failed!!", 0, 0);
+		return;
+	}
+
+	//
+	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	
+	dsd.StencilEnable = TRUE;
+	dsd.StencilReadMask = 0xff;
+	dsd.StencilWriteMask = 0xff;
+
+	dsd.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsd.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	dsd.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+	dsd.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	dsd.BackFace = dsd.FrontFace;
+
+	if (FAILED(m_pDevice->CreateDepthStencilState(&dsd, &m_pDepthStencil[1])))
+	{
+		MessageBox(g_hWnd, L"Create DepthStencilState Failed!!", 0, 0);
+		return;
+	}
+
+	//
+	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+	dsd.StencilEnable = TRUE;
+	dsd.StencilReadMask = 0xff;
+	dsd.StencilWriteMask = 0xff;
+
+	dsd.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsd.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	dsd.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	dsd.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+
+	dsd.BackFace = dsd.FrontFace;
+
+	if (FAILED(m_pDevice->CreateDepthStencilState(&dsd, &m_pDepthStencil[2])))
+	{
+		MessageBox(g_hWnd, L"Create DepthStencilState Failed!!", 0, 0);
 		return;
 	}
 }
@@ -367,7 +456,7 @@ void CMainFrame::Update_RasterizerState()
 {
 	if (TRUE == m_isWireFrame)
 	{
-		m_pContext->RSSetState(m_pState[1]);
+		m_pContext->RSSetState(m_pState[2]);
 	}
 	else
 	{
@@ -380,19 +469,34 @@ void CMainFrame::Update_SamplerState()
 	m_pContext->PSSetSamplers(0, 1, &m_pSampler);
 }
 
-void CMainFrame::Update_BlendState(BOOL isBlending)
+void CMainFrame::Update_BlendState(UINT	p_dwType)
 {
 	float factor[] = { 0.f, 0.f, 0.f, 0.f };
 
-	if (TRUE == isBlending)
-	{
-		m_pContext->OMSetBlendState(m_pBlend[1], factor, 0xffffffff);
-	}
-	else
+	if (0 == p_dwType)
 	{
 		m_pContext->OMSetBlendState(m_pBlend[0], factor, 0xffffffff);
 	}
+	else if (1 == p_dwType)
+	{
+		m_pContext->OMSetBlendState(m_pBlend[1], factor, 0xffffffff);
+	}
+}
 
+void CMainFrame::Update_DepthStencilState(DEPTHSTENCIL eDS)
+{
+	if (DEPTHSTENCIL::DEPTH == eDS)
+	{
+		m_pContext->OMSetDepthStencilState(m_pDepthStencil[0], 1);
+	}
+	else if (DEPTHSTENCIL::STENCILON == eDS)
+	{
+		m_pContext->OMSetDepthStencilState(m_pDepthStencil[1], 1);
+	}
+	else if (DEPTHSTENCIL::DRAWSTENCIL == eDS)
+	{
+		m_pContext->OMSetDepthStencilState(m_pDepthStencil[2], 1);
+	}
 }
 
 void CMainFrame::Update_LightShader()
@@ -421,4 +525,87 @@ void CMainFrame::Update_Input()
 
 		Update_RasterizerState();
 	}
+}
+
+void CMainFrame::Render_Default()
+{
+	Update_TextureShader();
+	Update_RasterizerState();
+	Update_BlendState(0);
+	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
+
+	// 그리기
+	m_pTerrain->Render();
+	m_pSphere->Render();
+
+	// 알파 블렌딩
+	Update_BlendState(1);
+	m_pBox->Render();
+
+	if (TRUE == m_isWireFrame)
+		m_pContext->RSSetState(m_pState[3]);
+	else
+		m_pContext->RSSetState(m_pState[1]);
+
+	m_pBox->Render();
+
+	if (TRUE == m_isWireFrame)
+		m_pContext->RSSetState(m_pState[2]);
+	else
+		m_pContext->RSSetState(m_pState[0]);
+}
+
+void CMainFrame::Render_Stencil()
+{
+	// 스텐실
+	Update_DepthStencilState(DEPTHSTENCIL::STENCILON);
+
+	Update_BlendState(1);
+	m_pLake->Render();
+
+	// 반사 객체 그리기
+	Update_DepthStencilState(DEPTHSTENCIL::DRAWSTENCIL);
+
+	XMVECTOR stencilPlane = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	XMMATRIX R = XMMatrixReflect(stencilPlane);
+
+	XMVECTOR litDir = XMLoadFloat3A(&m_Light.direction);
+	XMVECTOR litReflectDir = XMVector3TransformNormal(litDir, R);
+	XMStoreFloat3A(&m_Light.direction, litReflectDir);
+
+	Update_LightShader();
+	Update_TextureShader();
+
+	m_pContext->RSSetState(m_pState[1]);
+	m_pBox->Render(&R);
+	m_pSphere->Render(&R);
+
+	if (TRUE == m_isWireFrame)
+		m_pContext->RSSetState(m_pState[2]);
+	else
+		m_pContext->RSSetState(m_pState[0]);
+
+	m_pBox->Render(&R);
+
+	if (TRUE == m_isWireFrame)
+		m_pContext->RSSetState(m_pState[3]);
+	else
+		m_pContext->RSSetState(m_pState[1]);
+
+	m_pContext->RSSetState(m_pState[0]);
+	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
+
+	Update_BlendState(1);
+	m_pLake->Render();
+
+	XMStoreFloat3A(&m_Light.direction, litDir);
+
+	Update_TextureShader();
+}
+
+void CMainFrame::Render_Color()
+{
+	// 컬러 객체
+	Update_BlendState(0);
+	m_pVisible->Render();
 }

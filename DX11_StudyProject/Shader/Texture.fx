@@ -47,6 +47,9 @@ cbuffer cbMtrl : register (b2)
 cbuffer cbFrame : register (b3)
 {
 	float3 g_ViewPos;
+	float4 g_FogColor;
+	float g_FogStart;
+	float g_FogRange;
 }
 
 cbuffer cbLight : register (b4)
@@ -97,6 +100,8 @@ float4 ps_main(VertexOut i) : SV_Target
 
 	float4 texColor = g_DiffuseTex.Sample(smpLinear, i.uv);
 
+	clip(texColor.a - 0.1f);
+
 	float4 D, A, S;
 
 	float3 N = normalize(i.nrmW);
@@ -113,7 +118,19 @@ float4 ps_main(VertexOut i) : SV_Target
 	amb += A;
 	spec += S;
 
-	float4 col = texColor * (diff + amb) + spec;
+	float3 eyePos = g_ViewPos - i.posW.xyz;
+
+	float d = length(eyePos);
+
+	eyePos /= d;
+
+	float fogLerp = saturate((d - g_FogStart) / g_FogRange);
+
+	float4 litColor = texColor * (diff + amb) + spec;
+
+	float4 col = lerp(litColor, g_FogColor, fogLerp);
+
+	col.a = texColor.a * g_Mtrl.diff.a;
 
 	return col;
 }

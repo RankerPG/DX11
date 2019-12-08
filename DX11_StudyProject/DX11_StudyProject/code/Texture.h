@@ -24,6 +24,7 @@ public:
 public:
 	// RV 요구하는 함수가 더블 포인터 요구
 	inline ID3D11ShaderResourceView** Get_TextureRV() { return &m_texInfo.pTexRV; }
+	inline D3D11_TEXTURE2D_DESC Get_TextureDesc() { return m_texInfo.texDesc; }
 
 public:
 	HRESULT Load_Texture(LPCWSTR pTexName, BOOL isWIC);

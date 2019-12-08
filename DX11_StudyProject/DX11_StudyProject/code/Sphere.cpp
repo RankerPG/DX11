@@ -54,7 +54,7 @@ void CSphere::Update(float p_deltaTime)
 	m_pTransform->Update_Transform();
 }
 
-void CSphere::Render()
+void CSphere::Render(XMMATRIX* p_matReflect)
 {
 	m_pContext->IASetVertexBuffers(0, 1, m_pMesh->Get_VertexBuffer(), &m_pMesh->Get_Stride(), &m_pMesh->Get_Offset());
 	m_pContext->IASetIndexBuffer(m_pMesh->Get_IndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
@@ -63,12 +63,22 @@ void CSphere::Render()
 
 	m_pShader->Update_Shader();
 
-	XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World());
+	if (nullptr == p_matReflect)
+	{
+		XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World());
+		XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * g_matView * g_matProj);
+	}
+	else
+	{
+		XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World() * (*p_matReflect));
+		XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * (*p_matReflect) * g_matView * g_matProj);
+	}
+
 	XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(m_pTransform->Get_World()));
-	XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * g_matView * g_matProj);
+
 	XMStoreFloat4x4(&m_mat.matTex, m_pTransform->Get_Tex());
 
-	m_pShader->Update_ConstantBuffer((void*)&m_mat, sizeof(TRANSMATRIX), m_pCB);
+	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
 	m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());

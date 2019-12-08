@@ -70,11 +70,11 @@
     <Filter Include="98. Timer">
       <UniqueIdentifier>{4c727099-4093-4d57-8b85-fc4ce4c14a37}</UniqueIdentifier>
     </Filter>
-    <Filter Include="95. Component\96. global">
-      <UniqueIdentifier>{41fbf8f5-21ab-47d2-a7d3-af9ec8f091e3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. Object\05. Lake">
       <UniqueIdentifier>{97d1ffc2-802a-42a0-b288-0576bc56e5b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96. global">
+      <UniqueIdentifier>{41fbf8f5-21ab-47d2-a7d3-af9ec8f091e3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -94,10 +94,10 @@
       <Filter>98. Timer</Filter>
     </ClInclude>
     <ClInclude Include="code\struct.h">
-      <Filter>95. Component\96. global</Filter>
+      <Filter>96. global</Filter>
     </ClInclude>
     <ClInclude Include="framework.h">
-      <Filter>95. Component\96. global</Filter>
+      <Filter>96. global</Filter>
     </ClInclude>
     <ClInclude Include="code\Mesh.h">
       <Filter>95. Component\01. Mesh</Filter>
@@ -121,7 +121,7 @@
       <Filter>95. Component\01. Mesh</Filter>
     </ClInclude>
     <ClInclude Include="code\Functor.h">
-      <Filter>95. Component\96. global</Filter>
+      <Filter>96. global</Filter>
     </ClInclude>
     <ClInclude Include="code\Input.h">
       <Filter>01. Device\01. DXInput</Filter>
