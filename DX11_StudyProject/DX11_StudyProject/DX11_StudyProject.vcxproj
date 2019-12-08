@@ -157,50 +157,53 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
     <ClInclude Include="code\Box.h" />
+    <ClInclude Include="code\Camera.h" />
+    <ClInclude Include="code\Component.h" />
     <ClInclude Include="code\Device.h" />
-    <ClInclude Include="code\GeometryGenerator.h" />
+    <ClInclude Include="code\FigureMesh.h" />
+    <ClInclude Include="code\framework.h" />
+    <ClInclude Include="code\Functor.h" />
+    <ClInclude Include="code\Input.h" />
     <ClInclude Include="code\MainFrame.h" />
     <ClInclude Include="code\Mesh.h" />
+    <ClInclude Include="code\Object.h" />
+    <ClInclude Include="code\Resource.h" />
+    <ClInclude Include="code\Shader.h" />
+    <ClInclude Include="code\Sphere.h" />
     <ClInclude Include="code\struct.h" />
+    <ClInclude Include="code\targetver.h" />
+    <ClInclude Include="code\Terrain.h" />
     <ClInclude Include="code\Timer.h" />
-    <ClInclude Include="Component.h" />
+    <ClInclude Include="code\Transform.h" />
     <ClInclude Include="DX11_StudyProject.h" />
-    <ClInclude Include="FigureMesh.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="Functor.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="Object.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="Sphere.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Terrain.h" />
-    <ClInclude Include="Transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="Input.cpp" />
-    <ClCompile Include="Object.cpp" />
     <ClCompile Include="code\Box.cpp" />
+    <ClCompile Include="code\Camera.cpp" />
+    <ClCompile Include="code\Component.cpp" />
     <ClCompile Include="code\Device.cpp" />
+    <ClCompile Include="code\FigureMesh.cpp" />
+    <ClCompile Include="code\GeometryGenerator.cpp" />
+    <ClCompile Include="code\Input.cpp" />
     <ClCompile Include="code\MainFrame.cpp" />
     <ClCompile Include="code\Mesh.cpp" />
+    <ClCompile Include="code\Object.cpp" />
+    <ClCompile Include="code\Shader.cpp" />
+    <ClCompile Include="code\Sphere.cpp" />
+    <ClCompile Include="code\Terrain.cpp" />
     <ClCompile Include="code\Timer.cpp" />
-    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="code\Transform.cpp" />
     <ClCompile Include="DX11_StudyProject.cpp" />
-    <ClCompile Include="FigureMesh.cpp" />
-    <ClCompile Include="GeometryGenerator.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Terrain.cpp" />
-    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX11_StudyProject.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="code\small.ico" />
     <Image Include="DX11_StudyProject.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
