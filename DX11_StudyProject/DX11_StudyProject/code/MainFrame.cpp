@@ -185,7 +185,7 @@ void CMainFrame::Create_Components()
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 2);
 	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("TerrainMesh", pMesh));
-
+	 
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 3);
 	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("CubeTexMesh", pMesh));
