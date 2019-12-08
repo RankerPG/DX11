@@ -203,7 +203,7 @@ void CMainFrame::Create_Components()
 	m_mapComponent.insert(make_pair("Transform", pTransform));
 
 	// ÅØ½ºÃÄ
-	CTexture* pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"../Texture/woodbox.png");
+	CTexture* pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"../Texture/WoodBox.dds", FALSE);
 	m_mapComponent.insert(make_pair("BoxTexture", pTexture));
 
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"../Texture/earth.bmp");

@@ -1,26 +1,7 @@
-﻿  Box.cpp
-  Camera.cpp
-  Component.cpp
-  DDSTextureLoader.cpp
-  Device.cpp
-  FigureMesh.cpp
-  GeometryGenerator.cpp
-  Input.cpp
-  MainFrame.cpp
-  Mesh.cpp
-  Object.cpp
-  Shader.cpp
-  Sphere.cpp
-  Terrain.cpp
-  Timer.cpp
-  Transform.cpp
-  Visible.cpp
-  WICTextureLoader.cpp
-  DX11_StudyProject.cpp
-  Texture.cpp
+﻿  MainFrame.cpp
   코드를 생성하고 있습니다.
-  462 of 992 functions (46.6%) were compiled, the rest were copied from previous compilation.
-    260 functions were new in current compilation
-    112 functions had inline decision re-evaluated but remain unchanged
+  4 of 992 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    8 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
-  DX11_StudyProject.vcxproj -> C:\Users\RankerPG\Desktop\DX11-master\DX11_StudyProject\x64\Release\DX11_StudyProject.exe
+  DX11_StudyProject.vcxproj -> C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\x64\Release\DX11_StudyProject.exe
