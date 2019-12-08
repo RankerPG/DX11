@@ -28,18 +28,6 @@
     <Filter Include="02. Object">
       <UniqueIdentifier>{0b10d059-3a0c-48d6-a9e0-98df313e2d15}</UniqueIdentifier>
     </Filter>
-    <Filter Include="95. Component">
-      <UniqueIdentifier>{6322cc5b-65b6-4fca-a67b-1d9415d179c0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="95. Component\01. Mesh">
-      <UniqueIdentifier>{a42a4aff-93e5-4c65-b012-9dc85eb8c6b1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="95. Component\02. Shader">
-      <UniqueIdentifier>{5548e0fd-cde0-4399-98f7-71e7bfc0bb3c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="95. Component\03. Transform">
-      <UniqueIdentifier>{2d06b2de-1d9b-49f4-8b6c-fafec21ec76a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="02. Object\00. Terrain">
       <UniqueIdentifier>{4b32b6e1-de37-4196-a49b-48267e869d94}</UniqueIdentifier>
     </Filter>
@@ -61,6 +49,19 @@
     <Filter Include="02. Object\03. Sphere">
       <UniqueIdentifier>{78ba0b9d-8a39-4547-a6f7-e726937d0b80}</UniqueIdentifier>
     </Filter>
+<<<<<<< HEAD
+    <Filter Include="95. Component">
+      <UniqueIdentifier>{6322cc5b-65b6-4fca-a67b-1d9415d179c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Component\01. Mesh">
+      <UniqueIdentifier>{a42a4aff-93e5-4c65-b012-9dc85eb8c6b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Component\02. Shader">
+      <UniqueIdentifier>{5548e0fd-cde0-4399-98f7-71e7bfc0bb3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Component\03. Transform">
+      <UniqueIdentifier>{2d06b2de-1d9b-49f4-8b6c-fafec21ec76a}</UniqueIdentifier>
+=======
     <Filter Include="02. Object\04. Visible">
       <UniqueIdentifier>{d8af3862-0c54-4051-a8fd-0afc0684cdab}</UniqueIdentifier>
     </Filter>
@@ -72,6 +73,7 @@
     </Filter>
     <Filter Include="95. Component\04. Texture\Loader">
       <UniqueIdentifier>{c8afd9b5-183e-40ef-98e6-cec3c76cf664}</UniqueIdentifier>
+>>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -97,9 +99,12 @@
       <Filter>96. global</Filter>
     </ClInclude>
     <ClInclude Include="code\Mesh.h">
+<<<<<<< HEAD
+=======
       <Filter>95. Component\01. Mesh</Filter>
     </ClInclude>
     <ClInclude Include="code\GeometryGenerator.h">
+>>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
       <Filter>95. Component\01. Mesh</Filter>
     </ClInclude>
     <ClInclude Include="code\Box.h">
@@ -107,6 +112,47 @@
     </ClInclude>
     <ClInclude Include="code\Device.h">
       <Filter>01. Device\00. DXDevice</Filter>
+<<<<<<< HEAD
+    </ClInclude>
+    <ClInclude Include="code\FigureMesh.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\framework.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Functor.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Input.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Object.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Resource.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Shader.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Sphere.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\targetver.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Terrain.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Transform.h">
+      <Filter>99. Default\헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Component.h">
+      <Filter>00. MainFrame</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Camera.h">
+      <Filter>00. MainFrame</Filter>
+=======
     </ClInclude>
     <ClInclude Include="code\Camera.h">
       <Filter>02. Object\99. Camera</Filter>
@@ -149,6 +195,7 @@
     </ClInclude>
     <ClInclude Include="code\WICTextureLoader.h">
       <Filter>95. Component\04. Texture\Loader</Filter>
+>>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +213,41 @@
     </ClCompile>
     <ClCompile Include="code\Box.cpp">
       <Filter>02. Object\01. Box</Filter>
+<<<<<<< HEAD
+    </ClCompile>
+    <ClCompile Include="code\Device.cpp">
+      <Filter>01. Device\00. DXDevice</Filter>
+    </ClCompile>
+    <ClCompile Include="code\GeometryGenerator.cpp">
+      <Filter>99. Default\소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Input.cpp">
+      <Filter>99. Default\소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Object.cpp">
+      <Filter>99. Default\소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Shader.cpp">
+      <Filter>99. Default\소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Sphere.cpp">
+      <Filter>99. Default\소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Terrain.cpp">
+      <Filter>99. Default\소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Transform.cpp">
+      <Filter>99. Default\소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="code\FigureMesh.cpp">
+      <Filter>99. Default\소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Component.cpp">
+      <Filter>00. MainFrame</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Camera.cpp">
+      <Filter>00. MainFrame</Filter>
+=======
     </ClCompile>
     <ClCompile Include="code\Device.cpp">
       <Filter>01. Device\00. DXDevice</Filter>
@@ -211,6 +293,7 @@
     </ClCompile>
     <ClCompile Include="code\WICTextureLoader.cpp">
       <Filter>95. Component\04. Texture\Loader</Filter>
+>>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -223,6 +306,9 @@
       <Filter>99. Default\리소스 파일</Filter>
     </Image>
     <Image Include="DX11_StudyProject.ico">
+      <Filter>99. Default\리소스 파일</Filter>
+    </Image>
+    <Image Include="code\small.ico">
       <Filter>99. Default\리소스 파일</Filter>
     </Image>
   </ItemGroup>
