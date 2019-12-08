@@ -185,7 +185,7 @@ void CMainFrame::Create_Components()
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 2);
 	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("TerrainMesh", pMesh));
-	 
+
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 3);
 	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("CubeTexMesh", pMesh));
@@ -203,13 +203,13 @@ void CMainFrame::Create_Components()
 	m_mapComponent.insert(make_pair("Transform", pTransform));
 
 	// ÅØ½ºÃÄ
-	CTexture* pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"../Texture/WoodBox.dds", FALSE);
+	CTexture* pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/WoodBox.dds", FALSE);
 	m_mapComponent.insert(make_pair("BoxTexture", pTexture));
 
-	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"../Texture/earth.bmp");
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/earth.bmp");
 	m_mapComponent.insert(make_pair("EarthTexture", pTexture));
 
-	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"../Texture/Terrain.png");
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Terrain.png");
 	m_mapComponent.insert(make_pair("TerrainTexture", pTexture));
 }
 

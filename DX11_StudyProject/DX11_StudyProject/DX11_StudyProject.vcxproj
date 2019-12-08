@@ -160,32 +160,15 @@
     <ClInclude Include="code\Box.h" />
     <ClInclude Include="code\Camera.h" />
     <ClInclude Include="code\Component.h" />
-<<<<<<< HEAD
-    <ClInclude Include="code\Device.h" />
-    <ClInclude Include="code\FigureMesh.h" />
-    <ClInclude Include="code\framework.h" />
-    <ClInclude Include="code\Functor.h" />
-=======
     <ClInclude Include="code\DDSTextureLoader.h" />
     <ClInclude Include="code\Device.h" />
     <ClInclude Include="code\FigureMesh.h" />
     <ClInclude Include="code\Functor.h" />
     <ClInclude Include="code\GeometryGenerator.h" />
->>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
     <ClInclude Include="code\Input.h" />
     <ClInclude Include="code\MainFrame.h" />
     <ClInclude Include="code\Mesh.h" />
     <ClInclude Include="code\Object.h" />
-<<<<<<< HEAD
-    <ClInclude Include="code\Resource.h" />
-    <ClInclude Include="code\Shader.h" />
-    <ClInclude Include="code\Sphere.h" />
-    <ClInclude Include="code\struct.h" />
-    <ClInclude Include="code\targetver.h" />
-    <ClInclude Include="code\Terrain.h" />
-    <ClInclude Include="code\Timer.h" />
-    <ClInclude Include="code\Transform.h" />
-=======
     <ClInclude Include="code\Shader.h" />
     <ClInclude Include="code\Sphere.h" />
     <ClInclude Include="code\struct.h" />
@@ -195,7 +178,6 @@
     <ClInclude Include="code\Transform.h" />
     <ClInclude Include="code\Visible.h" />
     <ClInclude Include="code\WICTextureLoader.h" />
->>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
     <ClInclude Include="DX11_StudyProject.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -205,10 +187,7 @@
     <ClCompile Include="code\Box.cpp" />
     <ClCompile Include="code\Camera.cpp" />
     <ClCompile Include="code\Component.cpp" />
-<<<<<<< HEAD
-=======
     <ClCompile Include="code\DDSTextureLoader.cpp" />
->>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
     <ClCompile Include="code\Device.cpp" />
     <ClCompile Include="code\FigureMesh.cpp" />
     <ClCompile Include="code\GeometryGenerator.cpp" />
@@ -221,20 +200,15 @@
     <ClCompile Include="code\Terrain.cpp" />
     <ClCompile Include="code\Timer.cpp" />
     <ClCompile Include="code\Transform.cpp" />
-<<<<<<< HEAD
-    <ClCompile Include="DX11_StudyProject.cpp" />
-=======
     <ClCompile Include="code\Visible.cpp" />
     <ClCompile Include="code\WICTextureLoader.cpp" />
     <ClCompile Include="DX11_StudyProject.cpp" />
     <ClCompile Include="Texture.cpp" />
->>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX11_StudyProject.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="code\small.ico" />
     <Image Include="DX11_StudyProject.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
