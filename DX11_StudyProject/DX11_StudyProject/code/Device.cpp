@@ -17,11 +17,13 @@ CDevice::CDevice()
 
 CDevice::~CDevice()
 {
-	m_pDepthStencilView->Release();
-	m_pRenderTargetView->Release();
-	m_pSwapChain->Release();
-	m_pContext->Release();
-	m_pDeivce->Release();
+	ULONG dwRefCnt = 0;
+
+	dwRefCnt = m_pDepthStencilView->Release();
+	dwRefCnt = m_pRenderTargetView->Release();
+	dwRefCnt = m_pSwapChain->Release();
+	dwRefCnt = m_pContext->Release();
+	dwRefCnt = m_pDeivce->Release();
 }
 
 BOOL CDevice::Init_Device(UINT p_dwSizeX, UINT p_dwSizeY)

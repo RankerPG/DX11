@@ -5,6 +5,7 @@
 class CMesh;
 class CTransform;
 class CShader;
+class CTexture;
 
 class CBox : public CObject
 {
@@ -24,6 +25,7 @@ private:
 	CMesh*			m_pMesh;
 	CTransform*		m_pTransform;
 	CShader*		m_pShader;
+	CTexture*		m_pTexture;
 
 private: //constant buffer
 	ID3D11Buffer*	m_pCB;

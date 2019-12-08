@@ -4,7 +4,7 @@
 
 class CComponent abstract
 {
-public:
+protected:
 	explicit CComponent(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
 	virtual ~CComponent();
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 c:\users\rankerpg\desktop\dx11\dx11_studyproject\dx11_studyproject\x64\debug\vc142.pdb
 c:\users\rankerpg\desktop\dx11\dx11_studyproject\dx11_studyproject\x64\debug\vc142.idb
 c:\users\rankerpg\desktop\dx11\dx11_studyproject\dx11_studyproject\x64\debug\transform.obj
@@ -30,3 +31,38 @@ c:\users\rankerpg\desktop\dx11\dx11_studyproject\dx11_studyproject\x64\debug\dx1
 c:\users\rankerpg\desktop\dx11\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\rc.command.1.tlog
 c:\users\rankerpg\desktop\dx11\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\rc.read.1.tlog
 c:\users\rankerpg\desktop\dx11\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\rc.write.1.tlog
+=======
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\vc142.pdb
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\vc142.idb
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\texture.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_studyproject.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\visible.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\transform.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\timer.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\terrain.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\sphere.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\shader.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\object.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\mesh.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\mainframe.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\input.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\geometrygenerator.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\figuremesh.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\device.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\component.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\camera.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\box.obj
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\x64\debug\dx11_studyproject.exe
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\x64\debug\dx11_studyproject.ilk
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\x64\debug\dx11_studyproject.pdb
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_studyproject.res
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\cl.command.1.tlog
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\cl.read.1.tlog
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\cl.write.1.tlog
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\link.command.1.tlog
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\link.read.1.tlog
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\link.write.1.tlog
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\rc.command.1.tlog
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\rc.read.1.tlog
+c:\users\rankerpg\desktop\dx11-master\dx11_studyproject\dx11_studyproject\x64\debug\dx11_stu.c552c42e.tlog\rc.write.1.tlog
+>>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a

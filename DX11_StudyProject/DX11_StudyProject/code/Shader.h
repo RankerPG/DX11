@@ -4,9 +4,11 @@
 
 class CShader : public CComponent
 {
-public:
+private:
 	explicit CShader(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);
 	CShader(const CShader& rhs);
+
+public:
 	virtual ~CShader();
 
 public:
@@ -16,7 +18,7 @@ public:
 	inline ID3D11InputLayout* Get_Layout() const { return m_pInputLayout; }
 
 public:
-	void Create_VertexShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR p_version, int p_LayoutType = 0);
+	void Create_VertexShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR p_version, int p_LayoutType);
 	void Create_PixelShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR p_version);
 	void Create_ConstantBuffer(LPVOID p_data, UINT p_size, ID3D11Buffer** p_CB);
 
@@ -25,6 +27,9 @@ public:
 
 private:
 	void Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType = 0); // 추후 타입 enum화
+
+public:
+	static CShader* Create_Shader(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, LPCWSTR p_filename, LPCSTR p_VSEntrypoint, LPCSTR p_PSEntrypoint, int p_LayoutType = 0);
 
 private:
 	ID3D11VertexShader*			m_pVS;

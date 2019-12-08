@@ -32,8 +32,10 @@ public:
 		vector<UINT> Indices;
 	};
 
-public:
+private:
 	explicit CGeometryGenerator(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);
+
+public:
 	virtual ~CGeometryGenerator();
 
 public:
@@ -41,10 +43,20 @@ public:
 
 public:
 	void Create_Cube(float p_width, float p_height, float p_depth, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
-	void Create_Terrain(float p_width, float p_depth, UINT m, UINT n, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
+	void Create_Terrain(float p_width, float p_depth, UINT n, UINT m, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
 	void Create_Sphere(float p_radius, UINT p_sliceCount, UINT p_stackCount, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
 
+	void Create_TexCube(float p_width, float p_height, float p_depth, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
+	void Create_TexTerrain(float p_width, float p_depth, float p_maxUV, UINT n, UINT m, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
+	void Create_TexSphere(float p_radius, UINT p_sliceCount, UINT p_stackCount, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
+
 private:
-	float Get_Height(float p_x, float p_z) { return 0.3f * (p_z * sinf(0.1f * p_x) + p_x * cosf(0.1f * p_z)); }
+	void Get_CubeData(float p_width, float p_height, float p_depth, MeshData& p_data);
+	void Get_TerrainData(float p_width, float p_depth, float p_maxUV, UINT n, UINT m, MeshData& p_data);
+	void Get_SphereData(float p_radius, UINT p_sliceCount, UINT p_stackCount, MeshData& p_data);
+
+public:
+	static CGeometryGenerator* Create_GeometryGenerator(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);
+
 };
 

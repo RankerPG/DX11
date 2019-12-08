@@ -10,6 +10,6 @@ CComponent::CComponent(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
 
 CComponent::~CComponent()
 {
-	m_pDevice->Release();
-	m_pContext->Release();
+	SAFE_RELEASE(m_pDevice);
+	SAFE_RELEASE(m_pContext);
 }

@@ -5,6 +5,9 @@ CTransform::CTransform(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
 	, m_vScale(XMVectorSet(1.f, 1.f, 1.f, 0.f))
 	, m_vRot(XMVectorZero())
 	, m_vTrans(XMVectorZero())
+	, m_matScale(XMMatrixIdentity())
+	, m_matRot(XMMatrixIdentity())
+	, m_matTrans(XMMatrixIdentity())
 	, m_matWorld(XMMatrixIdentity())
 {
 }
@@ -25,11 +28,16 @@ CTransform::~CTransform()
 
 void CTransform::Update_Transform()
 {
-	XMMATRIX matScale, matRot, matTrans;
-	
-	matScale = XMMatrixScalingFromVector(m_vScale);
-	matRot = XMMatrixRotationRollPitchYawFromVector(m_vRot);
-	matTrans = XMMatrixTranslationFromVector(m_vTrans);
+	m_matScale = XMMatrixScalingFromVector(m_vScale);
+	m_matRot = XMMatrixRotationRollPitchYawFromVector(m_vRot);
+	m_matTrans = XMMatrixTranslationFromVector(m_vTrans);
 
-	m_matWorld = matScale * matRot * matTrans;
+	m_matWorld = m_matScale * m_matRot * m_matTrans;
+}
+
+CTransform* CTransform::Create_Transform(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
+{
+	CTransform* pInstance = new CTransform(p_Device, p_Context);
+
+	return pInstance;
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿  Box.cpp
   Camera.cpp
   Component.cpp
@@ -23,3 +24,7 @@ C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\DX11_StudyProject\code\Geometry
   코드를 생성하고 있습니다...
 C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\DX11_StudyProject\code\GeometryGenerator.cpp(364,35): warning C4267: '초기화 중': 'size_t'에서 'UINT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   DX11_StudyProject.vcxproj -> C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\x64\Debug\DX11_StudyProject.exe
+=======
+﻿  MainFrame.cpp
+  DX11_StudyProject.vcxproj -> C:\Users\RankerPG\Desktop\DX11-master\DX11_StudyProject\x64\Debug\DX11_StudyProject.exe
+>>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a

@@ -25,8 +25,8 @@ CMesh::CMesh(const CMesh& rhs)
 
 CMesh::~CMesh()
 {
-	m_pVB->Release();
-	m_pIB->Release();
+	SAFE_RELEASE(m_pVB);
+	SAFE_RELEASE(m_pIB);
 }
 
 void CMesh::Draw_Mesh()

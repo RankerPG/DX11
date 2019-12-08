@@ -44,14 +44,14 @@ public:
 	}
 
 	inline BOOL Get_DIKPressState(const unsigned char& byKey) {
-		return m_bPressingKey[byKey];
+		return m_bPressedKey[byKey];
 	}
 
 	inline BOOL Get_DIMState(const MOUSESTATE & eMouseState) {
 		return m_MouseState.rgbButtons[eMouseState];
 	}
 
-	inline BOOL Get_DIMMoveState(const MOUSEMOVESTATE & eMouseMoveState) {
+	inline LONG Get_DIMMoveState(const MOUSEMOVESTATE & eMouseMoveState) {
 		return *((LONG*)&m_MouseState + eMouseMoveState);
 	}
 
@@ -71,7 +71,7 @@ private:
 private:
 	LPDIRECTINPUTDEVICE8		m_pKeyBoard;
 	char						m_byKeyBoard_State[256];
-	BOOL						m_bPressingKey[256];
+	BOOL						m_bPressedKey[256];
 private:
 	LPDIRECTINPUTDEVICE8		m_pMouse;
 	DIMOUSESTATE				m_MouseState;

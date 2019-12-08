@@ -83,7 +83,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)\include;./;./Header;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)\include;./;./code;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(DXSDK_DIR)\lib\x64;</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -114,7 +114,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3d11.lib;d3dx11d.lib;D3DCompiler.lib;Effects11d.lib;dxerr.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;d3d11.lib;D3DCompiler.lib;dxerr.lib;dxgi.lib;dxguid.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -153,21 +153,30 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;d3dx11.lib;D3DCompiler.lib;Effects11.lib;dxerr.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;D3DCompiler.lib;dxerr.lib;dxgi.lib;dxguid.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="code\Box.h" />
     <ClInclude Include="code\Camera.h" />
     <ClInclude Include="code\Component.h" />
+<<<<<<< HEAD
     <ClInclude Include="code\Device.h" />
     <ClInclude Include="code\FigureMesh.h" />
     <ClInclude Include="code\framework.h" />
     <ClInclude Include="code\Functor.h" />
+=======
+    <ClInclude Include="code\DDSTextureLoader.h" />
+    <ClInclude Include="code\Device.h" />
+    <ClInclude Include="code\FigureMesh.h" />
+    <ClInclude Include="code\Functor.h" />
+    <ClInclude Include="code\GeometryGenerator.h" />
+>>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
     <ClInclude Include="code\Input.h" />
     <ClInclude Include="code\MainFrame.h" />
     <ClInclude Include="code\Mesh.h" />
     <ClInclude Include="code\Object.h" />
+<<<<<<< HEAD
     <ClInclude Include="code\Resource.h" />
     <ClInclude Include="code\Shader.h" />
     <ClInclude Include="code\Sphere.h" />
@@ -176,6 +185,17 @@
     <ClInclude Include="code\Terrain.h" />
     <ClInclude Include="code\Timer.h" />
     <ClInclude Include="code\Transform.h" />
+=======
+    <ClInclude Include="code\Shader.h" />
+    <ClInclude Include="code\Sphere.h" />
+    <ClInclude Include="code\struct.h" />
+    <ClInclude Include="code\Terrain.h" />
+    <ClInclude Include="code\Texture.h" />
+    <ClInclude Include="code\Timer.h" />
+    <ClInclude Include="code\Transform.h" />
+    <ClInclude Include="code\Visible.h" />
+    <ClInclude Include="code\WICTextureLoader.h" />
+>>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
     <ClInclude Include="DX11_StudyProject.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Resource.h" />
@@ -185,6 +205,10 @@
     <ClCompile Include="code\Box.cpp" />
     <ClCompile Include="code\Camera.cpp" />
     <ClCompile Include="code\Component.cpp" />
+<<<<<<< HEAD
+=======
+    <ClCompile Include="code\DDSTextureLoader.cpp" />
+>>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
     <ClCompile Include="code\Device.cpp" />
     <ClCompile Include="code\FigureMesh.cpp" />
     <ClCompile Include="code\GeometryGenerator.cpp" />
@@ -197,7 +221,14 @@
     <ClCompile Include="code\Terrain.cpp" />
     <ClCompile Include="code\Timer.cpp" />
     <ClCompile Include="code\Transform.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="DX11_StudyProject.cpp" />
+=======
+    <ClCompile Include="code\Visible.cpp" />
+    <ClCompile Include="code\WICTextureLoader.cpp" />
+    <ClCompile Include="DX11_StudyProject.cpp" />
+    <ClCompile Include="Texture.cpp" />
+>>>>>>> c72a60c00d603ccbe064d2401984e96c80d26b3a
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX11_StudyProject.rc" />
@@ -208,15 +239,21 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Shader\Default.fx">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="Shader\Light.fx">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </FxCompile>
+    <Text Include="..\..\UpdateList.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Shader\UpdateList.txt" />
+    <FxCompile Include="..\Shader\Default.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Shader\Light.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Shader\Texture.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

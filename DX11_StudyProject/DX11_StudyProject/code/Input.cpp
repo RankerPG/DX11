@@ -8,7 +8,7 @@ CInput::CInput()
 	, m_pKeyBoard(nullptr)
 	, m_pMouse(nullptr)
 {
-	ZeroMemory(&m_bPressingKey, sizeof(BOOL) * 256);
+	ZeroMemory(&m_bPressedKey, sizeof(BOOL) * 256);
 }
 
 CInput::~CInput()
@@ -48,13 +48,14 @@ void CInput::Update_InputDev_State()
 
 	for (size_t i = 0; i < 256; ++i)
 	{
-		if (m_byKeyBoard_State[i] & 0x80)
+		if (byTempKeyState[i] && 0 == m_byKeyBoard_State[i])
 		{
-			if (byTempKeyState[i] && m_byKeyBoard_State[i])
-				m_bPressingKey[i] = true;
+			m_bPressedKey[i] = true;
 		}
 		else
-			m_bPressingKey[i] = false;
+		{
+			m_bPressedKey[i] = false;
+		}
 	}
 
 	char byTempMouseState[3];

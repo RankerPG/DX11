@@ -9,6 +9,8 @@
 #include "Camera.h"
 #include "Sphere.h"
 #include "Input.h"
+#include "Visible.h"
+#include "Texture.h"
 
 XMMATRIX g_matView, g_matProj;
 
@@ -19,15 +21,20 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pContext(nullptr)
 	, m_pState(nullptr)
 	, m_pStateWireFrame(nullptr)
+	, m_pSampler(nullptr)
 	, m_pCamera(nullptr)
 	, m_pMainTimer(new CTimer())
 	, m_pBox(nullptr)
 	, m_pTerrain(nullptr)
 	, m_pSphere(nullptr)
+	, m_pVisible(nullptr)
 	, m_pLightShader(nullptr)
+	, m_pTextureShader(nullptr)
 	, m_pCBLight(nullptr)
+	, m_pCBPointLight(nullptr)
 	, m_pCBPerFrame(nullptr)
 	, m_Light(LIGHT())
+	, m_PointLight(POINTLIGHT())
 	, m_PerFrame(PERFRAME())
 	, m_dwFrameCnt(0)
 	, m_fElapsedTime(0.f)
@@ -45,7 +52,9 @@ void CMainFrame::Init()
 	Create_Device();
 	Create_Components();
 	Create_RasterizerState();
+	Create_Sampler();
 	Update_State();
+	Update_Sampler();
 	Create_Object();
 }
 
@@ -61,6 +70,7 @@ void CMainFrame::Update()
 	m_pBox->Update(deltaTime);
 	m_pTerrain->Update(deltaTime);
 	m_pSphere->Update(deltaTime);
+	m_pVisible->Update(deltaTime);
 }
 
 void CMainFrame::Render()
@@ -68,11 +78,13 @@ void CMainFrame::Render()
 	m_pGraphicDevice->Begin_Render();
 
 	Update_LightShader();
+	Update_TextureShader();
 
 	// 그리기
 	m_pTerrain->Render();
 	m_pSphere->Render();
 	m_pBox->Render();
+	m_pVisible->Render();
 
 	m_pGraphicDevice->End_Render();
 }
@@ -82,10 +94,12 @@ void CMainFrame::Release()
 	m_mapComponent.clear();
 
 	SAFE_RELEASE(m_pCBLight);
+	SAFE_RELEASE(m_pCBPointLight);
 	SAFE_RELEASE(m_pCBPerFrame);
 
 	SAFE_RELEASE(m_pState);
 	SAFE_RELEASE(m_pStateWireFrame);
+	SAFE_RELEASE(m_pSampler);
 	SAFE_RELEASE(m_pDevice);
 	SAFE_RELEASE(m_pContext);
 }
@@ -132,16 +146,14 @@ void CMainFrame::Create_Components()
 	// 컴포넌트 생성
 	
 	// 쉐이더
-	CShader* pShader = new CShader(m_pDevice, m_pContext);
-	pShader->Create_VertexShader(L"./Shader/Default.fx", "vs_main", "vs_5_0");
-	pShader->Create_PixelShader(L"./Shader/Default.fx", "ps_main", "ps_5_0");
+	CShader* pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Default.fx", "vs_main", "ps_main", 0);
 	m_mapComponent.insert(make_pair("DefaultShader", pShader));
 
-	m_pLightShader = pShader = new CShader(m_pDevice, m_pContext);
-	pShader->Create_VertexShader(L"./Shader/Light.fx", "vs_main", "vs_5_0", 1);
-	pShader->Create_PixelShader(L"./Shader/Light.fx", "ps_main", "ps_5_0");
+	m_pLightShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Light.fx", "vs_main", "ps_main", 1);
 	m_mapComponent.insert(make_pair("LightShader", pShader));
+
 	pShader->Create_ConstantBuffer(&m_Light, sizeof(LIGHT), &m_pCBLight);
+	pShader->Create_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), &m_pCBPointLight);
 	pShader->Create_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), &m_pCBPerFrame);
 
 	XMVECTOR vDir = XMVectorSet(1.f, -1.f, 1.f, 0.f);
@@ -151,22 +163,54 @@ void CMainFrame::Create_Components()
 	m_Light.ambient = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	m_Light.specular = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 
+	m_PointLight.position = XMFLOAT3A(0.f, 5.f, 0.f);
+	m_PointLight.Range = 20.f;
+	m_PointLight.diffuse = XMFLOAT4(1.f, 0.f, 0.f, 1.f);
+	m_PointLight.ambient = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
+	m_PointLight.specular = XMFLOAT4(1.f, 0.f, 0.f, 1.f);
+
+	m_pTextureShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Texture.fx", "vs_main", "ps_main", 2);
+	m_mapComponent.insert(make_pair("TextureShader", pShader));
+	// 상수 버퍼는 라이트 쉐이더와 공유
+
 	// 메쉬
-	CMesh* pMesh = new CFigureMesh(m_pDevice, m_pContext);
+	CMesh* pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext);
 	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("CubeMesh", pMesh));
 
-	pMesh = new CFigureMesh(m_pDevice, m_pContext, 1);
+	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 1);
 	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("SphereMesh", pMesh));
 
-	pMesh = new CFigureMesh(m_pDevice, m_pContext, 2);
+	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 2);
 	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("TerrainMesh", pMesh));
 
+	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 3);
+	pMesh->Init_Mesh();
+	m_mapComponent.insert(make_pair("CubeTexMesh", pMesh));
+
+	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 4);
+	pMesh->Init_Mesh();
+	m_mapComponent.insert(make_pair("SphereTexMesh", pMesh));
+
+	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 5);
+	pMesh->Init_Mesh();
+	m_mapComponent.insert(make_pair("TerrainTexMesh", pMesh));
+	
 	// 트랜스폼
-	CTransform* pTransform = new CTransform(m_pDevice, m_pContext);
+	CTransform* pTransform = CTransform::Create_Transform(m_pDevice, m_pContext);
 	m_mapComponent.insert(make_pair("Transform", pTransform));
+
+	// 텍스쳐
+	CTexture* pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/WoodBox.dds", FALSE);
+	m_mapComponent.insert(make_pair("BoxTexture", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/earth.bmp");
+	m_mapComponent.insert(make_pair("EarthTexture", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Terrain.png");
+	m_mapComponent.insert(make_pair("TerrainTexture", pTexture));
 }
 
 void CMainFrame::Create_RasterizerState()
@@ -194,6 +238,34 @@ void CMainFrame::Create_RasterizerState()
 	}
 }
 
+void CMainFrame::Create_Sampler()
+{
+	D3D11_SAMPLER_DESC sd;
+	ZeroMemory(&sd, sizeof(D3D11_SAMPLER_DESC));
+
+	sd.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sd.MaxAnisotropy = 1;
+	sd.MinLOD = 0;
+	sd.MaxLOD = 0;
+	sd.MipLODBias = 0;
+	sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sd.BorderColor[0] = 1;
+	sd.BorderColor[1] = 1;
+	sd.BorderColor[2] = 1;
+	sd.BorderColor[3] = 1;
+
+	sd.MaxLOD = D3D11_FLOAT32_MAX;
+	sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
+	
+	if (FAILED(m_pDevice->CreateSamplerState(&sd, &m_pSampler)))
+	{
+		MessageBox(g_hWnd, L"Create Sampler Failed!!", 0, 0);
+		return;
+	}
+}
+
 void CMainFrame::Create_Object()
 {
 	// 오브젝트 생성
@@ -210,6 +282,9 @@ void CMainFrame::Create_Object()
 
 	m_pSphere.reset(new CSphere(m_pDevice, m_pContext, &m_mapComponent));
 	m_pSphere->Init();
+
+	m_pVisible.reset(new CVisible(m_pDevice, m_pContext, &m_mapComponent));
+	m_pVisible->Init();
 }
 
 void CMainFrame::Update_State()
@@ -224,11 +299,27 @@ void CMainFrame::Update_State()
 	}
 }
 
+void CMainFrame::Update_Sampler()
+{
+	m_pContext->PSSetSamplers(0, 1, &m_pSampler);
+}
+
 void CMainFrame::Update_LightShader()
 {
 	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
 	m_pLightShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
+	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
+	m_pLightShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
 	m_pLightShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
+}
+
+void CMainFrame::Update_TextureShader()
+{
+	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
+	m_pTextureShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
+	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
+	m_pTextureShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
+	m_pTextureShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
 }
 
 void CMainFrame::Update_Input()
