@@ -62,7 +62,7 @@ void CVisible::Update(float p_deltaTime)
 	m_vTrans = m_pTransform->Get_Trans();
 }
 
-void CVisible::Render(XMMATRIX* p_matReflect)
+void CVisible::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 {
 	m_pContext->IASetVertexBuffers(0, 1, m_pMesh->Get_VertexBuffer(), &m_pMesh->Get_Stride(), &m_pMesh->Get_Offset());
 	m_pContext->IASetIndexBuffer(m_pMesh->Get_IndexBuffer(), DXGI_FORMAT_R32_UINT, 0);

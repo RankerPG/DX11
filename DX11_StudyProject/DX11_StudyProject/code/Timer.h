@@ -9,8 +9,11 @@ public:
 	~CTimer() = default;
 
 public:
+	inline const float Get_MainTime() const { return (float)m_MainTime; }
 	inline const float Get_DeltaTime() const { return (float)m_DeltaTime; }
 	
+	inline const BOOL& Get_isStopped() const { return m_IsStopped; }
+
 	float Get_TotalTime();
 
 public:
@@ -21,6 +24,7 @@ public:
 
 private:
 	double		m_SecondPerCount;
+	double		m_MainTime;
 	double		m_DeltaTime;
 
 	__int64		m_iBaseTime;

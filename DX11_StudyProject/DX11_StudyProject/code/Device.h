@@ -41,6 +41,9 @@ public:
 	void Begin_Render();
 	void End_Render();
 
+	void Clear_Depth();
+	void Clear_Stencil();
+
 private:
 	BOOL Create_Device();
 	BOOL Create_SwapChain();
