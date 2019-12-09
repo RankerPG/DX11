@@ -36,7 +36,7 @@ void CBox::Init()
 	m_pTransform->Set_Trans(XMVectorSet(0.f, 1.f, 0.f, 1.f));
 
 	// 쉐이더 생성
-	m_pShader = static_cast<CShader*>(m_pMapComponent->find("TextureShader")->second->Clone());
+	m_pShader = static_cast<CShader*>(m_pMapComponent->find("GeometryShader")->second->Clone());
 	m_pShader->Create_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), &m_pCB);
 	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
 
@@ -55,7 +55,7 @@ void CBox::Update(float p_deltaTime)
 	m_pTransform->Update_Transform();
 }
 
-void CBox::Render(XMMATRIX* p_matReflect)
+void CBox::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 {
 	m_pContext->IASetVertexBuffers(0, 1, m_pMesh->Get_VertexBuffer(), &m_pMesh->Get_Stride(), &m_pMesh->Get_Offset());
 	m_pContext->IASetIndexBuffer(m_pMesh->Get_IndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
@@ -64,24 +64,27 @@ void CBox::Render(XMMATRIX* p_matReflect)
 
 	m_pShader->Update_Shader();
 
-	if (nullptr == p_matReflect)
+	if (nullptr == p_matAdd)
 	{
 		XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World());
 		XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * g_matView * g_matProj);
 	}
 	else
 	{
-		XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World() * (*p_matReflect));
-		XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * (*p_matReflect) * g_matView * g_matProj);
+		XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World() * (*p_matAdd));
+		XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * (*p_matAdd) * g_matView * g_matProj);
 	}
 
 	XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(m_pTransform->Get_World()));
 
 	XMStoreFloat4x4(&m_mat.matTex, m_pTransform->Get_Tex());
 
-	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
-	m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 
+	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
+	if (TRUE == p_isUseMtrl)
+	{
+		m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
+	}
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
 
 	m_pMesh->Draw_Mesh();

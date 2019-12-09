@@ -2,6 +2,7 @@
 
 CTimer::CTimer()
 	: m_SecondPerCount(0.0)
+	, m_MainTime(0.0)
 	, m_DeltaTime(0.0)
 	, m_iBaseTime(0)
 	, m_iPauseTime(0)
@@ -65,20 +66,21 @@ void CTimer::Stop()
 
 void CTimer::Tick()
 {
+	QueryPerformanceCounter((LARGE_INTEGER*)&m_iCurTime);
+
+	m_MainTime = m_DeltaTime = (m_iCurTime - m_iPrevTime) * m_SecondPerCount;
+
+	m_iPrevTime = m_iCurTime;
+
 	if (TRUE == m_IsStopped)
 	{
 		m_DeltaTime = 0.0;
 		return;
 	}
 
-	QueryPerformanceCounter((LARGE_INTEGER*)&m_iCurTime);
-
-	m_DeltaTime = (m_iCurTime - m_iPrevTime) * m_SecondPerCount;
-
-	m_iPrevTime = m_iCurTime;
-
-	if (0.0 > m_DeltaTime)
+	if (0.0 > m_DeltaTime || 0.0 > m_MainTime)
 	{
+		m_MainTime = 0.0;
 		m_DeltaTime = 0.0;
 	}
 }

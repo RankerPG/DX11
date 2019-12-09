@@ -175,7 +175,7 @@ void ComputePointLight(float3 pos, float3 nrm, out float4 diff, out float4 amb, 
 
 	float att = 0.5f;
 
-	diff = diffFactor * g_PointLight.diff;
+	diff = diffFactor * g_PointLight.diff * g_Mtrl.diff;
 	amb = g_PointLight.amb * g_Mtrl.amb;
 	spec = 0; //specFactor* g_PointLight.spec * att;
 

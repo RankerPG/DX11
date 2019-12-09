@@ -20,6 +20,7 @@ public:
 public:
 	void Create_VertexShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR p_version, int p_LayoutType);
 	void Create_PixelShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR p_version);
+	void Create_GeometryShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR p_version);
 	void Create_ConstantBuffer(LPVOID p_data, UINT p_size, ID3D11Buffer** p_CB);
 
 	void Update_Shader();
@@ -34,5 +35,6 @@ public:
 private:
 	ID3D11VertexShader*			m_pVS;
 	ID3D11PixelShader*			m_pPS;
+	ID3D11GeometryShader*		m_pGS;
 	ID3D11InputLayout*			m_pInputLayout;
 };

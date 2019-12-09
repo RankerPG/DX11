@@ -59,6 +59,16 @@ void CDevice::End_Render()
 	m_pSwapChain->Present(0, 0);
 }
 
+void CDevice::Clear_Depth()
+{
+	m_pContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.f, 0);
+}
+
+void CDevice::Clear_Stencil()
+{
+	m_pContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_STENCIL, 1.f, 0);
+}
+
 BOOL CDevice::Create_Device()
 {
 	UINT createDeviceFlags = 0;

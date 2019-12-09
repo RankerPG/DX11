@@ -22,8 +22,8 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pContext(nullptr)
 	, m_pState{nullptr, nullptr, nullptr, nullptr}
 	, m_pSampler(nullptr)
-	, m_pBlend{nullptr, nullptr}
-	, m_pDepthStencil{nullptr, nullptr}
+	, m_pBlend{nullptr, nullptr, nullptr}
+	, m_pDepthStencil{nullptr, nullptr, nullptr, nullptr}
 	, m_pCamera(nullptr)
 	, m_pMainTimer(new CTimer())
 	, m_pBox(nullptr)
@@ -33,12 +33,15 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pLake(nullptr)
 	, m_pLightShader(nullptr)
 	, m_pTextureShader(nullptr)
+	, m_pGeometryShader(nullptr)
 	, m_pCBLight(nullptr)
 	, m_pCBPointLight(nullptr)
 	, m_pCBPerFrame(nullptr)
+	, m_pCBMtrl(nullptr)
 	, m_Light(LIGHT())
 	, m_PointLight(POINTLIGHT())
 	, m_PerFrame(PERFRAME())
+	, m_ShadowMtrl(MATERIAL())
 	, m_dwFrameCnt(0)
 	, m_fElapsedTime(0.f)
 	, m_isWireFrame(FALSE)
@@ -47,6 +50,7 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 
 CMainFrame::~CMainFrame()
 {
+
 	Release();
 }
 
@@ -71,11 +75,12 @@ void CMainFrame::Update()
 {
 	m_pMainTimer->Tick();
 	Calculate_FPS();
+	float MainTime = m_pMainTimer->Get_MainTime();
 	float deltaTime = m_pMainTimer->Get_DeltaTime();
 
 	Update_Input();
 
-	m_pCamera->Update(deltaTime);
+	m_pCamera->Update(MainTime);
 	m_pBox->Update(deltaTime);
 	m_pTerrain->Update(deltaTime);
 	m_pSphere->Update(deltaTime);
@@ -91,6 +96,8 @@ void CMainFrame::Render()
 
 	Render_Stencil();
 
+	Render_Shadow();
+
 	Render_Color();
 
 	m_pGraphicDevice->End_Render();
@@ -103,6 +110,7 @@ void CMainFrame::Release()
 	SAFE_RELEASE(m_pCBLight);
 	SAFE_RELEASE(m_pCBPointLight);
 	SAFE_RELEASE(m_pCBPerFrame);
+	SAFE_RELEASE(m_pCBMtrl);
 
 	SAFE_RELEASE(m_pState[0]);
 	SAFE_RELEASE(m_pState[1]);
@@ -165,6 +173,7 @@ void CMainFrame::Create_Components()
 	pShader->Create_ConstantBuffer(&m_Light, sizeof(LIGHT), &m_pCBLight);
 	pShader->Create_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), &m_pCBPointLight);
 	pShader->Create_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), &m_pCBPerFrame);
+	pShader->Create_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), &m_pCBMtrl);
 
 	XMVECTOR vDir = XMVectorSet(1.f, -1.f, 1.f, 0.f);
 	vDir = XMVector3Normalize(-vDir);
@@ -183,9 +192,17 @@ void CMainFrame::Create_Components()
 	m_PerFrame.fogStart = 5.f;
 	m_PerFrame.fogRange = 70.f;
 
+	m_ShadowMtrl.diffuse = XMFLOAT4(0.f, 0.f, 0.f, 0.5f);
+	m_ShadowMtrl.ambient = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
+	m_ShadowMtrl.specular = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
+
 	m_pTextureShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Texture.fx", "vs_main", "ps_main", 2);
 	m_mapComponent.insert(make_pair("TextureShader", pShader));
 	// 상수 버퍼는 라이트 쉐이더와 공유
+
+	m_pGeometryShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Geometry.fx", "vs_main", "ps_main", 2);
+	m_pGeometryShader->Create_GeometryShader(L"../Shader/Geometry.fx", "gs_main", "gs_5_0");
+	m_mapComponent.insert(make_pair("GeometryShader", pShader));
 
 	// 메쉬
 	CMesh* pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext);
@@ -352,23 +369,23 @@ void CMainFrame::Create_BlendState()
 		return;
 	}
 
-	////
-	//rtbd.BlendEnable = TRUE;
-	//rtbd.BlendOp = D3D11_BLEND_OP_ADD;
-	//rtbd.SrcBlend = D3D11_BLEND_SRC_ALPHA;
-	//rtbd.DestBlend = D3D11_BLEND_SRC_COLOR;
-	//rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
-	//rtbd.SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
-	//rtbd.DestBlendAlpha = D3D11_BLEND_ZERO;
+	//
+	rtbd.BlendEnable = TRUE;
+	rtbd.BlendOp = D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlend = D3D11_BLEND_ONE;
+	rtbd.DestBlend = D3D11_BLEND_ONE;
+	rtbd.BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	rtbd.SrcBlendAlpha = D3D11_BLEND_ONE;
+	rtbd.DestBlendAlpha = D3D11_BLEND_ZERO;
 
 
-	//bd.RenderTarget[0] = rtbd;
+	bd.RenderTarget[0] = rtbd;
 
-	//if (FAILED(m_pDevice->CreateBlendState(&bd, &m_pBlend[2])))
-	//{
-	//	MessageBox(g_hWnd, L"Create BlendState Failed!!", 0, 0);
-	//	return;
-	//}
+	if (FAILED(m_pDevice->CreateBlendState(&bd, &m_pBlend[2])))
+	{
+		MessageBox(g_hWnd, L"Create BlendState Failed!!", 0, 0);
+		return;
+	}
 }
 
 void CMainFrame::Create_DepthStencilState()
@@ -408,7 +425,7 @@ void CMainFrame::Create_DepthStencilState()
 	}
 
 	//
-	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	dsd.DepthEnable = FALSE;
 
 	dsd.StencilEnable = TRUE;
 	dsd.StencilReadMask = 0xff;
@@ -422,6 +439,27 @@ void CMainFrame::Create_DepthStencilState()
 	dsd.BackFace = dsd.FrontFace;
 
 	if (FAILED(m_pDevice->CreateDepthStencilState(&dsd, &m_pDepthStencil[2])))
+	{
+		MessageBox(g_hWnd, L"Create DepthStencilState Failed!!", 0, 0);
+		return;
+	}
+
+	//
+	dsd.DepthEnable = TRUE;
+	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+	dsd.StencilEnable = TRUE;
+	dsd.StencilReadMask = 0xff;
+	dsd.StencilWriteMask = 0xff;
+
+	dsd.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	dsd.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	dsd.FrontFace.StencilPassOp = D3D11_STENCIL_OP_INCR;
+	dsd.FrontFace.StencilFunc = D3D11_COMPARISON_EQUAL;
+
+	dsd.BackFace = dsd.FrontFace;
+
+	if (FAILED(m_pDevice->CreateDepthStencilState(&dsd, &m_pDepthStencil[3])))
 	{
 		MessageBox(g_hWnd, L"Create DepthStencilState Failed!!", 0, 0);
 		return;
@@ -481,6 +519,10 @@ void CMainFrame::Update_BlendState(UINT	p_dwType)
 	{
 		m_pContext->OMSetBlendState(m_pBlend[1], factor, 0xffffffff);
 	}
+	else if (2 == p_dwType)
+	{
+		m_pContext->OMSetBlendState(m_pBlend[2], factor, 0xffffffff);
+	}
 }
 
 void CMainFrame::Update_DepthStencilState(DEPTHSTENCIL eDS)
@@ -496,6 +538,10 @@ void CMainFrame::Update_DepthStencilState(DEPTHSTENCIL eDS)
 	else if (DEPTHSTENCIL::DRAWSTENCIL == eDS)
 	{
 		m_pContext->OMSetDepthStencilState(m_pDepthStencil[2], 1);
+	}
+	else if (DEPTHSTENCIL::SHADOWON == eDS)
+	{
+		m_pContext->OMSetDepthStencilState(m_pDepthStencil[3], 0);
 	}
 }
 
@@ -517,6 +563,15 @@ void CMainFrame::Update_TextureShader()
 	m_pTextureShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
 }
 
+void CMainFrame::Update_GeometryShader()
+{
+	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
+	m_pGeometryShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
+	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
+	m_pGeometryShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
+	m_pGeometryShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
+}
+
 void CMainFrame::Update_Input()
 {
 	if (m_pInput->Get_DIKPressState(DIK_SPACE))
@@ -525,11 +580,24 @@ void CMainFrame::Update_Input()
 
 		Update_RasterizerState();
 	}
+
+	if (m_pInput->Get_DIKPressState(DIK_LSHIFT))
+	{
+		if (TRUE == m_pMainTimer->Get_isStopped())
+		{
+			m_pMainTimer->Start();
+		}
+		else
+		{
+			m_pMainTimer->Stop();
+		}
+	}
 }
 
 void CMainFrame::Render_Default()
 {
 	Update_TextureShader();
+	Update_GeometryShader();
 	Update_RasterizerState();
 	Update_BlendState(0);
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
@@ -570,11 +638,11 @@ void CMainFrame::Render_Stencil()
 	XMMATRIX R = XMMatrixReflect(stencilPlane);
 
 	XMVECTOR litDir = XMLoadFloat3A(&m_Light.direction);
-	XMVECTOR litReflectDir = XMVector3TransformNormal(litDir, R);
+	XMVECTOR litReflectDir = XMVector3TransformNormal(-litDir, R);
 	XMStoreFloat3A(&m_Light.direction, litReflectDir);
 
-	Update_LightShader();
 	Update_TextureShader();
+	Update_GeometryShader();
 
 	m_pContext->RSSetState(m_pState[1]);
 	m_pBox->Render(&R);
@@ -592,7 +660,6 @@ void CMainFrame::Render_Stencil()
 	else
 		m_pContext->RSSetState(m_pState[1]);
 
-	m_pContext->RSSetState(m_pState[0]);
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
 
 	Update_BlendState(1);
@@ -601,6 +668,29 @@ void CMainFrame::Render_Stencil()
 	XMStoreFloat3A(&m_Light.direction, litDir);
 
 	Update_TextureShader();
+	Update_GeometryShader();
+}
+
+void CMainFrame::Render_Shadow()
+{
+	m_pGraphicDevice->Clear_Stencil();
+
+	Update_DepthStencilState(DEPTHSTENCIL::SHADOWON);
+
+	XMVECTOR vShadow = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	XMVECTOR vShadowLit = XMLoadFloat3A(&m_Light.direction);
+	XMMATRIX matShadow = XMMatrixShadow(vShadow, vShadowLit);
+
+	m_pTextureShader->Update_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
+
+	Update_BlendState(1);
+
+	m_pSphere->Render(&matShadow, FALSE);
+	m_pBox->Render(&matShadow, FALSE);
+
+	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
+
+	Update_BlendState(0);
 }
 
 void CMainFrame::Render_Color()

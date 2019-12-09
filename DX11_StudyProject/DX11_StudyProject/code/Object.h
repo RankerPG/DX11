@@ -18,7 +18,7 @@ public:
 	//void FixedUpdate(float p_deltaTime); 추후 추가
 	virtual void Update(float p_deltaTime) = 0;
 	//void LastUpdate(float p_deltaTime); 추후 추가
-	virtual void Render(XMMATRIX* p_matReflect = nullptr) = 0;
+	virtual void Render(XMMATRIX* p_matAdd = nullptr, BOOL p_isUseMtrl = TRUE) = 0;
 
 private:
 	virtual void Release();

@@ -21,7 +21,7 @@ class CMainFrame
 public:
 	enum class RASTERIZER { SOLIDBACK = 0, SOLIDFRONT, WIREBACK, WIREFRONT };
 	enum class BLEND { NONALPHA = 0, ALPHA };
-	enum class DEPTHSTENCIL { DEPTH = 0, STENCILON, DRAWSTENCIL };
+	enum class DEPTHSTENCIL { DEPTH = 0, STENCILON, DRAWSTENCIL, SHADOWON };
 
 public:
 	CMainFrame(CDevice* p_Device);
@@ -53,10 +53,13 @@ private:
 
 	void Update_LightShader();
 	void Update_TextureShader();
+	void Update_GeometryShader();
+
 	void Update_Input();
 
 	void Render_Default();
 	void Render_Stencil();
+	void Render_Shadow();
 	void Render_Color();
 	
 private:
@@ -66,8 +69,8 @@ private:
 	ID3D11DeviceContext*		m_pContext;
 	ID3D11RasterizerState*		m_pState[4];
 	ID3D11SamplerState*			m_pSampler;
-	ID3D11BlendState*			m_pBlend[2];
-	ID3D11DepthStencilState*	m_pDepthStencil[3];
+	ID3D11BlendState*			m_pBlend[3];
+	ID3D11DepthStencilState*	m_pDepthStencil[4];
 
 	COMHASHMAP					m_mapComponent;
 
@@ -82,15 +85,18 @@ private:
 private:
 	CShader*					m_pLightShader;
 	CShader*					m_pTextureShader;
+	CShader*					m_pGeometryShader;
 
 	ID3D11Buffer*				m_pCBLight;
 	ID3D11Buffer*				m_pCBPointLight;
 	ID3D11Buffer*				m_pCBPerFrame;
+	ID3D11Buffer*				m_pCBMtrl;
 
 	LIGHT						m_Light;
 	POINTLIGHT					m_PointLight;
 	PERFRAME					m_PerFrame;
-	
+	MATERIAL					m_ShadowMtrl;
+
 private:
 	UINT						m_dwFrameCnt;
 
