@@ -177,6 +177,7 @@
     <ClInclude Include="code\Texture.h" />
     <ClInclude Include="code\Timer.h" />
     <ClInclude Include="code\Transform.h" />
+    <ClInclude Include="code\Trees.h" />
     <ClInclude Include="code\Visible.h" />
     <ClInclude Include="code\WICTextureLoader.h" />
     <ClInclude Include="DX11_StudyProject.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="code\Texture.cpp" />
     <ClCompile Include="code\Timer.cpp" />
     <ClCompile Include="code\Transform.cpp" />
+    <ClCompile Include="code\Trees.cpp" />
     <ClCompile Include="code\Visible.cpp" />
     <ClCompile Include="code\WICTextureLoader.cpp" />
     <ClCompile Include="DX11_StudyProject.cpp" />

@@ -10,7 +10,7 @@ CTexture::CTexture(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
 }
 
 CTexture::CTexture(const CTexture& rhs)
-	: CComponent(rhs.m_pDevice, rhs.m_pContext)
+	: CComponent(rhs)
 	, m_texInfo(rhs.m_texInfo)
 {
 	m_texInfo.pTexRV->AddRef();

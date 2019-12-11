@@ -72,7 +72,7 @@ void CCamera::Update(float p_deltaTime)
 
 	if (fTargetMove = (float)m_pInput->Get_DIMMoveState(CInput::DIMMS_X))
 	{
-		fTargetMove *= p_deltaTime;// *5.f;
+		fTargetMove *= p_deltaTime * 2.f;
 
 		XMMATRIX matRot = XMMatrixRotationAxis(vUp, fTargetMove);
 
@@ -83,7 +83,7 @@ void CCamera::Update(float p_deltaTime)
 
 	if (fTargetMove = (float)m_pInput->Get_DIMMoveState(CInput::DIMMS_Y))
 	{
-		fTargetMove *= p_deltaTime;// *5.f;
+		fTargetMove *= p_deltaTime * 2.f;
 
 		XMMATRIX matRot = XMMatrixRotationAxis(vRight, fTargetMove);
 

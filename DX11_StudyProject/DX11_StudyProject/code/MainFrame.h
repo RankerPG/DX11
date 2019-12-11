@@ -13,6 +13,7 @@ class CSphere;
 class CShader;
 class CVisible;
 class CLake;
+class CTrees;
 
 class CMainFrame
 {
@@ -39,12 +40,12 @@ private:
 private:
 	void Create_Device();
 	void Create_Components();
+	void Create_Object();
+
 	void Create_RasterizerState();
 	void Create_SamplerState();
 	void Create_BlendState();
 	void Create_DepthStencilState();
-
-	void Create_Object();
 
 	void Update_RasterizerState();
 	void Update_SamplerState();
@@ -67,7 +68,7 @@ private:
 	CInput*						m_pInput;
 	ID3D11Device*				m_pDevice;
 	ID3D11DeviceContext*		m_pContext;
-	ID3D11RasterizerState*		m_pState[4];
+	ID3D11RasterizerState*		m_pState[5];
 	ID3D11SamplerState*			m_pSampler;
 	ID3D11BlendState*			m_pBlend[3];
 	ID3D11DepthStencilState*	m_pDepthStencil[4];
@@ -81,6 +82,7 @@ private:
 	shared_ptr<CSphere>			m_pSphere;
 	shared_ptr<CVisible>		m_pVisible;
 	shared_ptr<CLake>			m_pLake;
+	shared_ptr<CTrees>			m_pTrees;
 
 private:
 	CShader*					m_pLightShader;

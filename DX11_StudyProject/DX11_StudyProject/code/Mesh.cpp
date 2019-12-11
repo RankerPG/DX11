@@ -12,7 +12,7 @@ CMesh::CMesh(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
 }
 
 CMesh::CMesh(const CMesh& rhs)
-	: CComponent(rhs.m_pDevice, rhs.m_pContext)
+	: CComponent(rhs)
 	, m_pVB(rhs.m_pVB)
 	, m_pIB(rhs.m_pIB)
 	, m_dwStride(rhs.m_dwStride)

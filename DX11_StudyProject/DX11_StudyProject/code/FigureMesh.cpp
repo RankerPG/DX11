@@ -27,7 +27,7 @@ void CFigureMesh::Init_Mesh()
 	
 	switch (m_dwType)
 	{
-	case 0://여기서 릭
+	case 0:
 		generator->Create_Cube(1.f, 1.f, 1.f, &m_pVB, &m_pIB, &m_dwIdxCnt);
 		break;
 	case 1:

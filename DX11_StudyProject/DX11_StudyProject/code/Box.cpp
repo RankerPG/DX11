@@ -66,19 +66,20 @@ void CBox::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 
 	if (nullptr == p_matAdd)
 	{
-		XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World());
-		XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * g_matView * g_matProj);
+		XMMATRIX matWorld = m_pTransform->Get_World();
+		XMStoreFloat4x4(&m_mat.matWorld, matWorld);
+		XMStoreFloat4x4(&m_mat.matWVP, matWorld * g_matView * g_matProj);
+		XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(matWorld));
 	}
 	else
 	{
-		XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World() * (*p_matAdd));
-		XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * (*p_matAdd) * g_matView * g_matProj);
+		XMMATRIX matWorld = m_pTransform->Get_World() * (*p_matAdd);
+		XMStoreFloat4x4(&m_mat.matWorld, matWorld);
+		XMStoreFloat4x4(&m_mat.matWVP, matWorld * g_matView * g_matProj);
+		XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(matWorld));
 	}
 
-	XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(m_pTransform->Get_World()));
-
 	XMStoreFloat4x4(&m_mat.matTex, m_pTransform->Get_Tex());
-
 
 	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
 	if (TRUE == p_isUseMtrl)

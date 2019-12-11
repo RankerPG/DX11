@@ -12,6 +12,7 @@
 #include "Visible.h"
 #include "Texture.h"
 #include "Lake.h"
+#include "Trees.h"
 
 XMMATRIX g_matView, g_matProj;
 
@@ -20,7 +21,7 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pInput(CInput::Get_Instance())
 	, m_pDevice(nullptr)
 	, m_pContext(nullptr)
-	, m_pState{nullptr, nullptr, nullptr, nullptr}
+	, m_pState{nullptr, nullptr, nullptr, nullptr, nullptr}
 	, m_pSampler(nullptr)
 	, m_pBlend{nullptr, nullptr, nullptr}
 	, m_pDepthStencil{nullptr, nullptr, nullptr, nullptr}
@@ -31,6 +32,7 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pSphere(nullptr)
 	, m_pVisible(nullptr)
 	, m_pLake(nullptr)
+	, m_pTrees(nullptr)
 	, m_pLightShader(nullptr)
 	, m_pTextureShader(nullptr)
 	, m_pGeometryShader(nullptr)
@@ -50,7 +52,6 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 
 CMainFrame::~CMainFrame()
 {
-
 	Release();
 }
 
@@ -86,6 +87,7 @@ void CMainFrame::Update()
 	m_pSphere->Update(deltaTime);
 	m_pVisible->Update(deltaTime);
 	m_pLake->Update(deltaTime);
+	m_pTrees->Update(deltaTime);
 }
 
 void CMainFrame::Render()
@@ -114,12 +116,23 @@ void CMainFrame::Release()
 
 	SAFE_RELEASE(m_pState[0]);
 	SAFE_RELEASE(m_pState[1]);
+	SAFE_RELEASE(m_pState[2]);
+	SAFE_RELEASE(m_pState[3]);
+	SAFE_RELEASE(m_pState[4]);
+
 	SAFE_RELEASE(m_pSampler);
+
 	SAFE_RELEASE(m_pBlend[0]);
 	SAFE_RELEASE(m_pBlend[1]);
+	SAFE_RELEASE(m_pBlend[2]);
 
-	SAFE_RELEASE(m_pDevice);
+	SAFE_RELEASE(m_pDepthStencil[0]);
+	SAFE_RELEASE(m_pDepthStencil[1]);
+	SAFE_RELEASE(m_pDepthStencil[2]);
+	SAFE_RELEASE(m_pDepthStencil[3]);
+
 	SAFE_RELEASE(m_pContext);
+	SAFE_RELEASE(m_pDevice);
 }
 
 void CMainFrame::Calculate_FPS()
@@ -204,33 +217,26 @@ void CMainFrame::Create_Components()
 	m_pGeometryShader->Create_GeometryShader(L"../Shader/Geometry.fx", "gs_main", "gs_5_0");
 	m_mapComponent.insert(make_pair("GeometryShader", pShader));
 
-	// 메쉬
+	//// 메쉬
 	CMesh* pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext);
-	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("CubeMesh", pMesh));
 
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 1);
-	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("SphereMesh", pMesh));
 
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 2);
-	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("TerrainMesh", pMesh));
 
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 3);
-	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("CubeTexMesh", pMesh));
 
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 4);
-	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("SphereTexMesh", pMesh));
 
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 5);
-	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("TerrainTexMesh", pMesh));
 	
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 6);
-	pMesh->Init_Mesh();
 	m_mapComponent.insert(make_pair("QuadTexMesh", pMesh));
 
 	// 트랜스폼
@@ -252,6 +258,36 @@ void CMainFrame::Create_Components()
 
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Water2.dds", FALSE);
 	m_mapComponent.insert(make_pair("WaterTexture", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/tree.dds", FALSE);
+	m_mapComponent.insert(make_pair("TreeTexture", pTexture));
+}
+
+void CMainFrame::Create_Object()
+{
+	// 오브젝트 생성
+	m_pMainTimer->Reset();
+
+	m_pCamera.reset(new CCamera(m_pDevice, m_pContext, &m_mapComponent));
+	m_pCamera->Init();
+
+	m_pBox.reset(new CBox(m_pDevice, m_pContext, &m_mapComponent));
+	m_pBox->Init();
+
+	m_pTerrain.reset(new CTerrain(m_pDevice, m_pContext, &m_mapComponent));
+	m_pTerrain->Init();
+
+	m_pSphere.reset(new CSphere(m_pDevice, m_pContext, &m_mapComponent));
+	m_pSphere->Init();
+
+	m_pVisible.reset(new CVisible(m_pDevice, m_pContext, &m_mapComponent));
+	m_pVisible->Init();
+
+	m_pLake.reset(new CLake(m_pDevice, m_pContext, &m_mapComponent));
+	m_pLake->Init();
+
+	m_pTrees.reset(new CTrees(m_pDevice, m_pContext, &m_mapComponent));
+	m_pTrees->Init();
 }
 
 void CMainFrame::Create_RasterizerState()
@@ -289,6 +325,16 @@ void CMainFrame::Create_RasterizerState()
 	rd.FrontCounterClockwise = TRUE;
 
 	if (FAILED(m_pDevice->CreateRasterizerState(&rd, &m_pState[3])))
+	{
+		MessageBox(g_hWnd, L"Create RasterizerState Failed!!", 0, 0);
+		return;
+	}
+
+	rd.FillMode = D3D11_FILL_SOLID;
+	rd.CullMode = D3D11_CULL_NONE;
+	rd.FrontCounterClockwise = FALSE;
+
+	if (FAILED(m_pDevice->CreateRasterizerState(&rd, &m_pState[4])))
 	{
 		MessageBox(g_hWnd, L"Create RasterizerState Failed!!", 0, 0);
 		return;
@@ -466,30 +512,6 @@ void CMainFrame::Create_DepthStencilState()
 	}
 }
 
-void CMainFrame::Create_Object()
-{
-	// 오브젝트 생성
-	m_pMainTimer->Reset();
-
-	m_pCamera.reset(new CCamera(m_pDevice, m_pContext, &m_mapComponent));
-	m_pCamera->Init();
-
-	m_pBox.reset(new CBox(m_pDevice, m_pContext, &m_mapComponent));
-	m_pBox->Init();
-
-	m_pTerrain.reset(new CTerrain(m_pDevice, m_pContext, &m_mapComponent));
-	m_pTerrain->Init();
-
-	m_pSphere.reset(new CSphere(m_pDevice, m_pContext, &m_mapComponent));
-	m_pSphere->Init();
-
-	m_pVisible.reset(new CVisible(m_pDevice, m_pContext, &m_mapComponent));
-	m_pVisible->Init();
-
-	m_pLake.reset(new CLake(m_pDevice, m_pContext, &m_mapComponent));
-	m_pLake->Init();
-}
-
 void CMainFrame::Update_RasterizerState()
 {
 	if (TRUE == m_isWireFrame)
@@ -621,6 +643,8 @@ void CMainFrame::Render_Default()
 		m_pContext->RSSetState(m_pState[2]);
 	else
 		m_pContext->RSSetState(m_pState[0]);
+
+	m_pTrees->Render();
 }
 
 void CMainFrame::Render_Stencil()
@@ -680,6 +704,7 @@ void CMainFrame::Render_Shadow()
 	XMVECTOR vShadow = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 	XMVECTOR vShadowLit = XMLoadFloat3A(&m_Light.direction);
 	XMMATRIX matShadow = XMMatrixShadow(vShadow, vShadowLit);
+	matShadow *= XMMatrixTranslation(0.f, 0.01f, 0.f);
 
 	m_pTextureShader->Update_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 
@@ -687,6 +712,17 @@ void CMainFrame::Render_Shadow()
 
 	m_pSphere->Render(&matShadow, FALSE);
 	m_pBox->Render(&matShadow, FALSE);
+
+	m_pContext->RSSetState(m_pState[4]);
+	m_pTrees->Render(&matShadow, FALSE);
+	if (TRUE == m_isWireFrame)
+	{
+		m_pContext->RSSetState(m_pState[2]);
+	}
+	else
+	{
+		m_pContext->RSSetState(m_pState[0]);
+	}
 
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
 

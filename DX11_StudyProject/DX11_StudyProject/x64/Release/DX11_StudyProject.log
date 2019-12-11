@@ -1,7 +1,7 @@
-﻿  Shader.cpp
+﻿  Trees.cpp
   코드를 생성하고 있습니다.
-  6 of 1064 functions ( 0.6%) were compiled, the rest were copied from previous compilation.
+  1 of 1089 functions (<0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    10 functions had inline decision re-evaluated but remain unchanged
+    11 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
   DX11_StudyProject.vcxproj -> C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\x64\Release\DX11_StudyProject.exe

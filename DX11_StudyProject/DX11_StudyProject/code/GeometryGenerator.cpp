@@ -36,7 +36,6 @@ void CGeometryGenerator::Create_Cube(float p_width, float p_height, float p_dept
 	subData.SysMemPitch = 0;
 	subData.SysMemSlicePitch = 0;
 	
-	//이 부분에서 메모리 릭 발생
 	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, p_VB)))
 	{
 		MessageBox(g_hWnd, L"Create Vertex Buffer Failed!!", 0, 0);

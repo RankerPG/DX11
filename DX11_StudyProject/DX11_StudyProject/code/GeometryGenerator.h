@@ -59,6 +59,5 @@ private:
 
 public:
 	static CGeometryGenerator* Create_GeometryGenerator(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);
-
 };
 

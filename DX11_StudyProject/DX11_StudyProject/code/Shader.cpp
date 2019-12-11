@@ -10,7 +10,7 @@ CShader::CShader(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
 }
 
 CShader::CShader(const CShader& rhs)
-	: CComponent(rhs.m_pDevice, rhs.m_pContext)
+	: CComponent(rhs)
 	, m_pVS(rhs.m_pVS)
 	, m_pPS(rhs.m_pPS)
 	, m_pGS(rhs.m_pGS)

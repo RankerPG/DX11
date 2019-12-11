@@ -58,7 +58,7 @@ void CInput::Update_InputDev_State()
 		}
 	}
 
-	char byTempMouseState[3];
+	char byTempMouseState[3] = { NULL, };
 
 	for (size_t i = 0; i < 3; ++i)
 	{

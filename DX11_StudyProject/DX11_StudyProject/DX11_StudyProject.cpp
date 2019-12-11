@@ -3,6 +3,7 @@
 #include "MainFrame.h"
 #include "Device.h"
 #include "Input.h"
+#include <ctime>
 
 #define MAX_LOADSTRING 100
 
@@ -41,12 +42,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_DX11STUDYPROJECT));
 
+	srand(UINT(time(nullptr)));
+
 	CDevice* pDevice = CDevice::Get_Instance();
 	CInput* pInput = CInput::Get_Instance();
 	pInput->Init_Input_Device(hInst, g_hWnd);
 
 	mainFrame = new CMainFrame(pDevice);
-	shared_ptr<CMainFrame> shared_mainFrame(mainFrame);
 
 	mainFrame->Init();
 
@@ -67,6 +69,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			mainFrame->Render();
 		}
     }
+
+	delete mainFrame;
 
 	pDevice->Release_Instance();
 	pInput->Release_Instance();

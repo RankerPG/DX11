@@ -17,7 +17,7 @@ CTransform::CTransform(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
 }
 
 CTransform::CTransform(const CTransform& rhs)
-	: CComponent(rhs.m_pDevice, rhs.m_pContext)
+	: CComponent(rhs)
 	, m_vScale(rhs.m_vScale)
 	, m_vRot(rhs.m_vRot)
 	, m_vTrans(rhs.m_vTrans)
