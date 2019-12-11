@@ -53,6 +53,14 @@ void CTransform::Update_Transform()
 	m_matTex = matTexScale * matTexRot * matTexTrans;
 }
 
+void CTransform::Update_Transform_OnlyUseMatrix()
+{
+	//Temp
+	m_matTrans = XMMatrixTranslationFromVector(m_vTrans);
+
+	m_matWorld = m_matScale * m_matRot * m_matTrans;
+}
+
 CTransform* CTransform::Create_Transform(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
 {
 	CTransform* pInstance = new CTransform(p_Device, p_Context);

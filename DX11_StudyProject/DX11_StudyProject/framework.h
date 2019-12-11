@@ -33,4 +33,5 @@ using namespace PackedVector;
 extern HWND g_hWnd;
 
 extern XMMATRIX g_matView;
+extern XMMATRIX g_matViewWorld;
 extern XMMATRIX g_matProj;

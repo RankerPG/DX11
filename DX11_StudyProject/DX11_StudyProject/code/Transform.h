@@ -35,9 +35,11 @@ public:
 	inline void Acc_TexRot(XMVECTOR p_TexRot) { m_vTexRot += p_TexRot; }
 	inline void Acc_TexTrans(XMVECTOR p_TexTrans) { m_vTexTrans += p_TexTrans; }
 
+	inline void Set_MatRot(XMMATRIX p_matRot) { m_matRot = p_matRot; }
+
 public:
 	void Update_Transform();
-
+	void Update_Transform_OnlyUseMatrix();
 public:
 	static CTransform* Create_Transform(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);
 

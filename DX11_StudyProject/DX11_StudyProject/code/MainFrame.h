@@ -55,6 +55,7 @@ private:
 	void Update_LightShader();
 	void Update_TextureShader();
 	void Update_GeometryShader();
+	void Update_BillboardShader();
 
 	void Update_Input();
 
@@ -88,6 +89,7 @@ private:
 	CShader*					m_pLightShader;
 	CShader*					m_pTextureShader;
 	CShader*					m_pGeometryShader;
+	CShader*					m_pBillboardShader;
 
 	ID3D11Buffer*				m_pCBLight;
 	ID3D11Buffer*				m_pCBPointLight;

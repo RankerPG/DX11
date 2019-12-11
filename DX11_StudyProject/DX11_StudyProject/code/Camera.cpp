@@ -94,6 +94,11 @@ void CCamera::Update(float p_deltaTime)
 
 	m_matView = XMMatrixLookAtLH(m_vPos, m_vTarget, m_vUp);
 
+	g_matViewWorld.r[0] = vRight;
+	g_matViewWorld.r[1] = vUp;
+	g_matViewWorld.r[2] = vLook;
+	g_matViewWorld.r[3] = m_vPos;
+
 	g_matView = m_matView;
 }
 

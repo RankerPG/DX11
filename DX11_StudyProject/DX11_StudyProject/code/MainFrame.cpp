@@ -14,7 +14,7 @@
 #include "Lake.h"
 #include "Trees.h"
 
-XMMATRIX g_matView, g_matProj;
+XMMATRIX g_matView, g_matViewWorld, g_matProj;
 
 CMainFrame::CMainFrame(CDevice* p_Device)
 	: m_pGraphicDevice(p_Device)
@@ -36,6 +36,7 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pLightShader(nullptr)
 	, m_pTextureShader(nullptr)
 	, m_pGeometryShader(nullptr)
+	, m_pBillboardShader(nullptr)
 	, m_pCBLight(nullptr)
 	, m_pCBPointLight(nullptr)
 	, m_pCBPerFrame(nullptr)
@@ -217,6 +218,9 @@ void CMainFrame::Create_Components()
 	m_pGeometryShader->Create_GeometryShader(L"../Shader/Geometry.fx", "gs_main", "gs_5_0");
 	m_mapComponent.insert(make_pair("GeometryShader", pShader));
 
+	m_pBillboardShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Billboard.fx", "vs_main", "ps_main", 2);
+	m_mapComponent.insert(make_pair("BillboardShader", pShader));
+	
 	//// ¸Þ½¬
 	CMesh* pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext);
 	m_mapComponent.insert(make_pair("CubeMesh", pMesh));
@@ -259,7 +263,7 @@ void CMainFrame::Create_Components()
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Water2.dds", FALSE);
 	m_mapComponent.insert(make_pair("WaterTexture", pTexture));
 
-	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/tree.dds", FALSE);
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/tree%d.dds", FALSE, 4);
 	m_mapComponent.insert(make_pair("TreeTexture", pTexture));
 }
 
@@ -594,6 +598,15 @@ void CMainFrame::Update_GeometryShader()
 	m_pGeometryShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
 }
 
+void CMainFrame::Update_BillboardShader()
+{
+	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
+	m_pBillboardShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
+	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
+	m_pBillboardShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
+	m_pBillboardShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
+}
+
 void CMainFrame::Update_Input()
 {
 	if (m_pInput->Get_DIKPressState(DIK_SPACE))
@@ -621,6 +634,8 @@ void CMainFrame::Render_Default()
 	Update_TextureShader();
 	Update_GeometryShader();
 	Update_RasterizerState();
+	Update_BillboardShader();
+
 	Update_BlendState(0);
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
 

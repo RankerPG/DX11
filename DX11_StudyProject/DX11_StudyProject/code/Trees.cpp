@@ -16,6 +16,7 @@ CTrees::CTrees(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMA
 	, m_mat(TRANSMATRIX())
 	, m_mtrl(MATERIAL())
 	, m_vTrans{ XMVECTOR(), }
+	, m_matRot{XMMATRIX(), }
 {
 }
 
@@ -34,10 +35,9 @@ void CTrees::Init()
 	// 트랜스폼 생성
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
 	m_pTransform->Set_Scale(XMVectorSet(4.f, 6.f, 1.f, 1.f));
-	m_pTransform->Set_Trans(XMVectorSet(0.f, 5.f, 0.f, 1.f));
 
 	// 쉐이더 생성
-	m_pShader = static_cast<CShader*>(m_pMapComponent->find("TextureShader")->second->Clone());
+	m_pShader = static_cast<CShader*>(m_pMapComponent->find("BillboardShader")->second->Clone());
 	m_pShader->Create_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), &m_pCB);
 	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
 
@@ -60,12 +60,22 @@ void CTrees::Init()
 		}
 
 		m_vTrans[initCnt] = XMVectorSet((float)iX, 2.6f, (float)iZ, 1.f);
+		m_matRot[initCnt] = XMMatrixIdentity();
 		++initCnt;
 	}
 }
 
 void CTrees::Update(float p_deltaTime)
 {
+	for (int i = 0; i < 100; ++i)
+	{
+		XMVECTOR vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+		XMVECTOR vLook = XMVector3Normalize((g_matViewWorld.r[3] - m_vTrans[i]));
+		XMVECTOR vRight = XMVector3Cross(vLook, vUp);
+		m_matRot[i].r[0] = vRight;	
+		m_matRot[i].r[1] = vUp;
+		m_matRot[i].r[2] = vLook;
+	}
 }
 
 void CTrees::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
@@ -85,11 +95,15 @@ void CTrees::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 		m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 	}
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
+	m_pContext->PSSetShaderResources(1, 1, m_pTexture->Get_TextureRV(1));
+	m_pContext->PSSetShaderResources(2, 1, m_pTexture->Get_TextureRV(2));
+	m_pContext->PSSetShaderResources(3, 1, m_pTexture->Get_TextureRV(3));
 
 	for (int i = 0; i < 100; ++i)
 	{
+		m_pTransform->Set_MatRot(m_matRot[i]);
 		m_pTransform->Set_Trans(m_vTrans[i]);
-		m_pTransform->Update_Transform();
+		m_pTransform->Update_Transform_OnlyUseMatrix();
 
 		if (nullptr == p_matAdd)
 		{

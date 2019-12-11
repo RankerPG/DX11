@@ -15,5 +15,7 @@ public:
 protected:
 	ID3D11Device*			m_pDevice;
 	ID3D11DeviceContext*	m_pContext;
+
+	BOOL					m_isClone;
 };
 

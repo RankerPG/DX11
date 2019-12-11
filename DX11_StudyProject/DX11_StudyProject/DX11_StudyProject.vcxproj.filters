@@ -262,5 +262,8 @@
     <FxCompile Include="..\Shader\Geometry.fx">
       <Filter>97. fx</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shader\Billboard.fx">
+      <Filter>97. fx</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

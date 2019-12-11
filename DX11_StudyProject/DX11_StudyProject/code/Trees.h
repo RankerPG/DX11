@@ -35,5 +35,6 @@ private: //constant buffer
 	MATERIAL		m_mtrl;
 
 	XMVECTOR		m_vTrans[100];
+	XMMATRIX		m_matRot[100];
 };
 
