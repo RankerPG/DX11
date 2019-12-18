@@ -292,7 +292,7 @@ static float2 aggressivePackArray[8] = (float2[8])array;
 </pre>
 
 ## 19.12.09
-<code> ~ 498 page </code>
+<code> ~ 510 page </code>
 
 ### 나무 빌보드 예제
 
@@ -309,9 +309,29 @@ static float2 aggressivePackArray[8] = (float2[8])array;
 다각형의 가장 자리 여부를 사용해 실제 픽셀 쉐이더가 만든 알파 값을 기준으로 가장자리를 구하지 못한다.
 알파 포괄도 변환을 사용하면 장치는 픽셀 쉐이더에서 만든 알파 값을 통해 포괄도를 계산하여 옳바른 AA를 진행할 수 있다.
 
+## 19.12.18
+<code> ~ 544 page </code>
 
+### 계산 쉐이더
 
+- 범용 GPU ( General purpose GPU : GPGPU )
 
+- 계산 쉐이더는 렌더링 파이프라인에 직접 포함되어 있지 않고 옆에서 GPU 자원을 읽고 쓸 수 있다.
+
+- 다중 처리기는 1개 이상의 스레드 그룹을 가지며 지연을 숨기기 위해 2개 이상의 스레드 그룹을 가진다.
+
+- 워프 ( warp ) :  쓰레드의 단위로 워프 하나는 쓰레드 32개이다.
+
+- dispatch 함수로 쓰레드 그룹을 나눌 수 있다.
+
+- 쓰레드 식별 시스템 값
+> 쓰레드 그룹 ID : SV_GroupID
+> 그룹 쓰레드 ID : SV_GroupThreadID
+> 배분 쓰레드 ID : SV_DispatchThreadID
+
+### 소비 버퍼와 추가 버퍼
+
+- 소비 버퍼와 추가 버퍼를 통해 
 
 
 
