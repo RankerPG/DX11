@@ -1,23 +1,2 @@
-﻿  DX11_StudyProject.cpp
-  Box.cpp
-  Camera.cpp
-  Component.cpp
-  Device.cpp
-  FigureMesh.cpp
-  GeometryGenerator.cpp
-  Input.cpp
-  Lake.cpp
-  MainFrame.cpp
-  Mesh.cpp
-  Object.cpp
-  Shader.cpp
-  Sphere.cpp
-  Terrain.cpp
-  Texture.cpp
-  Timer.cpp
-  Transform.cpp
-  Trees.cpp
-  Visible.cpp
-  코드를 생성하고 있습니다...
-C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\DX11_StudyProject\code\Texture.cpp(22,36): warning C4267: '초기화 중': 'size_t'에서 'UINT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+﻿  MainFrame.cpp
   DX11_StudyProject.vcxproj -> C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\x64\Debug\DX11_StudyProject.exe

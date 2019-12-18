@@ -7,7 +7,6 @@
 
 CTrees::CTrees(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMAP* p_hashMap)
 	: CObject(p_Device, p_Context, p_hashMap)
-	, m_pMesh(nullptr)
 	, m_pTransform(nullptr)
 	, m_pShader(nullptr)
 	, m_pTexture(nullptr)
@@ -15,8 +14,7 @@ CTrees::CTrees(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMA
 	, m_pCBMtrl(nullptr)
 	, m_mat(TRANSMATRIX())
 	, m_mtrl(MATERIAL())
-	, m_vTrans{ XMVECTOR(), }
-	, m_matRot{XMMATRIX(), }
+	, m_vtx{ GEOVERTEX(), }
 {
 }
 
@@ -29,16 +27,13 @@ void CTrees::Init()
 {
 	assert(m_pMapComponent);
 
-	// 메쉬 생성
-	m_pMesh = static_cast<CMesh*>(m_pMapComponent->find("QuadTexMesh")->second->Clone());
-
 	// 트랜스폼 생성
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
 	m_pTransform->Set_Scale(XMVectorSet(4.f, 6.f, 1.f, 1.f));
 
 	// 쉐이더 생성
 	m_pShader = static_cast<CShader*>(m_pMapComponent->find("BillboardShader")->second->Clone());
-	m_pShader->Create_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), &m_pCB);
+	m_pShader->Create_ConstantBuffer(&XMFLOAT4X4(), sizeof(XMFLOAT4X4), &m_pCB);
 	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
 
 	m_mtrl.diffuse = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
@@ -58,31 +53,45 @@ void CTrees::Init()
 		{
 			continue;
 		}
+		m_vtx[initCnt].pos.x = (float)iX;
+		m_vtx[initCnt].pos.y = 2.6f;
+		m_vtx[initCnt].pos.z = (float)iZ;
+		m_vtx[initCnt].pos.w = 1.f;
 
-		m_vTrans[initCnt] = XMVectorSet((float)iX, 2.6f, (float)iZ, 1.f);
-		m_matRot[initCnt] = XMMatrixIdentity();
+		m_vtx[initCnt].size.x = 4.f;
+		m_vtx[initCnt].size.y = 6.f;
+
 		++initCnt;
+	}
+
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
+	bd.Usage = D3D11_USAGE_IMMUTABLE;
+	bd.ByteWidth = sizeof(GEOVERTEX) * 100;
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA subData;
+	subData.pSysMem = m_vtx;
+	subData.SysMemPitch = 0;
+	subData.SysMemSlicePitch = 0;
+
+	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, &m_pVB)))
+	{
+		MessageBox(g_hWnd, L"Create Vertex Buffer Failed!!", 0, 0);
+		return;
 	}
 }
 
 void CTrees::Update(float p_deltaTime)
 {
-	for (int i = 0; i < 100; ++i)
-	{
-		XMVECTOR vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-		XMVECTOR vLook = XMVector3Normalize((g_matViewWorld.r[3] - m_vTrans[i]));
-		XMVECTOR vRight = XMVector3Cross(vLook, vUp);
-		m_matRot[i].r[0] = vRight;	
-		m_matRot[i].r[1] = vUp;
-		m_matRot[i].r[2] = vLook;
-	}
 }
 
 void CTrees::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 {
-	m_pContext->IASetVertexBuffers(0, 1, m_pMesh->Get_VertexBuffer(), &m_pMesh->Get_Stride(), &m_pMesh->Get_Offset());
-	m_pContext->IASetIndexBuffer(m_pMesh->Get_IndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-	m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	UINT stride = sizeof(GEOVERTEX);
+	UINT offset = 0;
+	m_pContext->IASetVertexBuffers(0, 1, &m_pVB, &stride, &offset);
+	m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
 	m_pContext->IASetInputLayout(m_pShader->Get_Layout());
 
 	m_pShader->Update_Shader();
@@ -94,45 +103,39 @@ void CTrees::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 	{
 		m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 	}
-	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
-	m_pContext->PSSetShaderResources(1, 1, m_pTexture->Get_TextureRV(1));
-	m_pContext->PSSetShaderResources(2, 1, m_pTexture->Get_TextureRV(2));
-	m_pContext->PSSetShaderResources(3, 1, m_pTexture->Get_TextureRV(3));
 
-	for (int i = 0; i < 100; ++i)
+	XMMATRIX matViewProj = XMMatrixIdentity();
+
+	if (nullptr != p_matAdd)
 	{
-		m_pTransform->Set_MatRot(m_matRot[i]);
-		m_pTransform->Set_Trans(m_vTrans[i]);
-		m_pTransform->Update_Transform_OnlyUseMatrix();
-
-		if (nullptr == p_matAdd)
-		{
-			XMMATRIX matWorld = m_pTransform->Get_World();
-			XMStoreFloat4x4(&m_mat.matWorld, matWorld);
-			XMStoreFloat4x4(&m_mat.matWVP, matWorld * g_matView * g_matProj);
-			XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(matWorld));
-		}
-		else
-		{
-			XMMATRIX matWorld = m_pTransform->Get_World() * (*p_matAdd);
-			XMStoreFloat4x4(&m_mat.matWorld, matWorld);
-			XMStoreFloat4x4(&m_mat.matWVP, matWorld * g_matView * g_matProj);
-			XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(matWorld));
-		}
-
-		m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
-
-		m_pMesh->Draw_Mesh();
+		matViewProj = *p_matAdd;
 	}
+
+	matViewProj *= g_matView * g_matProj;
+	XMStoreFloat4x4(&m_matViewProj, matViewProj);
+
+	m_pShader->Update_ConstantBuffer(&m_matViewProj, sizeof(XMFLOAT4X4), m_pCB);
+
+	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
+	m_pContext->Draw(25, 0);
+
+	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV(1));
+	m_pContext->Draw(25, 25);
+
+	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV(2));
+	m_pContext->Draw(25, 50);
+
+	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV(3));
+	m_pContext->Draw(25, 75);
 }
 
 void CTrees::Release()
 {
-	SAFE_DELETE(m_pMesh);
 	SAFE_DELETE(m_pTransform);
 	SAFE_DELETE(m_pShader);
 	SAFE_DELETE(m_pTexture);
 
+	SAFE_RELEASE(m_pVB);
 	SAFE_RELEASE(m_pCB);
 	SAFE_RELEASE(m_pCBMtrl);
 }

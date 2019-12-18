@@ -24,14 +24,11 @@ struct Material
 
 SamplerState smpLinear : register (s0);
 
-Texture2DArray g_DiffuseTex : register (t0);
+Texture2D g_DiffuseTex : register (t0);
 
 cbuffer cbData : register (b0)
 {
-	float4x4 g_matWorld;
-	float4x4 g_matWorldInvT;
-	float4x4 g_matWVP;
-	float4x4 g_matTex;
+	float4x4 g_ViewProj;
 };
 
 cbuffer cbLight : register (b1)
@@ -59,50 +56,88 @@ cbuffer cbLight : register (b4)
 
 struct VertexIn
 {
-	float4 pos	: POSITION;
-	float3 nrm	: NORMAL;
-	float2 uv	: TEXCOORD;
+	float4 posW		: POSITION;
+	float2 sizeW	: SIZE;
 };
 
 struct VertexOut
+{
+	float3 centerW	: POSITION;
+	float2 sizeW	: SIZE;
+};
+
+struct GeoOut
 {
 	float4 pos	: SV_POSITION;
 	float4 posW : POSITION;
 	float3 nrmW	: NORMAL;
 	float2 uv	: TEXCOORD;
+	uint primID	: SV_PrimitiveID;
 };
 
 VertexOut vs_main(VertexIn i)
 {
 	VertexOut o;
 
-	o.pos = mul(i.pos, g_matWVP);
+	o.centerW = i.posW.xyz;
 
-	o.posW = mul(i.pos, g_matWorld);
-
-	float3 nrmW = mul(i.nrm, (float3x3)g_matWorldInvT);
-
-	o.nrmW = nrmW;
-
-	o.uv = mul(float4(i.uv, 0.f, 1.f), g_matTex).xy;
+	o.sizeW = i.sizeW;
 
 	return o;
+}
+
+[maxvertexcount(4)]
+void gs_main(point VertexOut gin[1], uint primID : SV_PrimitiveID, inout TriangleStream<GeoOut> triStream)
+{
+	float3 up = float3(0.f, 1.f, 0.f);
+	float3 look = g_ViewPos - gin[0].centerW;
+	look.y = 0.f;
+	look = normalize(look);
+	float3 right = cross(up, look);
+
+	float halfWidth = 0.5f * gin[0].sizeW.x;
+	float halfHeight = 0.5f * gin[0].sizeW.y;
+
+	float4 v[4];
+	v[0] = float4(gin[0].centerW + halfWidth * right - halfHeight * up, 1.f);
+	v[1] = float4(gin[0].centerW + halfWidth * right + halfHeight * up, 1.f);
+	v[2] = float4(gin[0].centerW - halfWidth * right - halfHeight * up, 1.f);
+	v[3] = float4(gin[0].centerW - halfWidth * right + halfHeight * up, 1.f);
+
+	float2 uv[4] =
+	{
+		float2(0.f, 1.f),
+		float2(0.f, 0.f),
+		float2(1.f, 1.f),
+		float2(1.f, 0.f)
+	};
+
+	GeoOut o;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		o.pos = mul(v[i], g_ViewProj);
+		o.posW = v[i];
+		o.nrmW = look;
+		o.uv = uv[i];
+		o.primID = primID;
+
+		triStream.Append(o);
+	}
 }
 
 void ComputeDirectionalLight(float3 pos, float3 nrm, out float4 diff, out float4 amb, out float4 spec);
 void ComputePointLight(float3 pos, float3 nrm, out float4 diff, out float4 amb, out float4 spec);
 
-float4 ps_main(VertexOut i) : SV_Target
+float4 ps_main(GeoOut i) : SV_Target
 {
 	float4 diff = 0;
 	float4 amb = 0;
 	float4 spec = 0;
 
-	int index = i.posW.x % 4;
+	int index = i.primID % 4;
 
-	float3 uvw = float3(i.uv, i.posW.x % 4);
-
-	float4 texColor = g_DiffuseTex.Sample(smpLinear, uvw);
+	float4 texColor = g_DiffuseTex.Sample(smpLinear, i.uv);
 
 	clip(texColor.a - 0.1f);
 
@@ -192,6 +227,7 @@ technique11 ColorTech
 	pass p0
 	{
 		SetVertexShader(CompileShader(vs_5_0, vs_main()));
+		SetGeometryShader(CompileShader(gs_5_0, gs_main()));
 		SetPixelShader(CompileShader(ps_5_0, ps_main()));
 	}
 };

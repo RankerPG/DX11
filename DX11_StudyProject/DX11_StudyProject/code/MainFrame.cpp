@@ -22,7 +22,7 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pDevice(nullptr)
 	, m_pContext(nullptr)
 	, m_pState{nullptr, nullptr, nullptr, nullptr, nullptr}
-	, m_pSampler(nullptr)
+	, m_pSampler{nullptr, nullptr}
 	, m_pBlend{nullptr, nullptr, nullptr}
 	, m_pDepthStencil{nullptr, nullptr, nullptr, nullptr}
 	, m_pCamera(nullptr)
@@ -66,9 +66,9 @@ void CMainFrame::Init()
 	Create_BlendState();
 	Create_DepthStencilState();
 
-	Update_RasterizerState();
-	Update_SamplerState();
-	Update_BlendState(FALSE);
+	Update_RasterizerState(RASTERIZER::CULLBACK);
+	Update_SamplerState(SAMPLER::WRAP);
+	Update_BlendState(BLEND::NONALPHA);
 
 	Create_Object();
 }
@@ -121,7 +121,8 @@ void CMainFrame::Release()
 	SAFE_RELEASE(m_pState[3]);
 	SAFE_RELEASE(m_pState[4]);
 
-	SAFE_RELEASE(m_pSampler);
+	SAFE_RELEASE(m_pSampler[0]);
+	SAFE_RELEASE(m_pSampler[1]);
 
 	SAFE_RELEASE(m_pBlend[0]);
 	SAFE_RELEASE(m_pBlend[1]);
@@ -218,7 +219,8 @@ void CMainFrame::Create_Components()
 	m_pGeometryShader->Create_GeometryShader(L"../Shader/Geometry.fx", "gs_main", "gs_5_0");
 	m_mapComponent.insert(make_pair("GeometryShader", pShader));
 
-	m_pBillboardShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Billboard.fx", "vs_main", "ps_main", 2);
+	m_pBillboardShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Billboard.fx", "vs_main", "ps_main", 3);
+	m_pBillboardShader->Create_GeometryShader(L"../Shader/Billboard.fx", "gs_main", "gs_5_0");
 	m_mapComponent.insert(make_pair("BillboardShader", pShader));
 	
 	//// ¸Ş½¬
@@ -366,7 +368,17 @@ void CMainFrame::Create_SamplerState()
 	sd.MaxLOD = D3D11_FLOAT32_MAX;
 	sd.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR;
 	
-	if (FAILED(m_pDevice->CreateSamplerState(&sd, &m_pSampler)))
+	if (FAILED(m_pDevice->CreateSamplerState(&sd, &m_pSampler[0])))
+	{
+		MessageBox(g_hWnd, L"Create SamplerState Failed!!", 0, 0);
+		return;
+	}
+
+	sd.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sd.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	sd.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+
+	if (FAILED(m_pDevice->CreateSamplerState(&sd, &m_pSampler[1])))
 	{
 		MessageBox(g_hWnd, L"Create SamplerState Failed!!", 0, 0);
 		return;
@@ -378,7 +390,7 @@ void CMainFrame::Create_BlendState()
 	D3D11_BLEND_DESC bd;
 	ZeroMemory(&bd, sizeof(D3D11_BLEND_DESC));
 
-	bd.AlphaToCoverageEnable = FALSE;
+	bd.AlphaToCoverageEnable = TRUE;
 	bd.IndependentBlendEnable = FALSE;
 
 	D3D11_RENDER_TARGET_BLEND_DESC rtbd;
@@ -442,10 +454,11 @@ void CMainFrame::Create_DepthStencilState()
 {
 	D3D11_DEPTH_STENCIL_DESC dsd;
 	ZeroMemory(&dsd, sizeof(D3D11_DEPTH_STENCIL_DESC));
-
+	
 	dsd.DepthEnable = TRUE;
 	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 	dsd.DepthFunc = D3D11_COMPARISON_LESS;
+	
 	dsd.StencilEnable = FALSE;
 
 	if (FAILED(m_pDevice->CreateDepthStencilState(&dsd, &m_pDepthStencil[0])))
@@ -516,36 +529,61 @@ void CMainFrame::Create_DepthStencilState()
 	}
 }
 
-void CMainFrame::Update_RasterizerState()
+void CMainFrame::Update_RasterizerState(RASTERIZER p_eRS)
 {
-	if (TRUE == m_isWireFrame)
+	if (RASTERIZER::CULLBACK == p_eRS)
 	{
-		m_pContext->RSSetState(m_pState[2]);
+		if (TRUE == m_isWireFrame)
+		{
+			m_pContext->RSSetState(m_pState[2]);
+		}
+		else
+		{
+			m_pContext->RSSetState(m_pState[0]);
+		}
 	}
-	else
+	else if (RASTERIZER::CULLFRONT == p_eRS)
 	{
-		m_pContext->RSSetState(m_pState[0]);
+		if (TRUE == m_isWireFrame)
+		{
+			m_pContext->RSSetState(m_pState[3]);
+		}
+		else
+		{
+			m_pContext->RSSetState(m_pState[1]);
+		}
+	}
+	else if (RASTERIZER::CULLNONE == p_eRS)
+	{
+		m_pContext->RSSetState(m_pState[4]);
 	}
 }
 
-void CMainFrame::Update_SamplerState()
+void CMainFrame::Update_SamplerState(SAMPLER p_eSS)
 {
-	m_pContext->PSSetSamplers(0, 1, &m_pSampler);
+	if (SAMPLER::WRAP == p_eSS)
+	{
+		m_pContext->PSSetSamplers(0, 1, &m_pSampler[0]);
+	}
+	else if (SAMPLER::CLAMP == p_eSS)
+	{
+		m_pContext->PSSetSamplers(0, 1, &m_pSampler[1]);
+	}
 }
 
-void CMainFrame::Update_BlendState(UINT	p_dwType)
+void CMainFrame::Update_BlendState(BLEND p_eBS)
 {
 	float factor[] = { 0.f, 0.f, 0.f, 0.f };
 
-	if (0 == p_dwType)
+	if (BLEND::NONALPHA == p_eBS)
 	{
 		m_pContext->OMSetBlendState(m_pBlend[0], factor, 0xffffffff);
 	}
-	else if (1 == p_dwType)
+	else if (BLEND::ALPHA == p_eBS)
 	{
 		m_pContext->OMSetBlendState(m_pBlend[1], factor, 0xffffffff);
 	}
-	else if (2 == p_dwType)
+	else
 	{
 		m_pContext->OMSetBlendState(m_pBlend[2], factor, 0xffffffff);
 	}
@@ -613,7 +651,7 @@ void CMainFrame::Update_Input()
 	{
 		m_isWireFrame ^= TRUE;
 
-		Update_RasterizerState();
+		Update_RasterizerState(RASTERIZER::CULLBACK);
 	}
 
 	if (m_pInput->Get_DIKPressState(DIK_LSHIFT))
@@ -631,35 +669,31 @@ void CMainFrame::Update_Input()
 
 void CMainFrame::Render_Default()
 {
+	Update_RasterizerState(RASTERIZER::CULLBACK);
+	Update_BlendState(BLEND::NONALPHA);
+	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
+
 	Update_TextureShader();
 	Update_GeometryShader();
-	Update_RasterizerState();
 	Update_BillboardShader();
-
-	Update_BlendState(0);
-	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
 
 	// ±×¸®±â
 	m_pTerrain->Render();
 	m_pSphere->Render();
 
 	// ¾ËÆÄ ºí·»µù
-	Update_BlendState(1);
+	Update_BlendState(BLEND::ALPHA);
 	m_pBox->Render();
 
-	if (TRUE == m_isWireFrame)
-		m_pContext->RSSetState(m_pState[3]);
-	else
-		m_pContext->RSSetState(m_pState[1]);
+	Update_RasterizerState(RASTERIZER::CULLFRONT);
 
 	m_pBox->Render();
 
-	if (TRUE == m_isWireFrame)
-		m_pContext->RSSetState(m_pState[2]);
-	else
-		m_pContext->RSSetState(m_pState[0]);
+	Update_RasterizerState(RASTERIZER::CULLBACK);
 
+	Update_SamplerState(SAMPLER::CLAMP);
 	m_pTrees->Render();
+	Update_SamplerState(SAMPLER::WRAP);
 }
 
 void CMainFrame::Render_Stencil()
@@ -667,7 +701,7 @@ void CMainFrame::Render_Stencil()
 	// ½ºÅÙ½Ç
 	Update_DepthStencilState(DEPTHSTENCIL::STENCILON);
 
-	Update_BlendState(1);
+	Update_BlendState(BLEND::ALPHA);
 	m_pLake->Render();
 
 	// ¹İ»ç °´Ã¼ ±×¸®±â
@@ -683,28 +717,21 @@ void CMainFrame::Render_Stencil()
 	Update_TextureShader();
 	Update_GeometryShader();
 
-	m_pContext->RSSetState(m_pState[1]);
 	m_pBox->Render(&R);
 	m_pSphere->Render(&R);
 
-	if (TRUE == m_isWireFrame)
-		m_pContext->RSSetState(m_pState[2]);
-	else
-		m_pContext->RSSetState(m_pState[0]);
+	Update_RasterizerState(RASTERIZER::CULLFRONT);
 
 	m_pBox->Render(&R);
 
-	if (TRUE == m_isWireFrame)
-		m_pContext->RSSetState(m_pState[3]);
-	else
-		m_pContext->RSSetState(m_pState[1]);
+	Update_RasterizerState(RASTERIZER::CULLBACK);
 
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
 
-	Update_BlendState(1);
-	m_pLake->Render();
-
 	XMStoreFloat3A(&m_Light.direction, litDir);
+
+	Update_BlendState(BLEND::ALPHA);
+	m_pLake->Render();
 
 	Update_TextureShader();
 	Update_GeometryShader();
@@ -723,30 +750,25 @@ void CMainFrame::Render_Shadow()
 
 	m_pTextureShader->Update_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 
-	Update_BlendState(1);
+	Update_BlendState(BLEND::ALPHA);
 
 	m_pSphere->Render(&matShadow, FALSE);
 	m_pBox->Render(&matShadow, FALSE);
 
-	m_pContext->RSSetState(m_pState[4]);
+	Update_SamplerState(SAMPLER::CLAMP);
 	m_pTrees->Render(&matShadow, FALSE);
-	if (TRUE == m_isWireFrame)
-	{
-		m_pContext->RSSetState(m_pState[2]);
-	}
-	else
-	{
-		m_pContext->RSSetState(m_pState[0]);
-	}
+	Update_SamplerState(SAMPLER::WRAP);
+
+	Update_RasterizerState(RASTERIZER::CULLBACK);
 
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
 
-	Update_BlendState(0);
+	Update_BlendState(BLEND::NONALPHA);
 }
 
 void CMainFrame::Render_Color()
 {
 	// ÄÃ·¯ °´Ã¼
-	Update_BlendState(0);
+	Update_BlendState(BLEND::NONALPHA);
 	m_pVisible->Render();
 }

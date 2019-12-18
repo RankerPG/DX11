@@ -24,6 +24,12 @@ struct TEXVERTEX
 	XMFLOAT2 uv;
 };
 
+struct GEOVERTEX
+{
+	XMFLOAT4 pos;
+	XMFLOAT2 size;
+};
+
 struct TRANSMATRIX
 {
 	XMFLOAT4X4 matWorld;

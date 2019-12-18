@@ -22,19 +22,19 @@ private:
 	virtual void Release();
 
 private:
-	CMesh* m_pMesh;
-	CTransform* m_pTransform;
-	CShader* m_pShader;
-	CTexture* m_pTexture;
+	CTransform*		m_pTransform;
+	CShader*		m_pShader;
+	CTexture*		m_pTexture;
 
 private: //constant buffer
-	ID3D11Buffer* m_pCB;
-	ID3D11Buffer* m_pCBMtrl;
+	ID3D11Buffer*	m_pCB;
+	ID3D11Buffer*	m_pCBMtrl;
 
 	TRANSMATRIX		m_mat;
 	MATERIAL		m_mtrl;
+	XMFLOAT4X4		m_matViewProj;
 
-	XMVECTOR		m_vTrans[100];
-	XMMATRIX		m_matRot[100];
+	GEOVERTEX		m_vtx[100];
+	ID3D11Buffer*	m_pVB;
 };
 

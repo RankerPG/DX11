@@ -20,7 +20,8 @@ class CMainFrame
 	typedef unordered_map<LPCSTR, shared_ptr<CComponent>> COMHASHMAP;
 
 public:
-	enum class RASTERIZER { SOLIDBACK = 0, SOLIDFRONT, WIREBACK, WIREFRONT };
+	enum class RASTERIZER { CULLBACK = 0, CULLFRONT, CULLNONE };
+	enum class SAMPLER { WRAP = 0, CLAMP };
 	enum class BLEND { NONALPHA = 0, ALPHA };
 	enum class DEPTHSTENCIL { DEPTH = 0, STENCILON, DRAWSTENCIL, SHADOWON };
 
@@ -47,10 +48,10 @@ private:
 	void Create_BlendState();
 	void Create_DepthStencilState();
 
-	void Update_RasterizerState();
-	void Update_SamplerState();
-	void Update_BlendState(UINT	p_dwType);
-	void Update_DepthStencilState(DEPTHSTENCIL eDS);
+	void Update_RasterizerState(RASTERIZER p_eRS);
+	void Update_SamplerState(SAMPLER p_eSS);
+	void Update_BlendState(BLEND p_eBS);
+	void Update_DepthStencilState(DEPTHSTENCIL p_eDS);
 
 	void Update_LightShader();
 	void Update_TextureShader();
@@ -70,7 +71,7 @@ private:
 	ID3D11Device*				m_pDevice;
 	ID3D11DeviceContext*		m_pContext;
 	ID3D11RasterizerState*		m_pState[5];
-	ID3D11SamplerState*			m_pSampler;
+	ID3D11SamplerState*			m_pSampler[2];
 	ID3D11BlendState*			m_pBlend[3];
 	ID3D11DepthStencilState*	m_pDepthStencil[4];
 
