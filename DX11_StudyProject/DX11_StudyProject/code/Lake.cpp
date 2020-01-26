@@ -77,8 +77,6 @@ void CLake::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
 
-
-
 	m_pMesh->Draw_Mesh();
 }
 

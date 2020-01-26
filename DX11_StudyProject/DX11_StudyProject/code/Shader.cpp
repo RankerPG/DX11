@@ -44,8 +44,8 @@ void CShader::Create_VertexShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCST
 
 	if (nullptr != compilationMsgs)
 	{
-		compilationMsgs->Release();
 		MessageBoxA(g_hWnd, (char*)compilationMsgs->GetBufferPointer(), 0, 0);
+		compilationMsgs->Release();
 		return;
 	}
 
@@ -202,7 +202,9 @@ void CShader::Update_ConstantBuffer(LPVOID p_data, UINT p_size, ID3D11Buffer* p_
 
 void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 {
-	if (0 == p_LayoutType)
+	switch (p_LayoutType)
+	{
+	case 0:
 	{
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 		{
@@ -216,7 +218,8 @@ void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 			return;
 		}
 	}
-	else if (1 == p_LayoutType)
+		break;
+	case 1:
 	{
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 		{
@@ -231,7 +234,8 @@ void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 			return;
 		}
 	}
-	else if (2 == p_LayoutType)
+		break;
+	case 2:
 	{
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 		{
@@ -247,7 +251,8 @@ void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 			return;
 		}
 	}
-	else if (3 == p_LayoutType)
+		break;
+	case 3:
 	{
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
 		{
@@ -261,6 +266,29 @@ void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 			MessageBox(g_hWnd, L"Create InputLayout Failed!!", 0, 0);
 			return;
 		}
+	}
+		break;
+	case 4:
+	{
+		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+		{
+			{ "POSITION",	0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0, 0,	D3D11_INPUT_PER_VERTEX_DATA,	0 },
+			{ "NORMAL",		0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 16,	D3D11_INPUT_PER_VERTEX_DATA,	0 },
+			{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,		0, 28,	D3D11_INPUT_PER_VERTEX_DATA,	0 },
+			{ "WORLD",		0, DXGI_FORMAT_R32G32B32A32_FLOAT,	1, 0,	D3D11_INPUT_PER_INSTANCE_DATA,	1 },
+			{ "WORLD",		1, DXGI_FORMAT_R32G32B32A32_FLOAT,	1, 16,	D3D11_INPUT_PER_INSTANCE_DATA,	1 },
+			{ "WORLD",		2, DXGI_FORMAT_R32G32B32A32_FLOAT,	1, 32,	D3D11_INPUT_PER_INSTANCE_DATA,	1 },
+			{ "WORLD",		3, DXGI_FORMAT_R32G32B32A32_FLOAT,	1, 48,	D3D11_INPUT_PER_INSTANCE_DATA,	1 },
+		};
+
+		if (FAILED(m_pDevice->CreateInputLayout(vertexDesc, 7, p_CompileVS->GetBufferPointer(),
+			p_CompileVS->GetBufferSize(), &m_pInputLayout)))
+		{
+			MessageBox(g_hWnd, L"Create InputLayout Failed!!", 0, 0);
+			return;
+		}
+	}
+		break;
 	}
 }
 

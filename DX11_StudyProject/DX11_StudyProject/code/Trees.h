@@ -34,7 +34,10 @@ private: //constant buffer
 	MATERIAL		m_mtrl;
 	XMFLOAT4X4		m_matViewProj;
 
-	GEOVERTEX		m_vtx[100];
+	XMFLOAT4X4		m_matArrWorld[1000];
 	ID3D11Buffer*	m_pVB;
+	ID3D11Buffer*	m_pIB;
+	UINT			m_iIdxCnt;
+	ID3D11Buffer*	m_pInstanceVB;
 };
 

@@ -223,6 +223,9 @@ void CMainFrame::Create_Components()
 	m_pBillboardShader->Create_GeometryShader(L"../Shader/Billboard.fx", "gs_main", "gs_5_0");
 	m_mapComponent.insert(make_pair("BillboardShader", pShader));
 	
+	m_pInstanceShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Instancing.fx", "vs_main", "ps_main", 4);
+	m_mapComponent.insert(make_pair("InstanceShader", pShader));
+	
 	//// ¸Þ½¬
 	CMesh* pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext);
 	m_mapComponent.insert(make_pair("CubeMesh", pMesh));
@@ -643,6 +646,15 @@ void CMainFrame::Update_BillboardShader()
 	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
 	m_pBillboardShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
 	m_pBillboardShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
+}
+
+void CMainFrame::Update_InstanceShader()
+{
+	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
+	m_pInstanceShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
+	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
+	m_pInstanceShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
+	m_pInstanceShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
 }
 
 void CMainFrame::Update_Input()
