@@ -1,5 +1,8 @@
 # DX11
 >내용 정리
+
+[[링크]2020년 테셀레이션 ~ ](https://github.com/RankerPG/DX11/blob/master/README_2020.md)
+
 <pre>
 현재 : 576
 적용하면서 기술 데모 만들기
