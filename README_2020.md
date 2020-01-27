@@ -76,6 +76,56 @@
 
 <code> 그래픽 카드 영향이 있을 거 같은데 프레임에서 꽤 상승한 모습이 보이긴하지만 후에 메쉬로 테스트 해봐야 할 것 같음 </code>
 
+## 20.01.26
+<code> ~ 625 page </code>
+
+## 경계입체와 시야 절두체
+
+<code>  DirectXCollision.h에 관련 함수가 정의되어 있다. </code>
+
+### 경계입체
+
+- 경계 입체(bounding volume) : 입체적 영역은 근사하는 기본적인 기하학적 입체
+
+- AABB(axis-aligned bounding box) : 축 정렬 경계 상자로 최솟점과 최댓점으로 정의할 수 있다. 중점과 한계 벡터(extents vector)로
+표현할 수 있다.
+
+- OBB(oriented bounding box) : 지향 경계상자로 회전된 월드 공간의 객체의 충돌 박스를 계산할 수 있다. 중점과 한계 벡터, 회전을
+나타내는 단위 사원수로 표현할 수 있다.
+
+### 절두체
+
+- NDC 공간에서 절두체는 [-1, 1] x [-1, 1] x [0, 1] 범위의 상자로 변환된다.
+
+> 월드 공간 절두체 꼭짓점 구하기
+1. NDC 공간 상의 절두체 좌표에 투영 행렬의 역행렬을 곱한다.
+2. 기울기를 구하기 위해 각 꼭짓점을 Z 값의 역수와 곱하고 Near와 Far 값은 W 값의 역수로 나눠 거리를 구한다.
+
+## 절두체 선별
+
+- 절두체 선별(Frustum culling)은 래스터라이저 단계에서 진행되지만, 렌더링되지 않는 것을 미리 연산을 통해 알 수 있다면
+정점 쉐이더와 추가적으로 테셀레이션이나 기하 쉐이더를 진행하는 비용을 없앨 수 있다.
+
+``` cpp
+
+bool XM_CALLCONV XMMatrixDecompose(_Out_ XMVECTOR *outScale
+                                   , _Out_ XMVECTOR *outRotQuat
+                                   , _Out_ XMVECTOR *outTrans
+                                   , _In_ FXMMATRIX M);
+// 행렬의 scale, rotation, translation을 분해하여 개별적인 행렬에 저장해준다.
+
+```
+
+<pre>
+이번 챕터에서 DirectXMath와 이 헤더에서 파생된 헤더를 봤는데 선언뿐만 아니라 정의도 볼 수 있어서 참고하고 
+틈틈히 보면 많이 도움될 듯.
+절두체 컬링의 대상은 로우폴리곤 메쉬로는 오히려 프레임이 저하됨. 테스트를 위해 인스턴스 객체도 했는데 메쉬 로딩 후에 
+다시 테스트해봐야 할 듯.
+</pre>
+
+
+
+
 
 
 
