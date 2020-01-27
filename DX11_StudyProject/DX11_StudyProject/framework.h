@@ -19,6 +19,7 @@
 #include <DirectXPackedVector.h>
 #include <dxgi.h>
 #include <d3dcompiler.h>
+#include <DirectXCollision.h>
 
 #include "Functor.h"
 #include "struct.h"
@@ -35,3 +36,5 @@ extern HWND g_hWnd;
 extern XMMATRIX g_matView;
 extern XMMATRIX g_matViewWorld;
 extern XMMATRIX g_matProj;
+
+extern UINT g_dwRenderCnt;

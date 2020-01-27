@@ -79,6 +79,9 @@
     <Filter Include="96. global">
       <UniqueIdentifier>{41fbf8f5-21ab-47d2-a7d3-af9ec8f091e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="95. Component\05. Frustum">
+      <UniqueIdentifier>{d796bbd0-c794-4dbe-b14e-0bb30a0547e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -162,6 +165,9 @@
     <ClInclude Include="code\Trees.h">
       <Filter>02. Object\06. Trees</Filter>
     </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>95. Component\05. Frustum</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX11_StudyProject.cpp">
@@ -229,6 +235,9 @@
     </ClCompile>
     <ClCompile Include="code\Trees.cpp">
       <Filter>02. Object\06. Trees</Filter>
+    </ClCompile>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>95. Component\05. Frustum</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

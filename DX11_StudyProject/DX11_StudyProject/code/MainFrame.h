@@ -14,6 +14,7 @@ class CShader;
 class CVisible;
 class CLake;
 class CTrees;
+class CFrustum;
 
 class CMainFrame
 {
@@ -32,6 +33,7 @@ public:
 public:
 	void Init();
 	void Update();
+	void Last_Update();
 	void Render();
 	void Release();
 
@@ -88,6 +90,8 @@ private:
 	shared_ptr<CTrees>			m_pTrees;
 
 private:
+	CFrustum*					m_pFrustum;
+
 	CShader*					m_pLightShader;
 	CShader*					m_pTextureShader;
 	CShader*					m_pGeometryShader;

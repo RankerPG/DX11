@@ -16,6 +16,7 @@ public:
 public:
 	virtual void Init();
 	virtual void Update(float p_deltaTime);
+	virtual void LastUpdate(float p_deltaTime);
 	virtual void Render(XMMATRIX* p_matAdd = nullptr, BOOL p_isUseMtrl = TRUE);
 
 private:

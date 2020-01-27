@@ -66,6 +66,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			pInput->Update_InputDev_State();
 			mainFrame->Update();
+			mainFrame->Last_Update();
 			mainFrame->Render();
 		}
     }

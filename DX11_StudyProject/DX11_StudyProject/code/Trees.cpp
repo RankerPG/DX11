@@ -5,12 +5,14 @@
 #include "transform.h"
 #include "Texture.h"
 #include "GeometryGenerator.h"
+#include "Frustum.h"
 
 CTrees::CTrees(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMAP* p_hashMap)
 	: CObject(p_Device, p_Context, p_hashMap)
 	, m_pTransform(nullptr)
 	, m_pShader(nullptr)
 	, m_pTexture(nullptr)
+	, m_pFrustum(nullptr)
 	, m_pCB(nullptr)
 	, m_pCBMtrl(nullptr)
 	, m_mat(TRANSMATRIX())
@@ -19,6 +21,8 @@ CTrees::CTrees(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMA
 	, m_pVB(nullptr)
 	, m_pIB(nullptr)
 	, m_iIdxCnt(0)
+	, m_dwRenderCnt(0)
+	, m_dwTexTreeCnt{ 0, }
 	, m_pInstanceVB(nullptr)
 {
 }
@@ -35,6 +39,7 @@ void CTrees::Init()
 	// 트랜스폼 생성
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
 	m_pTransform->Set_Scale(XMVectorSet(4.f, 6.f, 1.f, 1.f));
+	m_pTransform->Update_Transform();
 
 	// 쉐이더 생성
 	m_pShader = static_cast<CShader*>(m_pMapComponent->find("InstanceShader")->second->Clone());
@@ -58,6 +63,14 @@ void CTrees::Init()
 						0.f, 0.f, 1.f, 0.f,
 						0.f, 2.6f, 0.f, 1.f);
 
+	// 충돌구 반지름 계산
+	m_pFrustum = static_cast<CFrustum*>(m_pMapComponent->find("Frustum")->second->Clone());
+
+	BoundingSphere bs;
+	bs.Transform(bs, m_pTransform->Get_World());
+
+	m_fRadius = bs.Radius;
+
 	while (1000 != initCnt)
 	{
 		int iX = (rand() % 128) - 64;
@@ -78,9 +91,10 @@ void CTrees::Init()
 
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
-	bd.Usage = D3D11_USAGE_IMMUTABLE;
+	bd.Usage = D3D11_USAGE_DYNAMIC;
 	bd.ByteWidth = sizeof(m_matArrWorld);
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
 
 	D3D11_SUBRESOURCE_DATA subData;
 	subData.pSysMem = m_matArrWorld;
@@ -99,6 +113,40 @@ void CTrees::Update(float p_deltaTime)
 
 }
 
+void CTrees::LastUpdate(float p_deltaTime)
+{
+	m_dwRenderCnt = 0;
+
+	memset(m_dwTexTreeCnt, 0, sizeof(UINT) * 4);
+
+	D3D11_MAPPED_SUBRESOURCE mr;
+	ZeroMemory(&mr, sizeof(mr));
+
+	if (FAILED(m_pContext->Map(m_pInstanceVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mr)))
+	{
+		MessageBox(g_hWnd, L"Update Instance Buffer Failed!!", 0, 0);
+		return;
+	}
+
+	XMFLOAT4X4* matRender = reinterpret_cast<XMFLOAT4X4*>(mr.pData);
+
+	for (int i = 0; i < 1000; ++i)
+	{
+		XMVECTOR vPos = XMVectorSet(m_matArrWorld[i]._41, m_matArrWorld[i]._42, m_matArrWorld[i]._43, 1.f);
+		bool isVisible = m_pFrustum->Compute_CullingObject(vPos, m_fRadius);
+		
+		if (TRUE == isVisible)
+		{
+			g_dwRenderCnt += m_isVisible;
+
+			matRender[m_dwRenderCnt++] = m_matArrWorld[i];
+			++m_dwTexTreeCnt[i / 250];
+		}
+	}
+
+	m_pContext->Unmap(m_pInstanceVB, 0);
+}
+
 void CTrees::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 {
 	UINT stride[2] = { sizeof(TEXVERTEX), sizeof(XMFLOAT4X4) };
@@ -107,6 +155,7 @@ void CTrees::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 	ID3D11Buffer* vbs[2] = { m_pVB, m_pInstanceVB };
 
 	m_pContext->IASetVertexBuffers(0, 2, vbs, stride, offset);
+	m_pContext->IASetIndexBuffer(m_pIB, DXGI_FORMAT_R32_UINT, 0);
 	m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_pContext->IASetInputLayout(m_pShader->Get_Layout());
 
@@ -133,16 +182,22 @@ void CTrees::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 	m_pShader->Update_ConstantBuffer(&m_matViewProj, sizeof(XMFLOAT4X4), m_pCB);
 
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
-	m_pContext->DrawIndexedInstanced(m_iIdxCnt, 250, 0, 0, 0);
+	m_pContext->DrawIndexedInstanced(m_iIdxCnt, m_dwTexTreeCnt[0], 0, 0, 0);
+
+	UINT dwStartPos = m_dwTexTreeCnt[0];
 
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV(1));
-	m_pContext->DrawIndexedInstanced(m_iIdxCnt, 250, 0, 0, 250);
+	m_pContext->DrawIndexedInstanced(m_iIdxCnt, m_dwTexTreeCnt[1], 0, 0, dwStartPos);
+
+	dwStartPos += m_dwTexTreeCnt[1];
 
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV(2));
-	m_pContext->DrawIndexedInstanced(m_iIdxCnt, 250, 0, 0, 500);
+	m_pContext->DrawIndexedInstanced(m_iIdxCnt, m_dwTexTreeCnt[2], 0, 0, dwStartPos);
+
+	dwStartPos += m_dwTexTreeCnt[2];
 
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV(3));
-	m_pContext->DrawIndexedInstanced(m_iIdxCnt, 250, 0, 0, 750);
+	m_pContext->DrawIndexedInstanced(m_iIdxCnt, m_dwTexTreeCnt[3], 0, 0, dwStartPos);
 }
 
 void CTrees::Release()

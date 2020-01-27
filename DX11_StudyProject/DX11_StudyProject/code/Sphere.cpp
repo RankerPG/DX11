@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "transform.h"
 #include "Texture.h"
+#include "frustum.h"
 
 CSphere::CSphere(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMAP* p_hashMap)
 	: CObject(p_Device, p_Context, p_hashMap)
@@ -11,6 +12,7 @@ CSphere::CSphere(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASH
 	, m_pTransform(nullptr)
 	, m_pShader(nullptr)
 	, m_pTexture(nullptr)
+	, m_pFrustum(nullptr)
 	, m_pCB(nullptr)
 	, m_pCBMtrl(nullptr)
 	, m_mat(TRANSMATRIX())
@@ -34,6 +36,15 @@ void CSphere::Init()
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
 	m_pTransform->Set_Scale(XMVectorSet(2.f, 2.f, 2.f, 0.f));
 	m_pTransform->Set_Trans(XMVectorSet(5.f, 2.f, 0.f, 1.f));
+	m_pTransform->Update_Transform();
+
+	// 충돌구 반지름 계산
+	m_pFrustum = static_cast<CFrustum*>(m_pMapComponent->find("Frustum")->second->Clone());
+
+	BoundingSphere bs;
+	bs.Transform(bs, m_pTransform->Get_World());
+
+	m_fRadius = bs.Radius;
 
 	// 쉐이더 생성
 	m_pShader = static_cast<CShader*>(m_pMapComponent->find("TextureShader")->second->Clone());
@@ -52,6 +63,12 @@ void CSphere::Update(float p_deltaTime)
 	m_pTransform->Acc_TexTrans(XMVectorSet(p_deltaTime * 0.1f, 0.f, 0.f, 0.f));
 
 	m_pTransform->Update_Transform();
+}
+
+void CSphere::LastUpdate(float p_deltaTime)
+{
+	m_isVisible = m_pFrustum->Compute_CullingObject(m_pTransform->Get_Trans(), m_fRadius);
+	g_dwRenderCnt += m_isVisible;
 }
 
 void CSphere::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
@@ -96,6 +113,7 @@ void CSphere::Release()
 	SAFE_DELETE(m_pTransform);
 	SAFE_DELETE(m_pShader);
 	SAFE_DELETE(m_pTexture);
+	SAFE_DELETE(m_pFrustum);
 
 	SAFE_RELEASE(m_pCB);
 	SAFE_RELEASE(m_pCBMtrl);

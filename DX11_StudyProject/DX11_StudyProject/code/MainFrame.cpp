@@ -13,8 +13,10 @@
 #include "Texture.h"
 #include "Lake.h"
 #include "Trees.h"
+#include "Frustum.h"
 
 XMMATRIX g_matView, g_matViewWorld, g_matProj;
+UINT g_dwRenderCnt;
 
 CMainFrame::CMainFrame(CDevice* p_Device)
 	: m_pGraphicDevice(p_Device)
@@ -33,6 +35,7 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pVisible(nullptr)
 	, m_pLake(nullptr)
 	, m_pTrees(nullptr)
+	, m_pFrustum(nullptr)
 	, m_pLightShader(nullptr)
 	, m_pTextureShader(nullptr)
 	, m_pGeometryShader(nullptr)
@@ -91,6 +94,26 @@ void CMainFrame::Update()
 	m_pTrees->Update(deltaTime);
 }
 
+void CMainFrame::Last_Update()
+{
+	float MainTime = m_pMainTimer->Get_MainTime();
+	float deltaTime = m_pMainTimer->Get_DeltaTime();
+
+	g_dwRenderCnt = 0;
+
+	// 절두체 평면 갱신
+	m_pFrustum->Update_Frustum(&g_matView, &g_matProj);
+
+	// 객체별 컬링 판정
+	m_pCamera->LastUpdate(MainTime);
+	m_pBox->LastUpdate(deltaTime);
+	m_pTerrain->LastUpdate(deltaTime);
+	m_pSphere->LastUpdate(deltaTime);
+	m_pVisible->LastUpdate(deltaTime);
+	m_pLake->LastUpdate(deltaTime);
+	m_pTrees->LastUpdate(deltaTime);
+}
+
 void CMainFrame::Render()
 {
 	m_pGraphicDevice->Begin_Render();
@@ -133,6 +156,8 @@ void CMainFrame::Release()
 	SAFE_RELEASE(m_pDepthStencil[2]);
 	SAFE_RELEASE(m_pDepthStencil[3]);
 
+	SAFE_DELETE(m_pFrustum);
+
 	SAFE_RELEASE(m_pContext);
 	SAFE_RELEASE(m_pDevice);
 }
@@ -146,8 +171,8 @@ void CMainFrame::Calculate_FPS()
 	{
 		float fFrameTime = 1000.f / m_dwFrameCnt;
 
-		wchar_t wText[64] = L"";
-		_stprintf_s(wText, L"FPS : %d / Frame Time : %f(ms)", m_dwFrameCnt, fFrameTime);
+		wchar_t wText[128] = L"";
+		_stprintf_s(wText, L"FPS : %d / Frame Time : %f(ms) / Rendering Cnt : %d", m_dwFrameCnt, fFrameTime, g_dwRenderCnt);
 		SetWindowText(g_hWnd, wText);
 
 		m_dwFrameCnt = 0;
@@ -177,7 +202,9 @@ void CMainFrame::Create_Device()
 void CMainFrame::Create_Components()
 {
 	// 컴포넌트 생성
-	
+	m_pFrustum = CFrustum::Create_Frustum(m_pDevice, m_pContext);
+	m_mapComponent.insert(make_pair("Frustum", m_pFrustum));
+
 	// 쉐이더
 	CShader* pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Default.fx", "vs_main", "ps_main", 0);
 	m_mapComponent.insert(make_pair("DefaultShader", pShader));
@@ -691,20 +718,33 @@ void CMainFrame::Render_Default()
 
 	// 그리기
 	m_pTerrain->Render();
-	m_pSphere->Render();
+	
+	if (TRUE == m_pSphere->Get_Visible())
+	{
+		m_pSphere->Render();
+	}
 
 	// 알파 블렌딩
 	Update_BlendState(BLEND::ALPHA);
-	m_pBox->Render();
 
-	Update_RasterizerState(RASTERIZER::CULLFRONT);
+	if (TRUE == m_pBox->Get_Visible())
+	{
+		m_pBox->Render();
+	}
 
-	m_pBox->Render();
+	if (TRUE == m_pBox->Get_Visible())
+	{
+		Update_RasterizerState(RASTERIZER::CULLFRONT);
 
-	Update_RasterizerState(RASTERIZER::CULLBACK);
+		m_pBox->Render();
+
+		Update_RasterizerState(RASTERIZER::CULLBACK);
+	}
 
 	Update_SamplerState(SAMPLER::CLAMP);
+
 	m_pTrees->Render();
+
 	Update_SamplerState(SAMPLER::WRAP);
 }
 
@@ -714,6 +754,7 @@ void CMainFrame::Render_Stencil()
 	Update_DepthStencilState(DEPTHSTENCIL::STENCILON);
 
 	Update_BlendState(BLEND::ALPHA);
+
 	m_pLake->Render();
 
 	// 반사 객체 그리기
@@ -782,5 +823,9 @@ void CMainFrame::Render_Color()
 {
 	// 컬러 객체
 	Update_BlendState(BLEND::NONALPHA);
-	m_pVisible->Render();
+
+	if (TRUE == m_pVisible->Get_Visible())
+	{
+		m_pVisible->Render();
+	}
 }

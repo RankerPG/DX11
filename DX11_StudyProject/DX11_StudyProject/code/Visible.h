@@ -5,6 +5,7 @@
 class CMesh;
 class CTransform;
 class CShader;
+class CFrustum;
 
 class CVisible : public CObject
 {
@@ -18,15 +19,17 @@ public:
 public:
 	virtual void Init();
 	virtual void Update(float p_deltaTime);
+	virtual void LastUpdate(float p_deltaTime);
 	virtual void Render(XMMATRIX* p_matAdd = nullptr, BOOL p_isUseMtrl = TRUE);
 
 private:
 	virtual void Release();
 
 private:
-	CMesh* m_pMesh;
-	CTransform* m_pTransform;
-	CShader* m_pShader;
+	CMesh*			m_pMesh;
+	CTransform*		m_pTransform;
+	CShader*		m_pShader;
+	CFrustum*		m_pFrustum;
 
 private:
 	XMVECTOR		m_vTrans;

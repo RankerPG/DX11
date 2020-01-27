@@ -3,12 +3,14 @@
 #include "FigureMesh.h"
 #include "Shader.h"
 #include "transform.h"
+#include "Frustum.h"
 
 CVisible::CVisible(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMAP* p_hashMap)
 	: CObject(p_Device, p_Context, p_hashMap)
 	, m_pMesh(nullptr)
 	, m_pTransform(nullptr)
 	, m_pShader(nullptr)
+	, m_pFrustum(nullptr)
 	, m_vTrans(XMVECTOR())
 	, m_fAngle(0.f)
 	, m_pCB(nullptr)
@@ -34,6 +36,15 @@ void CVisible::Init()
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
 	m_pTransform->Set_Scale(XMVectorSet(0.1f, 0.1f, 0.1f, 1.f));
 	m_pTransform->Set_Trans(XMVectorSet(0.f, 5.f, 5.f, 1.f));
+	m_pTransform->Update_Transform();
+
+	// 충돌구 반지름 계산
+	m_pFrustum = static_cast<CFrustum*>(m_pMapComponent->find("Frustum")->second->Clone());
+
+	BoundingSphere bs;
+	bs.Transform(bs, m_pTransform->Get_World());
+
+	m_fRadius = bs.Radius;
 
 	// 쉐이더 생성
 	m_pShader = static_cast<CShader*>(m_pMapComponent->find("DefaultShader")->second->Clone());
@@ -60,6 +71,12 @@ void CVisible::Update(float p_deltaTime)
 	m_pTransform->Update_Transform();
 
 	m_vTrans = m_pTransform->Get_Trans();
+}
+
+void CVisible::LastUpdate(float p_deltaTime)
+{
+	m_isVisible = m_pFrustum->Compute_CullingObject(m_pTransform->Get_Trans(), m_fRadius);
+	g_dwRenderCnt += m_isVisible;
 }
 
 void CVisible::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)

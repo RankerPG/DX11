@@ -51,6 +51,10 @@ void CTerrain::Update(float p_deltaTime)
 	m_pTransform->Update_Transform();
 }
 
+void CTerrain::LastUpdate(float p_deltaTime)
+{
+}
+
 void CTerrain::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 {
 	m_pContext->IASetVertexBuffers(0, 1, m_pMesh->Get_VertexBuffer(), &m_pMesh->Get_Stride(), &m_pMesh->Get_Offset());

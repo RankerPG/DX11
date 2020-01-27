@@ -102,6 +102,10 @@ void CCamera::Update(float p_deltaTime)
 	g_matView = m_matView;
 }
 
+void CCamera::LastUpdate(float p_deltaTime)
+{
+}
+
 void CCamera::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 {
 }

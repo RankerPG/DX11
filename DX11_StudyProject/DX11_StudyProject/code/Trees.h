@@ -6,6 +6,7 @@ class CMesh;
 class CTransform;
 class CShader;
 class CTexture;
+class CFrustum;
 
 class CTrees : public CObject
 {
@@ -16,6 +17,7 @@ public:
 public:
 	virtual void Init();
 	virtual void Update(float p_deltaTime);
+	virtual void LastUpdate(float p_deltaTime);
 	virtual void Render(XMMATRIX* p_matAdd = nullptr, BOOL p_isUseMtrl = TRUE);
 
 private:
@@ -25,6 +27,7 @@ private:
 	CTransform*		m_pTransform;
 	CShader*		m_pShader;
 	CTexture*		m_pTexture;
+	CFrustum*		m_pFrustum;
 
 private: //constant buffer
 	ID3D11Buffer*	m_pCB;
@@ -38,6 +41,8 @@ private: //constant buffer
 	ID3D11Buffer*	m_pVB;
 	ID3D11Buffer*	m_pIB;
 	UINT			m_iIdxCnt;
+	UINT			m_dwRenderCnt;
+	UINT			m_dwTexTreeCnt[4];
 	ID3D11Buffer*	m_pInstanceVB;
 };
 

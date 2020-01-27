@@ -4,6 +4,8 @@ CObject::CObject(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASH
 	: m_pDevice(p_Device)
 	, m_pContext(p_Context)
 	, m_pMapComponent(p_hashMap)
+	, m_fRadius(0.f)
+	, m_isVisible(TRUE)
 {
 	m_pDevice->AddRef();
 	m_pContext->AddRef();
