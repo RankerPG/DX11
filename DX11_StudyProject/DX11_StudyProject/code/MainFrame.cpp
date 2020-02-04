@@ -14,6 +14,7 @@
 #include "Lake.h"
 #include "Trees.h"
 #include "Frustum.h"
+#include "skybox.h"
 
 XMMATRIX g_matView, g_matViewWorld, g_matProj;
 UINT g_dwRenderCnt;
@@ -35,11 +36,13 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pVisible(nullptr)
 	, m_pLake(nullptr)
 	, m_pTrees(nullptr)
+	, m_pSkyBox(nullptr)
 	, m_pFrustum(nullptr)
 	, m_pLightShader(nullptr)
 	, m_pTextureShader(nullptr)
 	, m_pGeometryShader(nullptr)
 	, m_pBillboardShader(nullptr)
+	, m_pSkyBoxShader(nullptr)
 	, m_pCBLight(nullptr)
 	, m_pCBPointLight(nullptr)
 	, m_pCBPerFrame(nullptr)
@@ -85,6 +88,8 @@ void CMainFrame::Update()
 
 	Update_Input();
 
+	m_pSkyBox->Update(MainTime);
+
 	m_pCamera->Update(MainTime);
 	m_pBox->Update(deltaTime);
 	m_pTerrain->Update(deltaTime);
@@ -103,6 +108,8 @@ void CMainFrame::Last_Update()
 
 	// 절두체 평면 갱신
 	m_pFrustum->Update_Frustum(&g_matView, &g_matProj);
+
+	m_pSkyBox->LastUpdate(MainTime);
 
 	// 객체별 컬링 판정
 	m_pCamera->LastUpdate(MainTime);
@@ -138,25 +145,25 @@ void CMainFrame::Release()
 	SAFE_RELEASE(m_pCBPerFrame);
 	SAFE_RELEASE(m_pCBMtrl);
 
-	SAFE_RELEASE(m_pState[0]);
-	SAFE_RELEASE(m_pState[1]);
-	SAFE_RELEASE(m_pState[2]);
-	SAFE_RELEASE(m_pState[3]);
-	SAFE_RELEASE(m_pState[4]);
+	for (int i = 0; i < 5; ++i)
+	{
+		SAFE_RELEASE(m_pState[i]);
+	}
 
-	SAFE_RELEASE(m_pSampler[0]);
-	SAFE_RELEASE(m_pSampler[1]);
+	for (int i = 0; i < (int)SAMPLER::SMP_END; ++i)
+	{
+		SAFE_RELEASE(m_pSampler[i]);
+	}
 
-	SAFE_RELEASE(m_pBlend[0]);
-	SAFE_RELEASE(m_pBlend[1]);
-	SAFE_RELEASE(m_pBlend[2]);
+	for (int i = 0; i < (int)BLEND::BLEND_END; ++i)
+	{
+		SAFE_RELEASE(m_pBlend[i]);
+	}
 
-	SAFE_RELEASE(m_pDepthStencil[0]);
-	SAFE_RELEASE(m_pDepthStencil[1]);
-	SAFE_RELEASE(m_pDepthStencil[2]);
-	SAFE_RELEASE(m_pDepthStencil[3]);
-
-	SAFE_DELETE(m_pFrustum);
+	for (int i = 0; i < (int)DEPTHSTENCIL::DS_END; ++i)
+	{
+		SAFE_RELEASE(m_pDepthStencil[i]);
+	}
 
 	SAFE_RELEASE(m_pContext);
 	SAFE_RELEASE(m_pDevice);
@@ -190,7 +197,7 @@ void CMainFrame::Create_Device()
 
 	//전역 행렬 초기화
 	g_matView = XMMatrixIdentity();
-	g_matProj = XMMatrixPerspectiveFovLH(XM_PIDIV4, 1280.f / 720.f, 1.f, 1000.f);
+	g_matProj = XMMatrixPerspectiveFovLH(XM_PIDIV4, 1280.f / 720.f, 0.1f, 1000.f);
 
 	//
 	m_pDevice = m_pGraphicDevice->Get_Device();
@@ -230,9 +237,9 @@ void CMainFrame::Create_Components()
 	m_PointLight.ambient = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
 	m_PointLight.specular = XMFLOAT4(1.f, 0.f, 0.f, 1.f);
 
-	m_PerFrame.fogColor = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.f);
-	m_PerFrame.fogStart = 5.f;
-	m_PerFrame.fogRange = 70.f;
+	m_PerFrame.fogColor = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	m_PerFrame.fogStart = 50.f;
+	m_PerFrame.fogRange = 100.f;
 
 	m_ShadowMtrl.diffuse = XMFLOAT4(0.f, 0.f, 0.f, 0.5f);
 	m_ShadowMtrl.ambient = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
@@ -253,6 +260,9 @@ void CMainFrame::Create_Components()
 	m_pInstanceShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Instancing.fx", "vs_main", "ps_main", 4);
 	m_mapComponent.insert(make_pair("InstanceShader", pShader));
 	
+	m_pSkyBoxShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Skybox.fx", "vs_main", "ps_main");
+	m_mapComponent.insert(make_pair("SkyboxShader", pShader));
+
 	//// 메쉬
 	CMesh* pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext);
 	m_mapComponent.insert(make_pair("CubeMesh", pMesh));
@@ -297,6 +307,9 @@ void CMainFrame::Create_Components()
 
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/tree%d.dds", FALSE, 4);
 	m_mapComponent.insert(make_pair("TreeTexture", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/skybox.dds", FALSE);
+	m_mapComponent.insert(make_pair("SkyTexture", pTexture));
 }
 
 void CMainFrame::Create_Object()
@@ -324,6 +337,9 @@ void CMainFrame::Create_Object()
 
 	m_pTrees.reset(new CTrees(m_pDevice, m_pContext, &m_mapComponent));
 	m_pTrees->Init();
+
+	m_pSkyBox.reset(new CSkyBox(m_pDevice, m_pContext, &m_mapComponent));
+	m_pSkyBox->Init();
 }
 
 void CMainFrame::Create_RasterizerState()
@@ -557,6 +573,21 @@ void CMainFrame::Create_DepthStencilState()
 		MessageBox(g_hWnd, L"Create DepthStencilState Failed!!", 0, 0);
 		return;
 	}
+
+	//
+	dsd.DepthEnable = TRUE;
+	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	dsd.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	dsd.StencilEnable = FALSE;
+
+	dsd.BackFace = dsd.FrontFace;
+
+	if (FAILED(m_pDevice->CreateDepthStencilState(&dsd, &m_pDepthStencil[4])))
+	{
+		MessageBox(g_hWnd, L"Create DepthStencilState Failed!!", 0, 0);
+		return;
+	}
 }
 
 void CMainFrame::Update_RasterizerState(RASTERIZER p_eRS)
@@ -637,6 +668,10 @@ void CMainFrame::Update_DepthStencilState(DEPTHSTENCIL eDS)
 	{
 		m_pContext->OMSetDepthStencilState(m_pDepthStencil[3], 0);
 	}
+	else if (DEPTHSTENCIL::DEPTHOFF == eDS)
+	{
+		m_pContext->OMSetDepthStencilState(m_pDepthStencil[4], 0);
+	}
 }
 
 void CMainFrame::Update_LightShader()
@@ -708,15 +743,20 @@ void CMainFrame::Update_Input()
 
 void CMainFrame::Render_Default()
 {
-	Update_RasterizerState(RASTERIZER::CULLBACK);
+	Update_RasterizerState(RASTERIZER::CULLNONE);
 	Update_BlendState(BLEND::NONALPHA);
-	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
+	Update_DepthStencilState(DEPTHSTENCIL::DEPTHOFF);
 
 	Update_TextureShader();
 	Update_GeometryShader();
 	Update_BillboardShader();
 
 	// 그리기
+	m_pSkyBox->Render();
+	
+	Update_RasterizerState(RASTERIZER::CULLBACK);
+	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
+
 	m_pTerrain->Render();
 	
 	if (TRUE == m_pSphere->Get_Visible())

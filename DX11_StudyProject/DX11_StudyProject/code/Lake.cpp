@@ -103,6 +103,7 @@ void CLake::Release()
 	SAFE_DELETE(m_pTransform);
 	SAFE_DELETE(m_pShader);
 	SAFE_DELETE(m_pTexture);
+	SAFE_DELETE(m_pFrustum);
 
 	SAFE_RELEASE(m_pCB);
 	SAFE_RELEASE(m_pCBMtrl);

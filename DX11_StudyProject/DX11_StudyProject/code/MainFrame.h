@@ -15,16 +15,17 @@ class CVisible;
 class CLake;
 class CTrees;
 class CFrustum;
+class CSkyBox;
 
 class CMainFrame
 {
 	typedef unordered_map<LPCSTR, shared_ptr<CComponent>> COMHASHMAP;
 
 public:
-	enum class RASTERIZER { CULLBACK = 0, CULLFRONT, CULLNONE };
-	enum class SAMPLER { WRAP = 0, CLAMP };
-	enum class BLEND { NONALPHA = 0, ALPHA };
-	enum class DEPTHSTENCIL { DEPTH = 0, STENCILON, DRAWSTENCIL, SHADOWON };
+	enum class RASTERIZER { CULLBACK = 0, CULLFRONT, CULLNONE, RASTER_END };
+	enum class SAMPLER { WRAP = 0, CLAMP, SMP_END };
+	enum class BLEND { NONALPHA = 0, ALPHA, ALPHAONE, BLEND_END };
+	enum class DEPTHSTENCIL { DEPTH = 0, STENCILON, DRAWSTENCIL, SHADOWON, DEPTHOFF, DS_END };
 
 public:
 	CMainFrame(CDevice* p_Device);
@@ -74,9 +75,9 @@ private:
 	ID3D11Device*				m_pDevice;
 	ID3D11DeviceContext*		m_pContext;
 	ID3D11RasterizerState*		m_pState[5];
-	ID3D11SamplerState*			m_pSampler[2];
-	ID3D11BlendState*			m_pBlend[3];
-	ID3D11DepthStencilState*	m_pDepthStencil[4];
+	ID3D11SamplerState*			m_pSampler[(int)SAMPLER::SMP_END];
+	ID3D11BlendState*			m_pBlend[(int)BLEND::BLEND_END];
+	ID3D11DepthStencilState*	m_pDepthStencil[(int)DEPTHSTENCIL::DS_END];
 
 	COMHASHMAP					m_mapComponent;
 
@@ -88,6 +89,7 @@ private:
 	shared_ptr<CVisible>		m_pVisible;
 	shared_ptr<CLake>			m_pLake;
 	shared_ptr<CTrees>			m_pTrees;
+	shared_ptr<CSkyBox>			m_pSkyBox;
 
 private:
 	CFrustum*					m_pFrustum;
@@ -97,6 +99,7 @@ private:
 	CShader*					m_pGeometryShader;
 	CShader*					m_pBillboardShader;
 	CShader*					m_pInstanceShader;
+	CShader*					m_pSkyBoxShader;
 
 	ID3D11Buffer*				m_pCBLight;
 	ID3D11Buffer*				m_pCBPointLight;

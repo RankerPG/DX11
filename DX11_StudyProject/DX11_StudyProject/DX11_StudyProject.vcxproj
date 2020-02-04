@@ -171,6 +171,7 @@
     <ClInclude Include="code\Mesh.h" />
     <ClInclude Include="code\Object.h" />
     <ClInclude Include="code\Shader.h" />
+    <ClInclude Include="code\skybox.h" />
     <ClInclude Include="code\Sphere.h" />
     <ClInclude Include="code\struct.h" />
     <ClInclude Include="code\Terrain.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="code\Mesh.cpp" />
     <ClCompile Include="code\Object.cpp" />
     <ClCompile Include="code\Shader.cpp" />
+    <ClCompile Include="code\skybox.cpp" />
     <ClCompile Include="code\Sphere.cpp" />
     <ClCompile Include="code\Terrain.cpp" />
     <ClCompile Include="code\Texture.cpp" />
@@ -241,6 +243,10 @@
     <FxCompile Include="..\Shader\Light.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Shader\skybox.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Shader\Texture.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

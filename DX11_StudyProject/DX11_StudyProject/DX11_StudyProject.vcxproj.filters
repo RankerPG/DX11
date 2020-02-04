@@ -82,6 +82,9 @@
     <Filter Include="95. Component\05. Frustum">
       <UniqueIdentifier>{d796bbd0-c794-4dbe-b14e-0bb30a0547e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. Object\07. skybox">
+      <UniqueIdentifier>{c0b49649-6e5d-4399-a9d2-257ea4a67fe6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -168,6 +171,9 @@
     <ClInclude Include="Frustum.h">
       <Filter>95. Component\05. Frustum</Filter>
     </ClInclude>
+    <ClInclude Include="code\skybox.h">
+      <Filter>02. Object\07. skybox</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX11_StudyProject.cpp">
@@ -239,6 +245,9 @@
     <ClCompile Include="Frustum.cpp">
       <Filter>95. Component\05. Frustum</Filter>
     </ClCompile>
+    <ClCompile Include="code\skybox.cpp">
+      <Filter>02. Object\07. skybox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX11_StudyProject.rc">
@@ -275,6 +284,9 @@
       <Filter>97. fx</Filter>
     </FxCompile>
     <FxCompile Include="..\Shader\Instancing.fx">
+      <Filter>97. fx</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\skybox.fx">
       <Filter>97. fx</Filter>
     </FxCompile>
   </ItemGroup>
