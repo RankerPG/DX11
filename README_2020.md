@@ -77,7 +77,7 @@
 <code> 그래픽 카드 영향이 있을 거 같은데 프레임에서 꽤 상승한 모습이 보이긴하지만 후에 메쉬로 테스트 해봐야 할 것 같음 </code>
 
 ## 20.01.26
-<code> ~ 625 page </code>
+<code> ~ 645 page </code>
 
 ## 경계입체와 시야 절두체
 
@@ -123,11 +123,12 @@ bool XM_CALLCONV XMMatrixDecompose(_Out_ XMVECTOR *outScale
 다시 테스트해봐야 할 듯.
 </pre>
 
+## 20.02.04
+<code> ~ 671 page </code>
 
+## 환경매핑
 
-
-
-
+- 큐브맵 로딩도 DDS 텍스쳐 로딩 함수와 동일한 함수로 읽을 수 있다.
 
 
 

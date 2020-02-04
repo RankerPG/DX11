@@ -35,5 +35,11 @@
 ## 200126 나무 인스턴싱
 
 <div>
- <img src="Image/0126.PNG" width = 640 height = 360/>
+ <img src="Image/200126.PNG" width = 640 height = 360/>
+</div>
+
+## 200127 절두체 컬링
+
+<div>
+ <img src="Image/200127.PNG" width = 640 height = 360/>
 </div>
