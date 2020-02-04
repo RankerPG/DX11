@@ -128,7 +128,7 @@ bool XM_CALLCONV XMMatrixDecompose(_Out_ XMVECTOR *outScale
 
 ## 환경매핑
 
-
+- 큐브맵 로딩도 DDS 텍스쳐 로딩 함수와 동일한 함수로 읽을 수 있다.
 
 
 
