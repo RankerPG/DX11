@@ -49,4 +49,9 @@
 <div>
  <img src="Image/200204.PNG" width = 640 height = 360/>
 </div>
-200204.PNG
+
+## 200206 환경 매핑 적용
+
+<div>
+ <img src="Image/200205.PNG" width = 640 height = 360/>
+</div>
