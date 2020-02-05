@@ -20,11 +20,14 @@ struct Material
 	float4 diff;
 	float4 amb;
 	float4 spec; // w = power
+	float4 Env;
 };
 
 SamplerState smpLinear : register (s0);
 
 Texture2D g_DiffuseTex : register (t0);
+
+TextureCube g_EnvMapTex : register (t1);
 
 cbuffer cbData : register (b0)
 {
@@ -120,13 +123,17 @@ float4 ps_main(VertexOut i) : SV_Target
 
 	float3 eyePos = g_ViewPos - i.posW.xyz;
 
+	float3 reflectVector = reflect(-eyePos, N);
+
+	float4 EnvColor = g_EnvMapTex.Sample(smpLinear, reflectVector);
+
 	float d = length(eyePos);
 
 	eyePos /= d;
 
 	float fogLerp = saturate((d - g_FogStart) / g_FogRange);
 
-	float4 litColor = texColor * (diff + amb) + spec;
+	float4 litColor = g_Mtrl.Env.x * EnvColor + (1 - g_Mtrl.Env.x) * texColor * (diff + amb) + spec;
 
 	float4 col = lerp(litColor, g_FogColor, fogLerp);
 

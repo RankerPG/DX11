@@ -15,6 +15,7 @@
 #include "Trees.h"
 #include "Frustum.h"
 #include "skybox.h"
+#include "EnvSphere.h"
 
 XMMATRIX g_matView, g_matViewWorld, g_matProj;
 UINT g_dwRenderCnt;
@@ -37,6 +38,7 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pLake(nullptr)
 	, m_pTrees(nullptr)
 	, m_pSkyBox(nullptr)
+	, m_pEnvSphere(nullptr)
 	, m_pFrustum(nullptr)
 	, m_pLightShader(nullptr)
 	, m_pTextureShader(nullptr)
@@ -97,6 +99,7 @@ void CMainFrame::Update()
 	m_pVisible->Update(deltaTime);
 	m_pLake->Update(deltaTime);
 	m_pTrees->Update(deltaTime);
+	m_pEnvSphere->Update(deltaTime);
 }
 
 void CMainFrame::Last_Update()
@@ -119,6 +122,7 @@ void CMainFrame::Last_Update()
 	m_pVisible->LastUpdate(deltaTime);
 	m_pLake->LastUpdate(deltaTime);
 	m_pTrees->LastUpdate(deltaTime);
+	m_pEnvSphere->LastUpdate(deltaTime);
 }
 
 void CMainFrame::Render()
@@ -244,6 +248,7 @@ void CMainFrame::Create_Components()
 	m_ShadowMtrl.diffuse = XMFLOAT4(0.f, 0.f, 0.f, 0.5f);
 	m_ShadowMtrl.ambient = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
 	m_ShadowMtrl.specular = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
+	m_ShadowMtrl.Env = XMFLOAT4(0.f, 0.f, 0.f, 0.f);
 
 	m_pTextureShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Texture.fx", "vs_main", "ps_main", 2);
 	m_mapComponent.insert(make_pair("TextureShader", pShader));
@@ -262,6 +267,9 @@ void CMainFrame::Create_Components()
 	
 	m_pSkyBoxShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Skybox.fx", "vs_main", "ps_main");
 	m_mapComponent.insert(make_pair("SkyboxShader", pShader));
+
+	m_pEnvMapShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/EnvMapping.fx", "vs_main", "ps_main", 2);
+	m_mapComponent.insert(make_pair("EnvMapShader", pShader));
 
 	//// 메쉬
 	CMesh* pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext);
@@ -340,6 +348,9 @@ void CMainFrame::Create_Object()
 
 	m_pSkyBox.reset(new CSkyBox(m_pDevice, m_pContext, &m_mapComponent));
 	m_pSkyBox->Init();
+
+	m_pEnvSphere.reset(new CEnvSphere(m_pDevice, m_pContext, &m_mapComponent));
+	m_pEnvSphere->Init();
 }
 
 void CMainFrame::Create_RasterizerState()
@@ -719,6 +730,15 @@ void CMainFrame::Update_InstanceShader()
 	m_pInstanceShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
 }
 
+void CMainFrame::Update_EnvMappingShader()
+{
+	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
+	m_pInstanceShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
+	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
+	m_pInstanceShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
+	m_pInstanceShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
+}
+
 void CMainFrame::Update_Input()
 {
 	if (m_pInput->Get_DIKPressState(DIK_SPACE))
@@ -750,6 +770,7 @@ void CMainFrame::Render_Default()
 	Update_TextureShader();
 	Update_GeometryShader();
 	Update_BillboardShader();
+	Update_EnvMappingShader();
 
 	// 그리기
 	m_pSkyBox->Render();
@@ -786,6 +807,8 @@ void CMainFrame::Render_Default()
 	m_pTrees->Render();
 
 	Update_SamplerState(SAMPLER::WRAP);
+
+	m_pEnvSphere->Render();
 }
 
 void CMainFrame::Render_Stencil()
@@ -819,6 +842,8 @@ void CMainFrame::Render_Stencil()
 
 	Update_RasterizerState(RASTERIZER::CULLBACK);
 
+	m_pEnvSphere->Render(&R);
+
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
 
 	XMStoreFloat3A(&m_Light.direction, litDir);
@@ -842,6 +867,7 @@ void CMainFrame::Render_Shadow()
 	matShadow *= XMMatrixTranslation(0.f, 0.01f, 0.f);
 
 	m_pTextureShader->Update_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
+	m_pEnvMapShader->Update_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 
 	Update_BlendState(BLEND::ALPHA);
 
@@ -851,6 +877,8 @@ void CMainFrame::Render_Shadow()
 	Update_SamplerState(SAMPLER::CLAMP);
 	m_pTrees->Render(&matShadow, FALSE);
 	Update_SamplerState(SAMPLER::WRAP);
+
+	m_pEnvSphere->Render(&matShadow, FALSE);
 
 	Update_RasterizerState(RASTERIZER::CULLBACK);
 

@@ -12,6 +12,7 @@ CLake::CLake(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMAP*
 	, m_pTransform(nullptr)
 	, m_pShader(nullptr)
 	, m_pTexture(nullptr)
+	, m_pEnvTexture(nullptr)
 	, m_pFrustum(nullptr)
 	, m_pCB(nullptr)
 	, m_pCBMtrl(nullptr)
@@ -57,9 +58,12 @@ void CLake::Init()
 	m_mtrl.diffuse = XMFLOAT4(1.f, 1.f, 1.f, 0.5f);
 	m_mtrl.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.f);
 	m_mtrl.specular = XMFLOAT4(1.f, 1.f, 1.f, 1024.f);
+	m_mtrl.Env = XMFLOAT4(1.f, 0.f, 0.f, 0.f);
 
 	// 텍스쳐 복사
 	m_pTexture = static_cast<CTexture*>(m_pMapComponent->find("WaterTexture")->second->Clone());
+
+	m_pEnvTexture = static_cast<CTexture*>(m_pMapComponent->find("SkyTexture")->second->Clone());
 }
 
 void CLake::Update(float p_deltaTime)
@@ -93,6 +97,7 @@ void CLake::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 	m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
+	m_pContext->PSSetShaderResources(1, 1, m_pEnvTexture->Get_TextureRV());
 
 	m_pMesh->Draw_Mesh();
 }

@@ -162,6 +162,7 @@
     <ClInclude Include="code\Component.h" />
     <ClInclude Include="code\DDSTextureLoader.h" />
     <ClInclude Include="code\Device.h" />
+    <ClInclude Include="code\EnvSphere.h" />
     <ClInclude Include="code\FigureMesh.h" />
     <ClInclude Include="code\Functor.h" />
     <ClInclude Include="code\GeometryGenerator.h" />
@@ -193,6 +194,7 @@
     <ClCompile Include="code\Component.cpp" />
     <ClCompile Include="code\DDSTextureLoader.cpp" />
     <ClCompile Include="code\Device.cpp" />
+    <ClCompile Include="code\EnvSphere.cpp" />
     <ClCompile Include="code\FigureMesh.cpp" />
     <ClCompile Include="code\GeometryGenerator.cpp" />
     <ClCompile Include="code\Input.cpp" />
@@ -239,6 +241,10 @@
     <FxCompile Include="..\Shader\Instancing.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Shader\EnvMapping.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Shader\Light.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

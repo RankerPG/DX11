@@ -16,6 +16,7 @@ class CLake;
 class CTrees;
 class CFrustum;
 class CSkyBox;
+class CEnvSphere;
 
 class CMainFrame
 {
@@ -61,6 +62,7 @@ private:
 	void Update_GeometryShader();
 	void Update_BillboardShader();
 	void Update_InstanceShader();
+	void Update_EnvMappingShader();
 
 	void Update_Input();
 
@@ -90,6 +92,7 @@ private:
 	shared_ptr<CLake>			m_pLake;
 	shared_ptr<CTrees>			m_pTrees;
 	shared_ptr<CSkyBox>			m_pSkyBox;
+	shared_ptr<CEnvSphere>		m_pEnvSphere;
 
 private:
 	CFrustum*					m_pFrustum;
@@ -100,6 +103,7 @@ private:
 	CShader*					m_pBillboardShader;
 	CShader*					m_pInstanceShader;
 	CShader*					m_pSkyBoxShader;
+	CShader*					m_pEnvMapShader;
 
 	ID3D11Buffer*				m_pCBLight;
 	ID3D11Buffer*				m_pCBPointLight;

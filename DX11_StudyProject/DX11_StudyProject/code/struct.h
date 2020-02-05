@@ -60,6 +60,7 @@ struct MATERIAL
 	XMFLOAT4 diffuse;
 	XMFLOAT4 ambient;
 	XMFLOAT4 specular; // w = power
+	XMFLOAT4 Env;
 };
 
 struct PERFRAME

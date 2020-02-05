@@ -20,6 +20,7 @@ struct Material
 	float4 diff;
 	float4 amb;
 	float4 spec; // w = power
+	float4 Env;
 };
 
 SamplerState smpLinear : register (s0);
