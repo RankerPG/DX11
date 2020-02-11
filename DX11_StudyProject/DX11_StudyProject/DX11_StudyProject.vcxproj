@@ -160,6 +160,7 @@
     <ClInclude Include="code\Box.h" />
     <ClInclude Include="code\Camera.h" />
     <ClInclude Include="code\Component.h" />
+    <ClInclude Include="code\DCMCreator.h" />
     <ClInclude Include="code\DDSTextureLoader.h" />
     <ClInclude Include="code\Device.h" />
     <ClInclude Include="code\EnvSphere.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="code\Box.cpp" />
     <ClCompile Include="code\Camera.cpp" />
     <ClCompile Include="code\Component.cpp" />
+    <ClCompile Include="code\DCMCreator.cpp" />
     <ClCompile Include="code\DDSTextureLoader.cpp" />
     <ClCompile Include="code\Device.cpp" />
     <ClCompile Include="code\EnvSphere.cpp" />

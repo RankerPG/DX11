@@ -17,6 +17,7 @@ class CTrees;
 class CFrustum;
 class CSkyBox;
 class CEnvSphere;
+class CDCMCreator;
 
 class CMainFrame
 {
@@ -42,7 +43,7 @@ public:
 private:
 	void Calculate_FPS();
 
-private:
+public: //¿ø·¡ private temp
 	void Create_Device();
 	void Create_Components();
 	void Create_Object();
@@ -67,6 +68,7 @@ private:
 	void Update_Input();
 
 	void Render_Default();
+	void Render_CubeMap();
 	void Render_Stencil();
 	void Render_Shadow();
 	void Render_Color();
@@ -96,6 +98,7 @@ private:
 
 private:
 	CFrustum*					m_pFrustum;
+	CDCMCreator*				m_pCreator;
 
 	CShader*					m_pLightShader;
 	CShader*					m_pTextureShader;

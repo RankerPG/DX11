@@ -39,7 +39,7 @@ public:
 
 public:
 	void Update_Transform();
-	void Update_Transform_OnlyUseMatrix();
+
 public:
 	static CTransform* Create_Transform(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);
 

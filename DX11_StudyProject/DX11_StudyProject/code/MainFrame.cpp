@@ -16,6 +16,7 @@
 #include "Frustum.h"
 #include "skybox.h"
 #include "EnvSphere.h"
+#include "DCMCreator.h"
 
 XMMATRIX g_matView, g_matViewWorld, g_matProj;
 UINT g_dwRenderCnt;
@@ -40,6 +41,7 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pSkyBox(nullptr)
 	, m_pEnvSphere(nullptr)
 	, m_pFrustum(nullptr)
+	, m_pCreator(nullptr)
 	, m_pLightShader(nullptr)
 	, m_pTextureShader(nullptr)
 	, m_pGeometryShader(nullptr)
@@ -127,9 +129,14 @@ void CMainFrame::Last_Update()
 
 void CMainFrame::Render()
 {
+	m_pCreator->Update_RenderTarget(XMFLOAT3(-5.f, 2.f, 0.f), this);
+
 	m_pGraphicDevice->Begin_Render();
 
 	Render_Default();
+
+	// µ¿Àû Å¥ºê ¸Ê °´Ã¼ µû·Î ·»´õ
+	m_pEnvSphere->Render();
 
 	Render_Stencil();
 
@@ -215,6 +222,9 @@ void CMainFrame::Create_Components()
 	// ÄÄÆ÷³ÍÆ® »ý¼º
 	m_pFrustum = CFrustum::Create_Frustum(m_pDevice, m_pContext);
 	m_mapComponent.insert(make_pair("Frustum", m_pFrustum));
+
+	m_pCreator = CDCMCreator::Create_DCM(m_pDevice, m_pContext);
+	m_mapComponent.insert(make_pair("DCMCreator", m_pCreator));
 
 	// ½¦ÀÌ´õ
 	CShader* pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Default.fx", "vs_main", "ps_main", 0);
@@ -808,7 +818,59 @@ void CMainFrame::Render_Default()
 
 	Update_SamplerState(SAMPLER::WRAP);
 
-	m_pEnvSphere->Render();
+	m_pLake->Render();
+}
+
+void CMainFrame::Render_CubeMap()
+{
+	Update_RasterizerState(RASTERIZER::CULLNONE);
+	Update_BlendState(BLEND::NONALPHA);
+	Update_DepthStencilState(DEPTHSTENCIL::DEPTHOFF);
+
+	Update_TextureShader();
+	Update_GeometryShader();
+	Update_BillboardShader();
+	Update_EnvMappingShader();
+
+	// ±×¸®±â
+	m_pSkyBox->Render();
+
+	Update_RasterizerState(RASTERIZER::CULLBACK);
+	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
+
+	m_pTerrain->Render();
+
+	if (TRUE == m_pSphere->Get_Visible())
+	{
+		m_pSphere->Render();
+	}
+
+	// ¾ËÆÄ ºí·»µù
+	Update_BlendState(BLEND::ALPHA);
+
+	if (TRUE == m_pBox->Get_Visible())
+	{
+		m_pBox->Render();
+	}
+
+	if (TRUE == m_pBox->Get_Visible())
+	{
+		Update_RasterizerState(RASTERIZER::CULLFRONT);
+
+		m_pBox->Render();
+
+		Update_RasterizerState(RASTERIZER::CULLBACK);
+	}
+
+	Update_SamplerState(SAMPLER::CLAMP);
+
+	Update_RasterizerState(RASTERIZER::CULLNONE);
+
+	m_pTrees->Render();
+
+	Update_SamplerState(SAMPLER::WRAP);
+
+	m_pLake->Render();
 }
 
 void CMainFrame::Render_Stencil()

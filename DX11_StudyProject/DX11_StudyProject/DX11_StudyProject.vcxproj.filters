@@ -88,6 +88,9 @@
     <Filter Include="02. Object\08. EnvSphere">
       <UniqueIdentifier>{81dc7959-ebbb-43fa-a9f1-4ec8c49502fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="95. Component\06. DCMCreator">
+      <UniqueIdentifier>{fcbb1aa7-4155-4060-ad4a-796578b1f5f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -180,6 +183,9 @@
     <ClInclude Include="code\EnvSphere.h">
       <Filter>02. Object\08. EnvSphere</Filter>
     </ClInclude>
+    <ClInclude Include="code\DCMCreator.h">
+      <Filter>95. Component\06. DCMCreator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX11_StudyProject.cpp">
@@ -256,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="code\EnvSphere.cpp">
       <Filter>02. Object\08. EnvSphere</Filter>
+    </ClCompile>
+    <ClCompile Include="code\DCMCreator.cpp">
+      <Filter>95. Component\06. DCMCreator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

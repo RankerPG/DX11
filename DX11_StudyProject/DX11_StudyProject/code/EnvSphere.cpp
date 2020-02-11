@@ -5,6 +5,7 @@
 #include "transform.h"
 #include "Texture.h"
 #include "frustum.h"
+#include "DCMCreator.h"
 
 CEnvSphere::CEnvSphere(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASHMAP* p_hashMap)
 	: CObject(p_Device, p_Context, p_hashMap)
@@ -13,6 +14,7 @@ CEnvSphere::CEnvSphere(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, C
 	, m_pShader(nullptr)
 	, m_pTexture(nullptr)
 	, m_pFrustum(nullptr)
+	, m_pCreator(nullptr)
 	, m_pCB(nullptr)
 	, m_pCBMtrl(nullptr)
 	, m_mat(TRANSMATRIX())
@@ -57,6 +59,8 @@ void CEnvSphere::Init()
 	m_mtrl.Env = XMFLOAT4(0.7f, 0.f, 0.f, 0.f);
 
 	m_pTexture = static_cast<CTexture*>(m_pMapComponent->find("SkyTexture")->second->Clone());
+
+	m_pCreator = static_cast<CDCMCreator*>(m_pMapComponent->find("DCMCreator")->second->Clone());
 }
 
 void CEnvSphere::Update(float p_deltaTime)
@@ -105,7 +109,8 @@ void CEnvSphere::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 		m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 	}
 
-	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
+	//m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
+	m_pContext->PSSetShaderResources(0, 1, m_pCreator->Get_CubeMapSRV());
 
 	m_pMesh->Draw_Mesh();
 
@@ -146,6 +151,7 @@ void CEnvSphere::Release()
 	SAFE_DELETE(m_pShader);
 	SAFE_DELETE(m_pTexture);
 	SAFE_DELETE(m_pFrustum);
+	SAFE_DELETE(m_pCreator);
 
 	SAFE_RELEASE(m_pCB);
 	SAFE_RELEASE(m_pCBMtrl);

@@ -7,6 +7,7 @@ class CTransform;
 class CShader;
 class CTexture;
 class CFrustum;
+class CDCMCreator;
 
 class CEnvSphere : public CObject
 {
@@ -29,6 +30,7 @@ private:
 	CShader*		m_pShader;
 	CTexture*		m_pTexture;
 	CFrustum*		m_pFrustum;
+	CDCMCreator*	m_pCreator;
 
 private: //constant buffer
 	ID3D11Buffer*	m_pCB;
