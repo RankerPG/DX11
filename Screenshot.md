@@ -57,8 +57,18 @@
 </div>
 
 
-## 200206 동적 환경 매핑 적용 ( 호수 그려지지 않는 버그 수정 필요 )
+## 200207 동적 환경 매핑 적용 ( 호수 그려지지 않는 버그 수정 필요 )
 
 <div>
  <img src="Image/200207.PNG" width = 640 height = 360/>
+</div>
+
+## 200206 동적 환경 매핑 적용 ( 버그 수정 )
+
+<div>
+ <img src="Image/200220_1.PNG" width = 640 height = 360/>
+</div>
+
+<div>
+ <img src="Image/200220_2.PNG" width = 640 height = 360/>
 </div>
