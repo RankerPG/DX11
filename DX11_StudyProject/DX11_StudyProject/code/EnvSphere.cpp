@@ -103,43 +103,14 @@ void CEnvSphere::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 
 	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
 
+	m_mtrl.Env.y = (float)g_isReflect;
+
 	if (TRUE == p_isUseMtrl)
 	{
-		m_mtrl.Env.y = 0.f;
 		m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 	}
 
-	//m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
 	m_pContext->PSSetShaderResources(0, 1, m_pCreator->Get_CubeMapSRV());
-
-	m_pMesh->Draw_Mesh();
-
-	if (TRUE == p_isUseMtrl)
-	{
-		m_mtrl.Env.y = 1.f;
-		m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
-	}
-
-	// 왜 그림자 위치가 바뀔까
-	m_pTransform->Set_Trans(XMVectorSet(-10.f, 2.f, 0.f, 1.f));
-	m_pTransform->Update_Transform();
-	
-	if (nullptr == p_matAdd)
-	{
-		XMMATRIX matWorld = m_pTransform->Get_World();
-		XMStoreFloat4x4(&m_mat.matWorld, matWorld);
-		XMStoreFloat4x4(&m_mat.matWVP, matWorld * g_matView * g_matProj);
-		XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(matWorld));
-	}
-	else
-	{
-		XMMATRIX matWorld = m_pTransform->Get_World() * (*p_matAdd);
-		XMStoreFloat4x4(&m_mat.matWorld, matWorld);
-		XMStoreFloat4x4(&m_mat.matWVP, matWorld * g_matView * g_matProj);
-		XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(matWorld));
-	}
-
-	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
 
 	m_pMesh->Draw_Mesh();
 }

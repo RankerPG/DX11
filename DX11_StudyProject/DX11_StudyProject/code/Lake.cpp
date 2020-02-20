@@ -55,10 +55,10 @@ void CLake::Init()
 	m_pShader->Create_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), &m_pCB);
 	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
 
-	m_mtrl.diffuse = XMFLOAT4(1.f, 1.f, 1.f, 0.5f);
+	m_mtrl.diffuse = XMFLOAT4(1.f, 1.f, 1.f, 0.8f);
 	m_mtrl.ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.f);
 	m_mtrl.specular = XMFLOAT4(1.f, 1.f, 1.f, 1024.f);
-	m_mtrl.Env = XMFLOAT4(1.f, 0.f, 0.f, 0.f);
+	m_mtrl.Env = XMFLOAT4(0.5f, 0.f, 0.f, 0.f);
 
 	// 텍스쳐 복사
 	m_pTexture = static_cast<CTexture*>(m_pMapComponent->find("WaterTexture")->second->Clone());

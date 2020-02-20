@@ -20,6 +20,7 @@
 
 XMMATRIX g_matView, g_matViewWorld, g_matProj;
 UINT g_dwRenderCnt;
+BOOL g_isReflect = TRUE;
 
 CMainFrame::CMainFrame(CDevice* p_Device)
 	: m_pGraphicDevice(p_Device)
@@ -769,12 +770,16 @@ void CMainFrame::Update_Input()
 			m_pMainTimer->Stop();
 		}
 	}
+
+	if (m_pInput->Get_DIKPressState(DIK_1))
+	{
+		g_isReflect ^= TRUE;
+	}
 }
 
 void CMainFrame::Render_Default()
 {
 	Update_RasterizerState(RASTERIZER::CULLNONE);
-	Update_BlendState(BLEND::NONALPHA);
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTHOFF);
 
 	Update_TextureShader();
@@ -795,9 +800,6 @@ void CMainFrame::Render_Default()
 		m_pSphere->Render();
 	}
 
-	// ¾ËÆÄ ºí·»µù
-	Update_BlendState(BLEND::ALPHA);
-
 	if (TRUE == m_pBox->Get_Visible())
 	{
 		m_pBox->Render();
@@ -812,13 +814,15 @@ void CMainFrame::Render_Default()
 		Update_RasterizerState(RASTERIZER::CULLBACK);
 	}
 
+	Update_RasterizerState(RASTERIZER::CULLNONE);
+
 	Update_SamplerState(SAMPLER::CLAMP);
 
 	m_pTrees->Render();
 
-	Update_SamplerState(SAMPLER::WRAP);
+	Update_RasterizerState(RASTERIZER::CULLBACK);
 
-	m_pLake->Render();
+	Update_SamplerState(SAMPLER::WRAP);
 }
 
 void CMainFrame::Render_CubeMap()
@@ -839,32 +843,20 @@ void CMainFrame::Render_CubeMap()
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
 
 	m_pTerrain->Render();
-
-	if (TRUE == m_pSphere->Get_Visible())
-	{
-		m_pSphere->Render();
-	}
+	m_pSphere->Render();
 
 	// ¾ËÆÄ ºí·»µù
 	Update_BlendState(BLEND::ALPHA);
 
-	if (TRUE == m_pBox->Get_Visible())
-	{
-		m_pBox->Render();
-	}
+	m_pBox->Render();
 
-	if (TRUE == m_pBox->Get_Visible())
-	{
-		Update_RasterizerState(RASTERIZER::CULLFRONT);
+	Update_RasterizerState(RASTERIZER::CULLFRONT);
 
-		m_pBox->Render();
-
-		Update_RasterizerState(RASTERIZER::CULLBACK);
-	}
-
-	Update_SamplerState(SAMPLER::CLAMP);
+	m_pBox->Render();
 
 	Update_RasterizerState(RASTERIZER::CULLNONE);
+
+	Update_SamplerState(SAMPLER::CLAMP);
 
 	m_pTrees->Render();
 
@@ -903,8 +895,6 @@ void CMainFrame::Render_Stencil()
 	m_pBox->Render(&R);
 
 	Update_RasterizerState(RASTERIZER::CULLBACK);
-
-	m_pEnvSphere->Render(&R);
 
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
 

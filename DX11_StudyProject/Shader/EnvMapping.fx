@@ -107,13 +107,13 @@ float4 ps_main(VertexOut i) : SV_Target
 
 	float3 reflectVector;
 	
-	if (0 == g_Mtrl.Env.y)
+	if (1 == g_Mtrl.Env.y)
 	{
 		reflectVector = reflect(-eyePos, N);
 	}
 	else
 	{
-		reflectVector = refract(-eyePos, N, 1.51);
+		reflectVector = refract(-eyePos, N, 1.2);
 	}
 
 	float4 EnvColor = g_EnvMapTex.Sample(smpLinear, reflectVector);

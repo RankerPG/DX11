@@ -114,7 +114,7 @@ HRESULT CDCMCreator::Init_DCM()
 	depthTexDesc.ArraySize = 1;
 	depthTexDesc.SampleDesc.Count = 1;
 	depthTexDesc.SampleDesc.Quality = 0;
-	depthTexDesc.Format = DXGI_FORMAT_D32_FLOAT;
+	depthTexDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthTexDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthTexDesc.CPUAccessFlags = 0;
@@ -183,7 +183,7 @@ void CDCMCreator::Update_RenderTarget(XMFLOAT3 p_vPos, CMainFrame* p_mainFrame)
 	m_pContext->RSGetViewports(&dwNums, &beforeViewport);
 	m_pContext->RSSetViewports(1, &m_Viewport);
 
-	XMFLOAT4 clearColor(0.5f, 0.8f, 1.f, 1.f);
+	XMFLOAT4 clearColor(0.f, 0.f, 0.f, 1.f);
 
 	XMMATRIX matBeforeView, matBeforeProj;
 

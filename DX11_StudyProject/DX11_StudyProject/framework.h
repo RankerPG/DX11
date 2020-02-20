@@ -38,3 +38,5 @@ extern XMMATRIX g_matViewWorld;
 extern XMMATRIX g_matProj;
 
 extern UINT g_dwRenderCnt;
+
+extern BOOL g_isReflect; // TRUE == Reflect, FALSE == Refract

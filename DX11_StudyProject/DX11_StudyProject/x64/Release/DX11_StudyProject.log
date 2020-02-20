@@ -1,31 +1,7 @@
-﻿  Box.cpp
-  Camera.cpp
-  Component.cpp
-  Device.cpp
-  EnvSphere.cpp
-  FigureMesh.cpp
-  GeometryGenerator.cpp
-  Input.cpp
-  Lake.cpp
-  MainFrame.cpp
-  Mesh.cpp
-  Object.cpp
-  Shader.cpp
-  skybox.cpp
-  Sphere.cpp
-  Terrain.cpp
-  Texture.cpp
-  Timer.cpp
-  Transform.cpp
-  Trees.cpp
-  컴파일하고 있습니다...
-  Visible.cpp
-  DX11_StudyProject.cpp
-  Frustum.cpp
-C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\DX11_StudyProject\code\Texture.cpp(22,36): warning C4267: '초기화 중': 'size_t'에서 'UINT'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+﻿  MainFrame.cpp
   코드를 생성하고 있습니다.
-  90 of 1247 functions ( 7.2%) were compiled, the rest were copied from previous compilation.
-    32 functions were new in current compilation
-    94 functions had inline decision re-evaluated but remain unchanged
+  3 of 1283 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    18 functions had inline decision re-evaluated but remain unchanged
   코드를 생성했습니다.
   DX11_StudyProject.vcxproj -> C:\Users\RankerPG\Desktop\DX11\DX11_StudyProject\x64\Release\DX11_StudyProject.exe
