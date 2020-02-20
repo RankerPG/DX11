@@ -369,6 +369,163 @@ void CGeometryGenerator::Create_TexQuad(ID3D11Buffer** p_VB, ID3D11Buffer** p_IB
 	*p_dwIdxCnt = idxCnt;
 }
 
+void CGeometryGenerator::Create_NormalCube(float p_width, float p_height, float p_depth, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt)
+{
+	MeshData data;
+
+	Get_CubeData(p_width, p_height, p_depth, data);
+
+	TBNVERTEX vertices[24];
+
+	for (int i = 0; i < 24; ++i)
+	{
+		vertices[i].pos = data.Vertices[i].pos;
+		vertices[i].nrm = data.Vertices[i].nrm;
+		vertices[i].tan = data.Vertices[i].tangent;
+		vertices[i].uv = data.Vertices[i].uv;
+	}
+
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
+	bd.Usage = D3D11_USAGE_IMMUTABLE;
+	bd.ByteWidth = sizeof(TBNVERTEX) * 24;
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA subData;
+	subData.pSysMem = vertices;
+	subData.SysMemPitch = 0;
+	subData.SysMemSlicePitch = 0;
+
+	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, p_VB)))
+	{
+		MessageBox(g_hWnd, L"Create Vertex Buffer Failed!!", 0, 0);
+		return;
+	}
+
+	bd.Usage = D3D11_USAGE_IMMUTABLE;
+	bd.ByteWidth = sizeof(UINT) * 36;
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	subData.pSysMem = &data.Indices[0];
+
+	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, p_IB)))
+	{
+		(*p_VB)->Release();
+		MessageBox(g_hWnd, L"Create Index Buffer Failed!!", 0, 0);
+		return;
+	}
+
+	*p_dwIdxCnt = 36;
+}
+
+void CGeometryGenerator::Create_NormalTerrain(float p_width, float p_depth, float p_maxUV, UINT n, UINT m, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt)
+{
+	MeshData data;
+
+	Get_TerrainData(p_width, p_depth, p_maxUV, n, m, data);
+
+	UINT vtxCnt = (UINT)data.Vertices.size();
+
+	vector<TBNVERTEX> vertices(vtxCnt);
+
+	for (UINT i = 0; i < vtxCnt; ++i)
+	{
+		vertices[i].pos = data.Vertices[i].pos;
+		vertices[i].nrm = data.Vertices[i].nrm;
+		vertices[i].tan = data.Vertices[i].tangent;
+		vertices[i].uv = data.Vertices[i].uv;
+	}
+
+	//
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
+	bd.Usage = D3D11_USAGE_IMMUTABLE;
+	bd.ByteWidth = sizeof(TBNVERTEX) * vtxCnt;
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA subData;
+	subData.pSysMem = &vertices[0];
+	subData.SysMemPitch = 0;
+	subData.SysMemSlicePitch = 0;
+
+	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, p_VB)))
+	{
+		MessageBox(g_hWnd, L"Create Vertex Buffer Failed!!", 0, 0);
+		return;
+	}
+
+	UINT idxCnt = (UINT)data.Indices.size();
+
+	bd.Usage = D3D11_USAGE_IMMUTABLE;
+	bd.ByteWidth = sizeof(UINT) * idxCnt;
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	subData.pSysMem = &data.Indices[0];
+
+	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, p_IB)))
+	{
+		(*p_VB)->Release();
+		MessageBox(g_hWnd, L"Create Index Buffer Failed!!", 0, 0);
+		return;
+	}
+
+	*p_dwIdxCnt = idxCnt;
+}
+
+void CGeometryGenerator::Create_NormalSphere(float p_radius, UINT p_sliceCount, UINT p_stackCount, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt)
+{
+	MeshData data;
+
+	Get_SphereData(p_radius, p_sliceCount, p_stackCount, data);
+
+	UINT vtxCnt = (UINT)data.Vertices.size();
+
+	vector<TBNVERTEX> vertices(vtxCnt);
+
+	for (UINT i = 0; i < vtxCnt; ++i)
+	{
+		vertices[i].pos = data.Vertices[i].pos;
+		vertices[i].nrm = data.Vertices[i].nrm;
+		vertices[i].tan = data.Vertices[i].tangent;
+		vertices[i].uv = data.Vertices[i].uv;
+	}
+
+	//
+	D3D11_BUFFER_DESC bd;
+	ZeroMemory(&bd, sizeof(D3D11_BUFFER_DESC));
+	bd.Usage = D3D11_USAGE_IMMUTABLE;
+	bd.ByteWidth = sizeof(TBNVERTEX) * vtxCnt;
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+	D3D11_SUBRESOURCE_DATA subData;
+	subData.pSysMem = &vertices[0];
+	subData.SysMemPitch = 0;
+	subData.SysMemSlicePitch = 0;
+
+	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, p_VB)))
+	{
+		MessageBox(g_hWnd, L"Create Vertex Buffer Failed!!", 0, 0);
+		return;
+	}
+
+	UINT idxCnt = (UINT)data.Indices.size();
+
+	bd.Usage = D3D11_USAGE_IMMUTABLE;
+	bd.ByteWidth = sizeof(UINT) * idxCnt;
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+	subData.pSysMem = &data.Indices[0];
+
+	if (FAILED(m_pDevice->CreateBuffer(&bd, &subData, p_IB)))
+	{
+		(*p_VB)->Release();
+		MessageBox(g_hWnd, L"Create Index Buffer Failed!!", 0, 0);
+		return;
+	}
+
+	*p_dwIdxCnt = idxCnt;
+}
+
 void CGeometryGenerator::Get_CubeData(float p_width, float p_height, float p_depth, MeshData& p_data)
 {
 	p_data.Vertices.resize(24);

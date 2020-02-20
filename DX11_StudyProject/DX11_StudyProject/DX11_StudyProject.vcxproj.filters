@@ -310,5 +310,8 @@
     <FxCompile Include="..\Shader\EnvMapping.fx">
       <Filter>97. fx</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shader\NormalMapping.fx">
+      <Filter>97. fx</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

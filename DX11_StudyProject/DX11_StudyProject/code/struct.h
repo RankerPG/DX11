@@ -24,6 +24,14 @@ struct TEXVERTEX
 	XMFLOAT2 uv;
 };
 
+struct TBNVERTEX
+{
+	XMFLOAT4 pos;
+	XMFLOAT3 nrm;
+	XMFLOAT3 tan;
+	XMFLOAT2 uv;
+};
+
 struct GEOVERTEX
 {
 	XMFLOAT4 pos;

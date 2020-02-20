@@ -27,6 +27,7 @@ private:
 	CTransform*			m_pTransform;
 	CShader*			m_pShader;
 	CTexture*			m_pTexture;
+	CTexture*			m_pNormalTexture;
 
 private: //constant buffer
 	ID3D11Buffer* m_pCB;

@@ -27,10 +27,10 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pInput(CInput::Get_Instance())
 	, m_pDevice(nullptr)
 	, m_pContext(nullptr)
-	, m_pState{nullptr, nullptr, nullptr, nullptr, nullptr}
-	, m_pSampler{nullptr, nullptr}
-	, m_pBlend{nullptr, nullptr, nullptr}
-	, m_pDepthStencil{nullptr, nullptr, nullptr, nullptr}
+	, m_pState{ nullptr, nullptr, nullptr, nullptr, nullptr }
+	, m_pSampler{ nullptr, nullptr }
+	, m_pBlend{ nullptr, nullptr, nullptr }
+	, m_pDepthStencil{ nullptr, nullptr, nullptr, nullptr }
 	, m_pCamera(nullptr)
 	, m_pMainTimer(new CTimer())
 	, m_pBox(nullptr)
@@ -48,6 +48,8 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pGeometryShader(nullptr)
 	, m_pBillboardShader(nullptr)
 	, m_pSkyBoxShader(nullptr)
+	, m_pEnvMapShader(nullptr)
+	, m_pNrmMapShader(nullptr)
 	, m_pCBLight(nullptr)
 	, m_pCBPointLight(nullptr)
 	, m_pCBPerFrame(nullptr)
@@ -282,9 +284,12 @@ void CMainFrame::Create_Components()
 	m_pEnvMapShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/EnvMapping.fx", "vs_main", "ps_main", 2);
 	m_mapComponent.insert(make_pair("EnvMapShader", pShader));
 
-	//// 메쉬
+	m_pNrmMapShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/NormalMapping.fx", "vs_main", "ps_main", 5);
+	m_mapComponent.insert(make_pair("NrmMapShader", pShader));
+
+	// 메쉬
 	CMesh* pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext);
-	m_mapComponent.insert(make_pair("CubeMesh", pMesh));
+	m_mapComponent.insert(make_pair("CubeNrmMesh", pMesh));
 
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 1);
 	m_mapComponent.insert(make_pair("SphereMesh", pMesh));
@@ -304,6 +309,9 @@ void CMainFrame::Create_Components()
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 6);
 	m_mapComponent.insert(make_pair("QuadTexMesh", pMesh));
 
+	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 7);
+	m_mapComponent.insert(make_pair("SphereNrmMesh", pMesh));
+
 	// 트랜스폼
 	CTransform* pTransform = CTransform::Create_Transform(m_pDevice, m_pContext);
 	m_mapComponent.insert(make_pair("Transform", pTransform));
@@ -312,14 +320,26 @@ void CMainFrame::Create_Components()
 	CTexture* pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/WoodBox.dds", FALSE);
 	m_mapComponent.insert(make_pair("BoxTexture", pTexture));
 
-	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/WireFence.dds");
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Floor.jpg");
+	m_mapComponent.insert(make_pair("CubeTexture", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Floor_N.jpg");
+	m_mapComponent.insert(make_pair("CubeTexture_N", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/WireFence.dds", FALSE);
 	m_mapComponent.insert(make_pair("WireTexture", pTexture));
 
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/earth.bmp");
 	m_mapComponent.insert(make_pair("EarthTexture", pTexture));
 
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/earth_N.png");
+	m_mapComponent.insert(make_pair("EarthTexture_N", pTexture));
+
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Terrain.png");
 	m_mapComponent.insert(make_pair("TerrainTexture", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Terrain_N.png");
+	m_mapComponent.insert(make_pair("TerrainTexture_N", pTexture));
 
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Water2.dds", FALSE);
 	m_mapComponent.insert(make_pair("WaterTexture", pTexture));
@@ -750,6 +770,15 @@ void CMainFrame::Update_EnvMappingShader()
 	m_pInstanceShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
 }
 
+void CMainFrame::Update_NrmMappingShader()
+{
+	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
+	m_pNrmMapShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
+	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
+	m_pNrmMapShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
+	m_pNrmMapShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
+}
+
 void CMainFrame::Update_Input()
 {
 	if (m_pInput->Get_DIKPressState(DIK_SPACE))
@@ -786,6 +815,7 @@ void CMainFrame::Render_Default()
 	Update_GeometryShader();
 	Update_BillboardShader();
 	Update_EnvMappingShader();
+	Update_NrmMappingShader();
 
 	// 그리기
 	m_pSkyBox->Render();
@@ -895,6 +925,8 @@ void CMainFrame::Render_Stencil()
 	m_pBox->Render(&R);
 
 	Update_RasterizerState(RASTERIZER::CULLBACK);
+
+	m_pEnvSphere->Render(&R);
 
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTH);
 

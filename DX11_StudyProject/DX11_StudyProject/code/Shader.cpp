@@ -218,7 +218,8 @@ void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 			return;
 		}
 	}
-		break;
+	break;
+
 	case 1:
 	{
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
@@ -234,7 +235,8 @@ void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 			return;
 		}
 	}
-		break;
+	break;
+
 	case 2:
 	{
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
@@ -251,7 +253,8 @@ void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 			return;
 		}
 	}
-		break;
+	break;
+
 	case 3:
 	{
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
@@ -267,7 +270,8 @@ void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 			return;
 		}
 	}
-		break;
+	break;
+
 	case 4:
 	{
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
@@ -288,7 +292,27 @@ void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 			return;
 		}
 	}
-		break;
+	break;
+
+	case 5:
+	{
+		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+		{
+			{ "POSITION",	0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0, 0,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "NORMAL",		0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 16,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TANGENT",	0, DXGI_FORMAT_R32G32B32_FLOAT,		0, 28,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD",	0, DXGI_FORMAT_R32G32_FLOAT,		0, 40,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		if (FAILED(m_pDevice->CreateInputLayout(vertexDesc, 4, p_CompileVS->GetBufferPointer(),
+			p_CompileVS->GetBufferSize(), &m_pInputLayout)))
+		{
+			MessageBox(g_hWnd, L"Create InputLayout Failed!!", 0, 0);
+			return;
+		}
+	}
+	break;
+
 	}
 }
 

@@ -28,6 +28,7 @@ private:
 	CTransform*		m_pTransform;
 	CShader*		m_pShader;
 	CTexture*		m_pTexture;
+	CTexture*		m_pNrmTexture;
 	CFrustum*		m_pFrustum;
 
 private: //constant buffer

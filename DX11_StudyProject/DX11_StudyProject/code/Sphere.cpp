@@ -12,6 +12,7 @@ CSphere::CSphere(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, COMHASH
 	, m_pTransform(nullptr)
 	, m_pShader(nullptr)
 	, m_pTexture(nullptr)
+	, m_pNrmTexture(nullptr)
 	, m_pFrustum(nullptr)
 	, m_pCB(nullptr)
 	, m_pCBMtrl(nullptr)
@@ -30,7 +31,7 @@ void CSphere::Init()
 	assert(m_pMapComponent);
 
 	// 메쉬 생성
-	m_pMesh = static_cast<CMesh*>(m_pMapComponent->find("SphereTexMesh")->second->Clone());
+	m_pMesh = static_cast<CMesh*>(m_pMapComponent->find("SphereNrmMesh")->second->Clone());
 
 	// 트랜스폼 생성
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
@@ -47,7 +48,7 @@ void CSphere::Init()
 	m_fRadius = bs.Radius;
 
 	// 쉐이더 생성
-	m_pShader = static_cast<CShader*>(m_pMapComponent->find("TextureShader")->second->Clone());
+	m_pShader = static_cast<CShader*>(m_pMapComponent->find("NrmMapShader")->second->Clone());
 	m_pShader->Create_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), &m_pCB);
 	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
 
@@ -56,6 +57,8 @@ void CSphere::Init()
 	m_mtrl.specular = XMFLOAT4(1.f, 1.f, 1.f, 8.f);
 
 	m_pTexture = static_cast<CTexture*>(m_pMapComponent->find("EarthTexture")->second->Clone());
+
+	m_pNrmTexture = static_cast<CTexture*>(m_pMapComponent->find("EarthTexture_N")->second->Clone());
 }
 
 void CSphere::Update(float p_deltaTime)
@@ -103,7 +106,8 @@ void CSphere::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 		m_pShader->Update_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 	}
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
-
+	m_pContext->PSSetShaderResources(1, 1, m_pNrmTexture->Get_TextureRV());
+	
 	m_pMesh->Draw_Mesh();
 }
 
@@ -113,6 +117,7 @@ void CSphere::Release()
 	SAFE_DELETE(m_pTransform);
 	SAFE_DELETE(m_pShader);
 	SAFE_DELETE(m_pTexture);
+	SAFE_DELETE(m_pNrmTexture);
 	SAFE_DELETE(m_pFrustum);
 
 	SAFE_RELEASE(m_pCB);

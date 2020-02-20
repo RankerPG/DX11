@@ -25,7 +25,9 @@ struct Material
 
 SamplerState smpLinear : register (s0);
 
-TextureCube g_EnvMapTex : register (t0);
+Texture2D g_DiffuseTex : register (t0);
+
+Texture2D g_NormalMapTex : register (t1);
 
 cbuffer cbData : register (b0)
 {
@@ -62,6 +64,7 @@ struct VertexIn
 {
 	float4 pos	: POSITION;
 	float3 nrm	: NORMAL;
+	float3 tan	: TANGENT;
 	float2 uv	: TEXCOORD;
 };
 
@@ -70,6 +73,7 @@ struct VertexOut
 	float4 pos	: SV_POSITION;
 	float4 posW : POSITION;
 	float3 nrmW	: NORMAL;
+	float3 tanW : TANGENT;
 	float2 uv	: TEXCOORD;
 };
 
@@ -81,9 +85,9 @@ VertexOut vs_main(VertexIn i)
 
 	o.posW = mul(i.pos, g_matWorld);
 
-	float3 nrmW = mul(i.nrm, (float3x3)g_matWorldInvT);
+	o.nrmW = mul(i.nrm, (float3x3)g_matWorldInvT);
 
-	o.nrmW = nrmW;
+	o.tanW = mul(i.tan, (float3x3)g_matWorldInvT);
 
 	o.uv = mul(float4(i.uv, 0.f, 1.f), g_matTex).xy;
 
@@ -99,24 +103,23 @@ float4 ps_main(VertexOut i) : SV_Target
 	float4 amb = 0;
 	float4 spec = 0;
 
+	float4 texColor = g_DiffuseTex.Sample(smpLinear, i.uv);
+
+	clip(texColor.a - 0.1f);
+
 	float4 D, A, S;
 
 	float3 N = normalize(i.nrmW);
+	float3 T = normalize(i.tanW - dot(i.tanW, N) * N);
+	float3 B = cross(N, T);
 
-	float3 eyePos = g_ViewPos - i.posW.xyz;
+	float3 tangentN = g_NormalMapTex.Sample(smpLinear, i.uv).xyz;
 
-	float3 reflectVector;
+	tangentN = tangentN * 2.f - 1.f;
 
-	if (1 == g_Mtrl.Env.y)
-	{
-		reflectVector = reflect(-eyePos, N);
-	}
-	else
-	{
-		reflectVector = refract(-eyePos, N, 1.2);
-	}
+	float3x3 TBN = float3x3(T, B, N);
 
-	float4 EnvColor = g_EnvMapTex.Sample(smpLinear, reflectVector);
+	N = mul(tangentN, TBN);
 
 	ComputeDirectionalLight(i.posW.xyz, N, D, A, S);
 
@@ -130,17 +133,19 @@ float4 ps_main(VertexOut i) : SV_Target
 	amb += A;
 	spec += S;
 
+	float3 eyePos = g_ViewPos - i.posW.xyz;
+
 	float d = length(eyePos);
 
 	eyePos /= d;
 
 	float fogLerp = saturate((d - g_FogStart) / g_FogRange);
 
-	float4 litColor = g_Mtrl.Env.x * EnvColor + (1 - g_Mtrl.Env.x) * (diff + amb) + spec;
+	float4 litColor = texColor * (diff + amb) + spec;
 
 	float4 col = lerp(litColor, g_FogColor, fogLerp);
 
-	col.a = g_Mtrl.diff.a;
+	col.a = texColor.a * g_Mtrl.diff.a;
 
 	return col;
 }
@@ -193,7 +198,7 @@ void ComputePointLight(float3 pos, float3 nrm, out float4 diff, out float4 amb, 
 	//spec.rgb *= att;
 }
 
-technique11 EnvTech
+technique11 ColorTech
 {
 	pass p0
 	{

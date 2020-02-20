@@ -28,7 +28,8 @@ void CFigureMesh::Init_Mesh()
 	switch (m_dwType)
 	{
 	case 0:
-		generator->Create_Cube(1.f, 1.f, 1.f, &m_pVB, &m_pIB, &m_dwIdxCnt);
+		generator->Create_NormalCube(1.f, 1.f, 1.f, &m_pVB, &m_pIB, &m_dwIdxCnt);
+		m_dwStride = sizeof(TBNVERTEX);
 		break;
 	case 1:
 		generator->Create_Sphere(1.f, 40, 20, &m_pVB, &m_pIB, &m_dwIdxCnt);
@@ -45,12 +46,16 @@ void CFigureMesh::Init_Mesh()
 		m_dwStride = sizeof(TEXVERTEX);
 		break;
 	case 5:
-		generator->Create_TexTerrain(128.f, 128.f, 20.f, 129, 129, &m_pVB, &m_pIB, &m_dwIdxCnt);
-		m_dwStride = sizeof(TEXVERTEX);
+		generator->Create_NormalTerrain(128.f, 128.f, 20.f, 129, 129, &m_pVB, &m_pIB, &m_dwIdxCnt);
+		m_dwStride = sizeof(TBNVERTEX);
 		break;
 	case 6:
 		generator->Create_TexQuad(&m_pVB, &m_pIB, &m_dwIdxCnt);
 		m_dwStride = sizeof(TEXVERTEX);
+		break;
+	case 7:
+		generator->Create_NormalSphere(1.f, 40, 20, &m_pVB, &m_pIB, &m_dwIdxCnt);
+		m_dwStride = sizeof(TBNVERTEX);
 		break;
 	}
 }

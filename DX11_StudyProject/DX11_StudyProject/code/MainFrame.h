@@ -64,6 +64,7 @@ public: //¿ø·¡ private temp
 	void Update_BillboardShader();
 	void Update_InstanceShader();
 	void Update_EnvMappingShader();
+	void Update_NrmMappingShader();
 
 	void Update_Input();
 
@@ -107,6 +108,7 @@ private:
 	CShader*					m_pInstanceShader;
 	CShader*					m_pSkyBoxShader;
 	CShader*					m_pEnvMapShader;
+	CShader*					m_pNrmMapShader;
 
 	ID3D11Buffer*				m_pCBLight;
 	ID3D11Buffer*				m_pCBPointLight;
