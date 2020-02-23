@@ -63,7 +63,7 @@
  <img src="Image/200207.PNG" width = 640 height = 360/>
 </div>
 
-## 200206 동적 환경 매핑 적용 ( 버그 수정 )
+## 200220 동적 환경 매핑 적용 ( 버그 수정 )
 
 <div>
  <img src="Image/200220_1.PNG" width = 640 height = 360/>
@@ -71,4 +71,10 @@
 
 <div>
  <img src="Image/200220_2.PNG" width = 640 height = 360/>
+</div>
+
+## 200221 노말 매핑 적용
+
+<div>
+ <img src="Image/200221.PNG" width = 640 height = 360/>
 </div>
