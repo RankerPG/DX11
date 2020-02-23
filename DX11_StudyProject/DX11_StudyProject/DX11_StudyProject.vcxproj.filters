@@ -313,5 +313,11 @@
     <FxCompile Include="..\Shader\NormalMapping.fx">
       <Filter>97. fx</Filter>
     </FxCompile>
+    <FxCompile Include="..\Shader\Displacement.fx">
+      <Filter>97. fx</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\wave.fx">
+      <Filter>97. fx</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

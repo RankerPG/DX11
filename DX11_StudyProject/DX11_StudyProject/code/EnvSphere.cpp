@@ -49,7 +49,7 @@ void CEnvSphere::Init()
 	m_fRadius = bs.Radius;
 
 	// 쉐이더 생성
-	m_pShader = static_cast<CShader*>(m_pMapComponent->find("EnvMapShader")->second->Clone());
+	m_pShader = static_cast<CShader*>(m_pMapComponent->find("EnvMapFX")->second->Clone());
 	m_pShader->Create_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), &m_pCB);
 	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
 

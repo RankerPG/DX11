@@ -46,6 +46,15 @@ struct TRANSMATRIX
 	XMFLOAT4X4 matTex;
 };
 
+struct TRANSMATRIX_TEX2
+{
+	XMFLOAT4X4 matWorld;
+	XMFLOAT4X4 matWorldRT;
+	XMFLOAT4X4 matWVP;
+	XMFLOAT4X4 matTex;
+	XMFLOAT4X4 matTex2;
+};
+
 struct LIGHT
 {
 	XMFLOAT3A direction;
@@ -77,4 +86,13 @@ struct PERFRAME
 	XMFLOAT4 fogColor;
 	float fogStart;
 	float fogRange;
+};
+
+struct TESS
+{
+	float maxDistance;
+	float minDistance;
+	float maxFactor;
+	float minFactor;
+	XMFLOAT4 heightScale;
 };

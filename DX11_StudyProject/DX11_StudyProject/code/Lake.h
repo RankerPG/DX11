@@ -26,15 +26,21 @@ private:
 private:
 	CMesh* m_pMesh;
 	CTransform* m_pTransform;
+	CTransform* m_pTransform_2;
 	CShader* m_pShader;
 	CTexture* m_pTexture;
-	CTexture* m_pEnvTexture;
+	CTexture* m_pTexture_2;
+	CTexture* m_pTexture_N;
+	CTexture* m_pTexture_N2;
 	CFrustum* m_pFrustum;
 
 private: //constant buffer
-	ID3D11Buffer* m_pCB;
-	ID3D11Buffer* m_pCBMtrl;
+	ID3D11Buffer*		m_pCB;
+	ID3D11Buffer*		m_pCBMtrl;
 
-	TRANSMATRIX		m_mat;
-	MATERIAL		m_mtrl;
+	TRANSMATRIX_TEX2	m_mat;
+	MATERIAL			m_mtrl;
+
+private:
+	XMFLOAT2			m_vecTexTrans[2];
 };

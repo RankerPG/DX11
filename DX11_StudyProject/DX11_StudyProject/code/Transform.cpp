@@ -39,12 +39,21 @@ CTransform::~CTransform()
 
 void CTransform::Update_Transform()
 {
+	Update_World();
+	Update_Tex();
+}
+
+void CTransform::Update_World()
+{
 	m_matScale = XMMatrixScalingFromVector(m_vScale);
 	m_matRot = XMMatrixRotationRollPitchYawFromVector(m_vRot);
 	m_matTrans = XMMatrixTranslationFromVector(m_vTrans);
 
 	m_matWorld = m_matScale * m_matRot * m_matTrans;
+}
 
+void CTransform::Update_Tex()
+{
 	XMMATRIX matTexScale, matTexRot, matTexTrans;
 	matTexScale = XMMatrixScalingFromVector(m_vTexScale);
 	matTexRot = XMMatrixRotationRollPitchYawFromVector(m_vTexRot);

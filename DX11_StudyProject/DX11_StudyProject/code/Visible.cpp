@@ -47,7 +47,7 @@ void CVisible::Init()
 	m_fRadius = bs.Radius;
 
 	// 쉐이더 생성
-	m_pShader = static_cast<CShader*>(m_pMapComponent->find("DefaultShader")->second->Clone());
+	m_pShader = static_cast<CShader*>(m_pMapComponent->find("DefaultFX")->second->Clone());
 	m_pShader->Create_ConstantBuffer(&m_mat, sizeof(XMMATRIX), &m_pCB);
 	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
 

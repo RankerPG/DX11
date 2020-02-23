@@ -28,6 +28,8 @@ public:
 	enum class SAMPLER { WRAP = 0, CLAMP, SMP_END };
 	enum class BLEND { NONALPHA = 0, ALPHA, ALPHAONE, BLEND_END };
 	enum class DEPTHSTENCIL { DEPTH = 0, STENCILON, DRAWSTENCIL, SHADOWON, DEPTHOFF, DS_END };
+	enum class SHADER { LIGHT = 0, TEXTURE, GEOMETRY, BILLBORAD, INSTANCE, SKYBOX, ENVMAP, NORMALMAP
+		, DISPLACEMENT, WAVE, SHADER_END };
 
 public:
 	CMainFrame(CDevice* p_Device);
@@ -58,13 +60,8 @@ public: //¿ø·¡ private temp
 	void Update_BlendState(BLEND p_eBS);
 	void Update_DepthStencilState(DEPTHSTENCIL p_eDS);
 
-	void Update_LightShader();
-	void Update_TextureShader();
-	void Update_GeometryShader();
-	void Update_BillboardShader();
-	void Update_InstanceShader();
-	void Update_EnvMappingShader();
-	void Update_NrmMappingShader();
+	void Update_ShaderArray();
+	void Update_Shader(int p_shaderNum);
 
 	void Update_Input();
 
@@ -101,24 +98,19 @@ private:
 	CFrustum*					m_pFrustum;
 	CDCMCreator*				m_pCreator;
 
-	CShader*					m_pLightShader;
-	CShader*					m_pTextureShader;
-	CShader*					m_pGeometryShader;
-	CShader*					m_pBillboardShader;
-	CShader*					m_pInstanceShader;
-	CShader*					m_pSkyBoxShader;
-	CShader*					m_pEnvMapShader;
-	CShader*					m_pNrmMapShader;
+	CShader*					m_arrShader[(int)SHADER::SHADER_END];
 
 	ID3D11Buffer*				m_pCBLight;
 	ID3D11Buffer*				m_pCBPointLight;
 	ID3D11Buffer*				m_pCBPerFrame;
 	ID3D11Buffer*				m_pCBMtrl;
+	ID3D11Buffer*				m_pCBTess;
 
 	LIGHT						m_Light;
 	POINTLIGHT					m_PointLight;
 	PERFRAME					m_PerFrame;
 	MATERIAL					m_ShadowMtrl;
+	TESS						m_Tess;
 
 private:
 	UINT						m_dwFrameCnt;

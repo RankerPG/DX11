@@ -42,7 +42,7 @@ void CTrees::Init()
 	m_pTransform->Update_Transform();
 
 	// ½¦ÀÌ´õ »ý¼º
-	m_pShader = static_cast<CShader*>(m_pMapComponent->find("InstanceShader")->second->Clone());
+	m_pShader = static_cast<CShader*>(m_pMapComponent->find("InstanceFX")->second->Clone());
 	m_pShader->Create_ConstantBuffer(&XMFLOAT4X4(), sizeof(XMFLOAT4X4), &m_pCB);
 	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
 
@@ -76,7 +76,7 @@ void CTrees::Init()
 		int iX = (rand() % 128) - 64;
 		int iZ = (rand() % 128) - 64;
 		
-		if (-10 < iX && 10 > iX && -10 < iZ && 10 > iZ)
+		if (-20 < iX && 20 > iX && -20 < iZ && 20 > iZ)
 		{
 			continue;
 		}

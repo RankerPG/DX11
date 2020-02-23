@@ -5,6 +5,8 @@ CShader::CShader(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
 	, m_pVS(nullptr)
 	, m_pPS(nullptr)
 	, m_pGS(nullptr)
+	, m_pHS(nullptr)
+	, m_pDS(nullptr)
 	, m_pInputLayout(nullptr)
 {
 }
@@ -14,14 +16,24 @@ CShader::CShader(const CShader& rhs)
 	, m_pVS(rhs.m_pVS)
 	, m_pPS(rhs.m_pPS)
 	, m_pGS(rhs.m_pGS)
+	, m_pHS(rhs.m_pHS)
+	, m_pDS(rhs.m_pDS)
 	, m_pInputLayout(rhs.m_pInputLayout)
 {
-	m_pVS->AddRef();
+ 	m_pVS->AddRef();
 	m_pPS->AddRef();
+
 	if (nullptr != m_pGS)
 	{
 		m_pGS->AddRef();
 	}
+
+	if (nullptr != m_pHS)
+	{
+		m_pHS->AddRef();
+		m_pDS->AddRef();
+	}
+
 	m_pInputLayout->AddRef();
 }
 
@@ -30,6 +42,8 @@ CShader::~CShader()
 	SAFE_RELEASE(m_pVS);
 	SAFE_RELEASE(m_pPS);
 	SAFE_RELEASE(m_pGS);
+	SAFE_RELEASE(m_pHS);
+	SAFE_RELEASE(m_pDS);
 	SAFE_RELEASE(m_pInputLayout);
 }
 
@@ -140,6 +154,76 @@ void CShader::Create_GeometryShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPC
 	SAFE_RELEASE(compiledGS);
 }
 
+void CShader::Create_HullShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR p_version)
+{
+	ID3D10Blob* compiledHS = nullptr;
+	ID3D10Blob* compilationMsgs = nullptr;
+
+	UINT flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+
+	HRESULT hr = D3DCompileFromFile(p_filename, 0, 0, p_entrypoint, p_version, flags, 0, &compiledHS, &compilationMsgs);
+
+	if (nullptr != compilationMsgs)
+	{
+		compilationMsgs->Release();
+		MessageBoxA(g_hWnd, (char*)compilationMsgs->GetBufferPointer(), 0, 0);
+		return;
+	}
+
+	if (FAILED(hr))
+	{
+		compiledHS->Release();
+		MessageBox(g_hWnd, L"Shader Compile Failed!!", 0, 0);
+		return;
+	}
+
+	if (FAILED(m_pDevice->CreateHullShader(compiledHS->GetBufferPointer(),
+		compiledHS->GetBufferSize(),
+		nullptr,
+		&m_pHS)))
+	{
+		MessageBox(g_hWnd, L"Create Pixel Shader Failed!!", 0, 0);
+		return;
+	}
+
+	SAFE_RELEASE(compiledHS);
+}
+
+void CShader::Create_DomainShader(LPCWSTR p_filename, LPCSTR p_entrypoint, LPCSTR p_version)
+{
+	ID3D10Blob* compiledDS = nullptr;
+	ID3D10Blob* compilationMsgs = nullptr;
+
+	UINT flags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+
+	HRESULT hr = D3DCompileFromFile(p_filename, 0, 0, p_entrypoint, p_version, flags, 0, &compiledDS, &compilationMsgs);
+
+	if (nullptr != compilationMsgs)
+	{
+		compilationMsgs->Release();
+		MessageBoxA(g_hWnd, (char*)compilationMsgs->GetBufferPointer(), 0, 0);
+		return;
+	}
+
+	if (FAILED(hr))
+	{
+		compiledDS->Release();
+		MessageBox(g_hWnd, L"Shader Compile Failed!!", 0, 0);
+		return;
+	}
+
+	if (FAILED(m_pDevice->CreateDomainShader(compiledDS->GetBufferPointer(),
+		compiledDS->GetBufferSize(),
+		nullptr,
+		&m_pDS)))
+	{
+		MessageBox(g_hWnd, L"Create Pixel Shader Failed!!", 0, 0);
+		return;
+	}
+
+	SAFE_RELEASE(compiledDS);
+}
+
 void CShader::Create_ConstantBuffer(LPVOID p_data, UINT p_size, ID3D11Buffer** p_CB)
 {
 	D3D11_BUFFER_DESC bd;
@@ -165,6 +249,7 @@ void CShader::Update_Shader()
 {
 	m_pContext->VSSetShader(m_pVS, nullptr, 0);
 	m_pContext->PSSetShader(m_pPS, nullptr, 0);
+
 	if (nullptr != m_pGS)
 	{
 		m_pContext->GSSetShader(m_pGS, nullptr, 0);
@@ -172,6 +257,17 @@ void CShader::Update_Shader()
 	else
 	{
 		m_pContext->GSSetShader(nullptr, nullptr, 0);
+	}
+
+	if (nullptr != m_pHS)
+	{
+		m_pContext->HSSetShader(m_pHS, nullptr, 0);
+		m_pContext->DSSetShader(m_pDS, nullptr, 0);
+	}
+	else
+	{
+		m_pContext->HSSetShader(nullptr, nullptr, 0);
+		m_pContext->DSSetShader(nullptr, nullptr, 0);
 	}
 }
 
@@ -193,10 +289,18 @@ void CShader::Update_ConstantBuffer(LPVOID p_data, UINT p_size, ID3D11Buffer* p_
 	m_pContext->Unmap(p_CB, 0);
 
 	m_pContext->VSSetConstantBuffers(p_slot, 1, &p_CB);
+
 	if (nullptr != m_pGS)
 	{
 		m_pContext->GSSetConstantBuffers(p_slot, 1, &p_CB);
 	}
+
+	if (nullptr != m_pHS)
+	{
+		m_pContext->HSSetConstantBuffers(p_slot, 1, &p_CB);
+		m_pContext->DSSetConstantBuffers(p_slot, 1, &p_CB);
+	}
+
 	m_pContext->PSSetConstantBuffers(p_slot, 1, &p_CB);
 }
 

@@ -50,11 +50,16 @@ void CFigureMesh::Init_Mesh()
 		m_dwStride = sizeof(TBNVERTEX);
 		break;
 	case 6:
-		generator->Create_TexQuad(&m_pVB, &m_pIB, &m_dwIdxCnt);
-		m_dwStride = sizeof(TEXVERTEX);
+		generator->Create_NormalQuad(&m_pVB, &m_pIB, &m_dwIdxCnt);
+		//generator->Create_TexQuad(&m_pVB, &m_pIB, &m_dwIdxCnt);
+		m_dwStride = sizeof(TBNVERTEX);
 		break;
 	case 7:
 		generator->Create_NormalSphere(1.f, 40, 20, &m_pVB, &m_pIB, &m_dwIdxCnt);
+		m_dwStride = sizeof(TBNVERTEX);
+		break;
+	case 8:
+		generator->Create_NormalTileQuad(32.f, 32.f, 16.f, 33, 33, &m_pVB, &m_pIB, &m_dwIdxCnt);
 		m_dwStride = sizeof(TBNVERTEX);
 		break;
 	}

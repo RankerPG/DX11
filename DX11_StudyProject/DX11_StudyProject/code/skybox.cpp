@@ -45,7 +45,7 @@ void CSkyBox::Init()
 	m_fRadius = bs.Radius;
 
 	// 쉐이더 생성
-	m_pShader = static_cast<CShader*>(m_pMapComponent->find("SkyboxShader")->second->Clone());
+	m_pShader = static_cast<CShader*>(m_pMapComponent->find("SkyboxFX")->second->Clone());
 	m_pShader->Create_ConstantBuffer(&m_matWVP, sizeof(XMFLOAT4X4), &m_pCB);
 
 	// 텍스쳐 복사

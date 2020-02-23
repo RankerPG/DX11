@@ -18,7 +18,7 @@ public:
 	inline const XMVECTOR& Get_Scale() const { return m_vScale; }
 	inline const XMVECTOR& Get_Rot() const { return m_vRot; }
 	inline const XMVECTOR& Get_Trans() const { return m_vTrans; }
-	inline const XMMATRIX& Get_Tex() const { return m_matTex; }
+	inline const XMMATRIX& Get_Tex() const { return m_matTex; } // 임시로 참조 값을 보내지 않음
 	inline const XMMATRIX& Get_World() const { return m_matWorld; }
 
 	inline void Set_Scale(XMVECTOR p_Scale) { m_vScale = p_Scale; }
@@ -39,6 +39,8 @@ public:
 
 public:
 	void Update_Transform();
+	void Update_World();
+	void Update_Tex();
 
 public:
 	static CTransform* Create_Transform(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);

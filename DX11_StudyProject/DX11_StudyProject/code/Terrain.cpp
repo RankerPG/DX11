@@ -35,7 +35,7 @@ void CTerrain::Init()
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
 
 	// 쉐이더
-	m_pShader = static_cast<CShader*>(m_pMapComponent->find("NrmMapShader")->second->Clone());
+	m_pShader = static_cast<CShader*>(m_pMapComponent->find("DisplacementFX")->second->Clone());
 	m_pShader->Create_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), &m_pCB);
 	m_pShader->Create_ConstantBuffer(&m_mtrl, sizeof(MATERIAL), &m_pCBMtrl);
 
@@ -62,14 +62,14 @@ void CTerrain::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 {
 	m_pContext->IASetVertexBuffers(0, 1, m_pMesh->Get_VertexBuffer(), &m_pMesh->Get_Stride(), &m_pMesh->Get_Offset());
 	m_pContext->IASetIndexBuffer(m_pMesh->Get_IndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-	m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 	m_pContext->IASetInputLayout(m_pShader->Get_Layout());
 
 	m_pShader->Update_Shader();
 
 	XMStoreFloat4x4(&m_mat.matWorld, m_pTransform->Get_World());
 	XMStoreFloat4x4(&m_mat.matWorldRT, InverseTranspose(m_pTransform->Get_World()));
-	XMStoreFloat4x4(&m_mat.matWVP, m_pTransform->Get_World() * g_matView * g_matProj);
+	XMStoreFloat4x4(&m_mat.matWVP, g_matView * g_matProj); // 변위 매핑의 경우 VP를 리턴함
 	XMStoreFloat4x4(&m_mat.matTex, m_pTransform->Get_Tex());
 
 	m_pShader->Update_ConstantBuffer(&m_mat, sizeof(TRANSMATRIX), m_pCB);
@@ -77,7 +77,8 @@ void CTerrain::Render(XMMATRIX* p_matAdd, BOOL p_isUseMtrl)
 
 	m_pContext->PSSetShaderResources(0, 1, m_pTexture->Get_TextureRV());
 	m_pContext->PSSetShaderResources(1, 1, m_pNormalTexture->Get_TextureRV());
-	
+	m_pContext->DSSetShaderResources(1, 1, m_pNormalTexture->Get_TextureRV());
+
 	m_pMesh->Draw_Mesh();
 }
 

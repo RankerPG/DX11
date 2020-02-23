@@ -54,10 +54,12 @@ public:
 	void Create_NormalCube(float p_width, float p_height, float p_depth, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
 	void Create_NormalTerrain(float p_width, float p_depth, float p_maxUV, UINT n, UINT m, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
 	void Create_NormalSphere(float p_radius, UINT p_sliceCount, UINT p_stackCount, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
+	void Create_NormalQuad(ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
+	void Create_NormalTileQuad(float p_width, float p_depth, float p_maxUV, UINT n, UINT m, ID3D11Buffer** p_VB, ID3D11Buffer** p_IB, UINT* p_dwIdxCnt);
 
 private:
 	void Get_CubeData(float p_width, float p_height, float p_depth, MeshData& p_data);
-	void Get_TerrainData(float p_width, float p_depth, float p_maxUV, UINT n, UINT m, MeshData& p_data);
+	void Get_TerrainData(float p_width, float p_depth, float p_maxUV, UINT n, UINT m, MeshData& p_data, BOOL p_isTerrain = TRUE);
 	void Get_SphereData(float p_radius, UINT p_sliceCount, UINT p_stackCount, MeshData& p_data);
 	void Get_QuadData(MeshData& p_data);
 

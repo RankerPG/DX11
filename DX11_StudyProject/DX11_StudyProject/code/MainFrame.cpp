@@ -43,21 +43,17 @@ CMainFrame::CMainFrame(CDevice* p_Device)
 	, m_pEnvSphere(nullptr)
 	, m_pFrustum(nullptr)
 	, m_pCreator(nullptr)
-	, m_pLightShader(nullptr)
-	, m_pTextureShader(nullptr)
-	, m_pGeometryShader(nullptr)
-	, m_pBillboardShader(nullptr)
-	, m_pSkyBoxShader(nullptr)
-	, m_pEnvMapShader(nullptr)
-	, m_pNrmMapShader(nullptr)
+	, m_arrShader{ nullptr, }
 	, m_pCBLight(nullptr)
 	, m_pCBPointLight(nullptr)
 	, m_pCBPerFrame(nullptr)
 	, m_pCBMtrl(nullptr)
+	, m_pCBTess(nullptr)
 	, m_Light(LIGHT())
 	, m_PointLight(POINTLIGHT())
 	, m_PerFrame(PERFRAME())
 	, m_ShadowMtrl(MATERIAL())
+	, m_Tess(TESS())
 	, m_dwFrameCnt(0)
 	, m_fElapsedTime(0.f)
 	, m_isWireFrame(FALSE)
@@ -158,6 +154,7 @@ void CMainFrame::Release()
 	SAFE_RELEASE(m_pCBPointLight);
 	SAFE_RELEASE(m_pCBPerFrame);
 	SAFE_RELEASE(m_pCBMtrl);
+	SAFE_RELEASE(m_pCBTess);
 
 	for (int i = 0; i < 5; ++i)
 	{
@@ -231,17 +228,18 @@ void CMainFrame::Create_Components()
 
 	// 쉐이더
 	CShader* pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Default.fx", "vs_main", "ps_main", 0);
-	m_mapComponent.insert(make_pair("DefaultShader", pShader));
+	m_mapComponent.insert(make_pair("DefaultFX", pShader));
 
-	m_pLightShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Light.fx", "vs_main", "ps_main", 1);
-	m_mapComponent.insert(make_pair("LightShader", pShader));
+	m_arrShader[(int)SHADER::LIGHT] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Light.fx", "vs_main", "ps_main", 1);
+	m_mapComponent.insert(make_pair("LightFX", pShader));
 
 	pShader->Create_ConstantBuffer(&m_Light, sizeof(LIGHT), &m_pCBLight);
 	pShader->Create_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), &m_pCBPointLight);
 	pShader->Create_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), &m_pCBPerFrame);
 	pShader->Create_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), &m_pCBMtrl);
+	pShader->Create_ConstantBuffer(&m_Tess, sizeof(TESS), &m_pCBTess);
 
-	XMVECTOR vDir = XMVectorSet(1.f, -1.f, 1.f, 0.f);
+	XMVECTOR vDir = XMVectorSet(1.f, -1.f, 1.f, 0.f); //XMVectorSet(0.f, -0.8f, 1.f, 0.f); 
 	vDir = XMVector3Normalize(-vDir);
 	XMStoreFloat3A(&m_Light.direction, vDir);
 	m_Light.diffuse = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
@@ -263,29 +261,45 @@ void CMainFrame::Create_Components()
 	m_ShadowMtrl.specular = XMFLOAT4(0.f, 0.f, 0.f, 1.f);
 	m_ShadowMtrl.Env = XMFLOAT4(0.f, 0.f, 0.f, 0.f);
 
-	m_pTextureShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Texture.fx", "vs_main", "ps_main", 2);
-	m_mapComponent.insert(make_pair("TextureShader", pShader));
+	m_Tess.maxDistance = 1.f;
+	m_Tess.minDistance = 30.f;
+	m_Tess.maxFactor = 5.f;
+	m_Tess.minFactor = 1.f;
+	m_Tess.heightScale.x = 0.25f;
+
+	m_arrShader[(int)SHADER::TEXTURE] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Texture.fx", "vs_main", "ps_main", 2);
+	m_mapComponent.insert(make_pair("TextureFX", pShader));
 	// 상수 버퍼는 라이트 쉐이더와 공유
 
-	m_pGeometryShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Geometry.fx", "vs_main", "ps_main", 2);
-	m_pGeometryShader->Create_GeometryShader(L"../Shader/Geometry.fx", "gs_main", "gs_5_0");
-	m_mapComponent.insert(make_pair("GeometryShader", pShader));
+	m_arrShader[(int)SHADER::GEOMETRY] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Geometry.fx", "vs_main", "ps_main", 2);
+	pShader->Create_GeometryShader(L"../Shader/Geometry.fx", "gs_main", "gs_5_0");
+	m_mapComponent.insert(make_pair("GeometryFX", pShader));
 
-	m_pBillboardShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Billboard.fx", "vs_main", "ps_main", 3);
-	m_pBillboardShader->Create_GeometryShader(L"../Shader/Billboard.fx", "gs_main", "gs_5_0");
-	m_mapComponent.insert(make_pair("BillboardShader", pShader));
+	m_arrShader[(int)SHADER::BILLBORAD] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Billboard.fx", "vs_main", "ps_main", 3);
+	pShader->Create_GeometryShader(L"../Shader/Billboard.fx", "gs_main", "gs_5_0");
+	m_mapComponent.insert(make_pair("BillboardFX", pShader));
 	
-	m_pInstanceShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Instancing.fx", "vs_main", "ps_main", 4);
-	m_mapComponent.insert(make_pair("InstanceShader", pShader));
+	m_arrShader[(int)SHADER::INSTANCE] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Instancing.fx", "vs_main", "ps_main", 4);
+	m_mapComponent.insert(make_pair("InstanceFX", pShader));
 	
-	m_pSkyBoxShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Skybox.fx", "vs_main", "ps_main");
-	m_mapComponent.insert(make_pair("SkyboxShader", pShader));
+	m_arrShader[(int)SHADER::SKYBOX] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Skybox.fx", "vs_main", "ps_main");
+	m_mapComponent.insert(make_pair("SkyboxFX", pShader));
 
-	m_pEnvMapShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/EnvMapping.fx", "vs_main", "ps_main", 2);
-	m_mapComponent.insert(make_pair("EnvMapShader", pShader));
+	m_arrShader[(int)SHADER::ENVMAP] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/EnvMapping.fx", "vs_main", "ps_main", 2);
+	m_mapComponent.insert(make_pair("EnvMapFX", pShader));
 
-	m_pNrmMapShader = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/NormalMapping.fx", "vs_main", "ps_main", 5);
-	m_mapComponent.insert(make_pair("NrmMapShader", pShader));
+	m_arrShader[(int)SHADER::NORMALMAP] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/NormalMapping.fx", "vs_main", "ps_main", 5);
+	m_mapComponent.insert(make_pair("NrmMapFX", pShader));
+
+	m_arrShader[(int)SHADER::DISPLACEMENT] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Displacement.fx", "vs_main", "ps_main", 5);
+	pShader->Create_HullShader(L"../Shader/Displacement.fx", "HS", "hs_5_0");
+	pShader->Create_DomainShader(L"../Shader/Displacement.fx", "DS", "ds_5_0");
+	m_mapComponent.insert(make_pair("DisplacementFX", pShader));
+
+	m_arrShader[(int)SHADER::WAVE] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/wave.fx", "vs_main", "ps_main", 5);
+	pShader->Create_HullShader(L"../Shader/wave.fx", "HS", "hs_5_0");
+	pShader->Create_DomainShader(L"../Shader/wave.fx", "DS", "ds_5_0");
+	m_mapComponent.insert(make_pair("WaveFX", pShader));
 
 	// 메쉬
 	CMesh* pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext);
@@ -307,10 +321,13 @@ void CMainFrame::Create_Components()
 	m_mapComponent.insert(make_pair("TerrainTexMesh", pMesh));
 	
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 6);
-	m_mapComponent.insert(make_pair("QuadTexMesh", pMesh));
+	m_mapComponent.insert(make_pair("QuadNrmMesh", pMesh));
 
 	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 7);
 	m_mapComponent.insert(make_pair("SphereNrmMesh", pMesh));
+
+	pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext, 8);
+	m_mapComponent.insert(make_pair("TileQuadNrmMesh", pMesh));
 
 	// 트랜스폼
 	CTransform* pTransform = CTransform::Create_Transform(m_pDevice, m_pContext);
@@ -335,14 +352,23 @@ void CMainFrame::Create_Components()
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/earth_N.png");
 	m_mapComponent.insert(make_pair("EarthTexture_N", pTexture));
 
-	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Terrain.png");
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/stones.dds", FALSE);
 	m_mapComponent.insert(make_pair("TerrainTexture", pTexture));
 
-	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Terrain_N.png");
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/stones_N.dds", FALSE);
 	m_mapComponent.insert(make_pair("TerrainTexture_N", pTexture));
 
-	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Water2.dds", FALSE);
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Water1.dds", FALSE);
 	m_mapComponent.insert(make_pair("WaterTexture", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/Water2.dds", FALSE);
+	m_mapComponent.insert(make_pair("WaterTexture_2", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/waves0.dds", FALSE);
+	m_mapComponent.insert(make_pair("WaveTexture_N", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/waves1.dds", FALSE);
+	m_mapComponent.insert(make_pair("WaveTexture_N2", pTexture));
 
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/tree%d.dds", FALSE, 4);
 	m_mapComponent.insert(make_pair("TreeTexture", pTexture));
@@ -666,10 +692,12 @@ void CMainFrame::Update_SamplerState(SAMPLER p_eSS)
 {
 	if (SAMPLER::WRAP == p_eSS)
 	{
+		m_pContext->DSSetSamplers(0, 1, &m_pSampler[0]);
 		m_pContext->PSSetSamplers(0, 1, &m_pSampler[0]);
 	}
 	else if (SAMPLER::CLAMP == p_eSS)
 	{
+		m_pContext->DSSetSamplers(0, 1, &m_pSampler[1]);
 		m_pContext->PSSetSamplers(0, 1, &m_pSampler[1]);
 	}
 }
@@ -716,67 +744,30 @@ void CMainFrame::Update_DepthStencilState(DEPTHSTENCIL eDS)
 	}
 }
 
-void CMainFrame::Update_LightShader()
+void CMainFrame::Update_ShaderArray()
 {
-	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
-	m_pLightShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
-	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
-	m_pLightShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
-	m_pLightShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
+	for (int i = 0; i < (int)SHADER::SHADER_END; ++i)
+	{
+		if (nullptr == m_arrShader[i])
+			continue;
+
+		XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
+		m_arrShader[i]->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
+		XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
+		m_arrShader[i]->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
+		m_arrShader[i]->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
+		m_arrShader[i]->Update_ConstantBuffer(&m_Tess, sizeof(TESS), m_pCBTess, 5);
+	}
 }
 
-void CMainFrame::Update_TextureShader()
+void CMainFrame::Update_Shader(int p_shaderNum)
 {
 	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
-	m_pTextureShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
+	m_arrShader[p_shaderNum]->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
 	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
-	m_pTextureShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
-	m_pTextureShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
-}
-
-void CMainFrame::Update_GeometryShader()
-{
-	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
-	m_pGeometryShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
-	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
-	m_pGeometryShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
-	m_pGeometryShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
-}
-
-void CMainFrame::Update_BillboardShader()
-{
-	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
-	m_pBillboardShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
-	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
-	m_pBillboardShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
-	m_pBillboardShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
-}
-
-void CMainFrame::Update_InstanceShader()
-{
-	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
-	m_pInstanceShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
-	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
-	m_pInstanceShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
-	m_pInstanceShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
-}
-
-void CMainFrame::Update_EnvMappingShader()
-{
-	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
-	m_pInstanceShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
-	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
-	m_pInstanceShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
-	m_pInstanceShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
-}
-
-void CMainFrame::Update_NrmMappingShader()
-{
-	XMStoreFloat3A(&m_PerFrame.viewPos, m_pCamera->Get_ViewPos());
-	m_pNrmMapShader->Update_ConstantBuffer(&m_Light, sizeof(LIGHT), m_pCBLight, 1);
-	XMStoreFloat3(&m_PointLight.position, m_pVisible->Get_PointLightPos());
-	m_pNrmMapShader->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
-	m_pNrmMapShader->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
+	m_arrShader[p_shaderNum]->Update_ConstantBuffer(&m_PointLight, sizeof(POINTLIGHT), m_pCBPointLight, 4);
+	m_arrShader[p_shaderNum]->Update_ConstantBuffer(&m_PerFrame, sizeof(PERFRAME), m_pCBPerFrame, 3);
+	m_arrShader[p_shaderNum]->Update_ConstantBuffer(&m_Tess, sizeof(TESS), m_pCBTess, 5);
 }
 
 void CMainFrame::Update_Input()
@@ -811,11 +802,7 @@ void CMainFrame::Render_Default()
 	Update_RasterizerState(RASTERIZER::CULLNONE);
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTHOFF);
 
-	Update_TextureShader();
-	Update_GeometryShader();
-	Update_BillboardShader();
-	Update_EnvMappingShader();
-	Update_NrmMappingShader();
+	Update_ShaderArray();
 
 	// 그리기
 	m_pSkyBox->Render();
@@ -861,10 +848,7 @@ void CMainFrame::Render_CubeMap()
 	Update_BlendState(BLEND::NONALPHA);
 	Update_DepthStencilState(DEPTHSTENCIL::DEPTHOFF);
 
-	Update_TextureShader();
-	Update_GeometryShader();
-	Update_BillboardShader();
-	Update_EnvMappingShader();
+	Update_ShaderArray();
 
 	// 그리기
 	m_pSkyBox->Render();
@@ -914,8 +898,8 @@ void CMainFrame::Render_Stencil()
 	XMVECTOR litReflectDir = XMVector3TransformNormal(-litDir, R);
 	XMStoreFloat3A(&m_Light.direction, litReflectDir);
 
-	Update_TextureShader();
-	Update_GeometryShader();
+	Update_Shader((int)SHADER::TEXTURE);
+	Update_Shader((int)SHADER::GEOMETRY);
 
 	m_pBox->Render(&R);
 	m_pSphere->Render(&R);
@@ -935,8 +919,8 @@ void CMainFrame::Render_Stencil()
 	Update_BlendState(BLEND::ALPHA);
 	m_pLake->Render();
 
-	Update_TextureShader();
-	Update_GeometryShader();
+	Update_Shader((int)SHADER::TEXTURE);
+	Update_Shader((int)SHADER::GEOMETRY);
 }
 
 void CMainFrame::Render_Shadow()
@@ -950,8 +934,9 @@ void CMainFrame::Render_Shadow()
 	XMMATRIX matShadow = XMMatrixShadow(vShadow, vShadowLit);
 	matShadow *= XMMatrixTranslation(0.f, 0.01f, 0.f);
 
-	m_pTextureShader->Update_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
-	m_pEnvMapShader->Update_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
+	m_arrShader[(int)SHADER::TEXTURE]->Update_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
+	m_arrShader[(int)SHADER::ENVMAP]->Update_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
+	m_arrShader[(int)SHADER::NORMALMAP]->Update_ConstantBuffer(&m_ShadowMtrl, sizeof(MATERIAL), m_pCBMtrl, 2);
 
 	Update_BlendState(BLEND::ALPHA);
 
