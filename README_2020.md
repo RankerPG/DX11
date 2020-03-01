@@ -34,8 +34,9 @@
 스트림으로 출력하고, 두번째는 출력된 정점으로 렌더링하는 역할을 수행한다.
 
 ```cpp
-ConstructGSWithSO(CompileShader(gs_5_0, GS()), "POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");
+GeometryShader gsStreamOut = ConstructGSWithSO(CompileShader(gs_5_0, GS()), "POSITION.xyz; VELOCITY.xyz; SIZE.xy; AGE.x; TYPE.x");
 // 1. 컴파일된 기하 쉐이더, 스트림으로 출력할 정점들
+SetGeometryShader(gsStreamOut);
 
 D3D11_BUFFER_DESC vbd;
 vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_STREAM_OUTPUT;
@@ -57,7 +58,7 @@ void ID3D11DeviceContext::DrawAuto();
 
 ## GPU 기반 입자 시스템
 
-- 방출기 입자(emitter particle)은 입자를 생성하는 입자를 의미한다.
+- 방출기 입자(emitter particle)는 입자를 생성하는 입자를 의미한다.
 
 
 ## 20.02.28
