@@ -172,6 +172,9 @@
     <ClInclude Include="code\MainFrame.h" />
     <ClInclude Include="code\Mesh.h" />
     <ClInclude Include="code\Object.h" />
+    <ClInclude Include="code\Particle.h" />
+    <ClInclude Include="code\Particle_Rain.h" />
+    <ClInclude Include="code\Rain.h" />
     <ClInclude Include="code\Shader.h" />
     <ClInclude Include="code\skybox.h" />
     <ClInclude Include="code\Sphere.h" />
@@ -204,6 +207,9 @@
     <ClCompile Include="code\MainFrame.cpp" />
     <ClCompile Include="code\Mesh.cpp" />
     <ClCompile Include="code\Object.cpp" />
+    <ClCompile Include="code\Particle.cpp" />
+    <ClCompile Include="code\Particle_Rain.cpp" />
+    <ClCompile Include="code\Rain.cpp" />
     <ClCompile Include="code\Shader.cpp" />
     <ClCompile Include="code\skybox.cpp" />
     <ClCompile Include="code\Sphere.cpp" />
@@ -257,6 +263,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="..\Shader\NormalMapping.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Shader\Particle_Rain.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="..\Shader\SO_Rain.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>

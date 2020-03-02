@@ -38,6 +38,15 @@ struct GEOVERTEX
 	XMFLOAT2 size;
 };
 
+struct PARTICLEVERTEX
+{
+	XMFLOAT4 pos;
+	XMFLOAT3 vel;
+	XMFLOAT2 size;
+	float age;
+	UINT type;
+};
+
 struct TRANSMATRIX
 {
 	XMFLOAT4X4 matWorld;

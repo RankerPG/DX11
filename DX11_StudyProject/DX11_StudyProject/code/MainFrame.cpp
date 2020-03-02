@@ -17,6 +17,7 @@
 #include "skybox.h"
 #include "EnvSphere.h"
 #include "DCMCreator.h"
+#include "Particle.h"
 
 XMMATRIX g_matView, g_matViewWorld, g_matProj;
 UINT g_dwRenderCnt;
@@ -227,10 +228,10 @@ void CMainFrame::Create_Components()
 	m_mapComponent.insert(make_pair("DCMCreator", m_pCreator));
 
 	// 쉐이더
-	CShader* pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Default.fx", "vs_main", "ps_main", 0);
+	CShader* pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/Default.fx", "vs_main", "ps_main", 0);
 	m_mapComponent.insert(make_pair("DefaultFX", pShader));
 
-	m_arrShader[(int)SHADER::LIGHT] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Light.fx", "vs_main", "ps_main", 1);
+	m_arrShader[(int)SHADER::LIGHT] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/Light.fx", "vs_main", "ps_main", 1);
 	m_mapComponent.insert(make_pair("LightFX", pShader));
 
 	pShader->Create_ConstantBuffer(&m_Light, sizeof(LIGHT), &m_pCBLight);
@@ -267,40 +268,44 @@ void CMainFrame::Create_Components()
 	m_Tess.minFactor = 1.f;
 	m_Tess.heightScale.x = 0.25f;
 
-	m_arrShader[(int)SHADER::TEXTURE] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Texture.fx", "vs_main", "ps_main", 2);
+	m_arrShader[(int)SHADER::TEXTURE] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/Texture.fx", "vs_main", "ps_main", 2);
 	m_mapComponent.insert(make_pair("TextureFX", pShader));
 	// 상수 버퍼는 라이트 쉐이더와 공유
 
-	m_arrShader[(int)SHADER::GEOMETRY] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Geometry.fx", "vs_main", "ps_main", 2);
-	pShader->Create_GeometryShader(L"../Shader/Geometry.fx", "gs_main", "gs_5_0");
+	m_arrShader[(int)SHADER::GEOMETRY] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/Geometry.fx", "vs_main", "ps_main", 2);
+	pShader->Create_GeometryShader(L"./Shader/Geometry.fx", "gs_main", "gs_5_0");
 	m_mapComponent.insert(make_pair("GeometryFX", pShader));
 
-	m_arrShader[(int)SHADER::BILLBORAD] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Billboard.fx", "vs_main", "ps_main", 3);
-	pShader->Create_GeometryShader(L"../Shader/Billboard.fx", "gs_main", "gs_5_0");
+	m_arrShader[(int)SHADER::BILLBORAD] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/Billboard.fx", "vs_main", "ps_main", 3);
+	pShader->Create_GeometryShader(L"./Shader/Billboard.fx", "gs_main", "gs_5_0");
 	m_mapComponent.insert(make_pair("BillboardFX", pShader));
 	
-	m_arrShader[(int)SHADER::INSTANCE] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Instancing.fx", "vs_main", "ps_main", 4);
+	m_arrShader[(int)SHADER::INSTANCE] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/Instancing.fx", "vs_main", "ps_main", 4);
 	m_mapComponent.insert(make_pair("InstanceFX", pShader));
 	
-	m_arrShader[(int)SHADER::SKYBOX] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Skybox.fx", "vs_main", "ps_main");
+	m_arrShader[(int)SHADER::SKYBOX] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/Skybox.fx", "vs_main", "ps_main");
 	m_mapComponent.insert(make_pair("SkyboxFX", pShader));
 
-	m_arrShader[(int)SHADER::ENVMAP] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/EnvMapping.fx", "vs_main", "ps_main", 2);
+	m_arrShader[(int)SHADER::ENVMAP] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/EnvMapping.fx", "vs_main", "ps_main", 2);
 	m_mapComponent.insert(make_pair("EnvMapFX", pShader));
 
-	m_arrShader[(int)SHADER::NORMALMAP] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/NormalMapping.fx", "vs_main", "ps_main", 5);
+	m_arrShader[(int)SHADER::NORMALMAP] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/NormalMapping.fx", "vs_main", "ps_main", 5);
 	m_mapComponent.insert(make_pair("NrmMapFX", pShader));
 
-	m_arrShader[(int)SHADER::DISPLACEMENT] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/Displacement.fx", "vs_main", "ps_main", 5);
-	pShader->Create_HullShader(L"../Shader/Displacement.fx", "HS", "hs_5_0");
-	pShader->Create_DomainShader(L"../Shader/Displacement.fx", "DS", "ds_5_0");
+	m_arrShader[(int)SHADER::DISPLACEMENT] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/Displacement.fx", "vs_main", "ps_main", 5);
+	pShader->Create_HullShader(L"./Shader/Displacement.fx", "HS", "hs_5_0");
+	pShader->Create_DomainShader(L"./Shader/Displacement.fx", "DS", "ds_5_0");
 	m_mapComponent.insert(make_pair("DisplacementFX", pShader));
 
-	m_arrShader[(int)SHADER::WAVE] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"../Shader/wave.fx", "vs_main", "ps_main", 5);
-	pShader->Create_HullShader(L"../Shader/wave.fx", "HS", "hs_5_0");
-	pShader->Create_DomainShader(L"../Shader/wave.fx", "DS", "ds_5_0");
+	m_arrShader[(int)SHADER::WAVE] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/wave.fx", "vs_main", "ps_main", 5);
+	pShader->Create_HullShader(L"./Shader/wave.fx", "HS", "hs_5_0");
+	pShader->Create_DomainShader(L"./Shader/wave.fx", "DS", "ds_5_0");
 	m_mapComponent.insert(make_pair("WaveFX", pShader));
 
+	m_arrShader[(int)SHADER::SO_RAIN] = pShader = CShader::Create_Shader(m_pDevice, m_pContext, L"./Shader/SO_Rain.fx", "vs_main", nullptr, 6);
+	pShader->Create_GeometryShader(L"./Shader/SO_Rain.fx", "StreamOutGS", "gs_5_0");
+	m_mapComponent.insert(make_pair("SORainFX", pShader));
+	
 	// 메쉬
 	CMesh* pMesh = CFigureMesh::Create_FigureMesh(m_pDevice, m_pContext);
 	m_mapComponent.insert(make_pair("CubeNrmMesh", pMesh));
@@ -375,6 +380,9 @@ void CMainFrame::Create_Components()
 
 	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext, L"./Texture/skybox.dds", FALSE);
 	m_mapComponent.insert(make_pair("SkyTexture", pTexture));
+
+	pTexture = CTexture::Create_Texture(m_pDevice, m_pContext);
+	m_mapComponent.insert(make_pair("RandomTexture", pTexture));
 }
 
 void CMainFrame::Create_Object()

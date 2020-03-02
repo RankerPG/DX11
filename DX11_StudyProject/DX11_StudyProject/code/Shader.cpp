@@ -20,8 +20,15 @@ CShader::CShader(const CShader& rhs)
 	, m_pDS(rhs.m_pDS)
 	, m_pInputLayout(rhs.m_pInputLayout)
 {
- 	m_pVS->AddRef();
-	m_pPS->AddRef();
+	if (nullptr != m_pVS)
+	{
+		m_pVS->AddRef();
+	}
+
+	if (nullptr != m_pPS)
+	{
+		m_pPS->AddRef();
+	}
 
 	if (nullptr != m_pGS)
 	{
@@ -249,26 +256,9 @@ void CShader::Update_Shader()
 {
 	m_pContext->VSSetShader(m_pVS, nullptr, 0);
 	m_pContext->PSSetShader(m_pPS, nullptr, 0);
-
-	if (nullptr != m_pGS)
-	{
-		m_pContext->GSSetShader(m_pGS, nullptr, 0);
-	}
-	else
-	{
-		m_pContext->GSSetShader(nullptr, nullptr, 0);
-	}
-
-	if (nullptr != m_pHS)
-	{
-		m_pContext->HSSetShader(m_pHS, nullptr, 0);
-		m_pContext->DSSetShader(m_pDS, nullptr, 0);
-	}
-	else
-	{
-		m_pContext->HSSetShader(nullptr, nullptr, 0);
-		m_pContext->DSSetShader(nullptr, nullptr, 0);
-	}
+	m_pContext->GSSetShader(m_pGS, nullptr, 0);
+	m_pContext->HSSetShader(m_pHS, nullptr, 0);
+	m_pContext->DSSetShader(m_pDS, nullptr, 0);
 }
 
 void CShader::Update_ConstantBuffer(LPVOID p_data, UINT p_size, ID3D11Buffer* p_CB, UINT p_slot)
@@ -417,6 +407,26 @@ void CShader::Create_InputLayout(ID3D10Blob* p_CompileVS, int p_LayoutType)
 	}
 	break;
 
+	case 6:
+	{
+		D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+		{
+			{ "POSITION",	0, DXGI_FORMAT_R32G32B32A32_FLOAT,	0, 0,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "VELOCITY",	0, DXGI_FORMAT_R32G32_FLOAT,		0, 16,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "SIZE",		0, DXGI_FORMAT_R32G32_FLOAT,		0, 24,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "AGE",		0, DXGI_FORMAT_R32_FLOAT,			0, 32,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "TYPE",		0, DXGI_FORMAT_R32_UINT,			0, 36,	D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		};
+
+		if (FAILED(m_pDevice->CreateInputLayout(vertexDesc, 5, p_CompileVS->GetBufferPointer(),
+			p_CompileVS->GetBufferSize(), &m_pInputLayout)))
+		{
+			MessageBox(g_hWnd, L"Create InputLayout Failed!!", 0, 0);
+			return;
+		}
+	}
+	break;
+
 	}
 }
 
@@ -425,7 +435,11 @@ CShader* CShader::Create_Shader(ID3D11Device* p_Device, ID3D11DeviceContext* p_C
 	CShader* pInstance = new CShader(p_Device, p_Context);
 
 	pInstance->Create_VertexShader(p_filename, p_VSEntrypoint, "vs_5_0", p_LayoutType);
-	pInstance->Create_PixelShader(p_filename, p_PSEntrypoint, "ps_5_0");
+
+	if (nullptr != p_PSEntrypoint)
+	{
+		pInstance->Create_PixelShader(p_filename, p_PSEntrypoint, "ps_5_0");
+	}
 
 	return pInstance;
 }

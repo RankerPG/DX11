@@ -91,6 +91,15 @@
     <Filter Include="95. Component\06. DCMCreator">
       <UniqueIdentifier>{fcbb1aa7-4155-4060-ad4a-796578b1f5f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="95. Component\07. Particle">
+      <UniqueIdentifier>{fe4dfa58-ce0e-4ca7-b940-2cdead8d4da2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="95. Component\07. Particle\01. Rain">
+      <UniqueIdentifier>{501f9699-ede7-464f-b6e8-9b0bf7d663d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. Object\09. Rain">
+      <UniqueIdentifier>{8573e71f-9e9f-4868-a75b-e79c219516db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -186,6 +195,15 @@
     <ClInclude Include="code\DCMCreator.h">
       <Filter>95. Component\06. DCMCreator</Filter>
     </ClInclude>
+    <ClInclude Include="code\Particle.h">
+      <Filter>95. Component\07. Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Particle_Rain.h">
+      <Filter>95. Component\07. Particle\01. Rain</Filter>
+    </ClInclude>
+    <ClInclude Include="code\Rain.h">
+      <Filter>02. Object\09. Rain</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX11_StudyProject.cpp">
@@ -266,6 +284,15 @@
     <ClCompile Include="code\DCMCreator.cpp">
       <Filter>95. Component\06. DCMCreator</Filter>
     </ClCompile>
+    <ClCompile Include="code\Particle.cpp">
+      <Filter>95. Component\07. Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Particle_Rain.cpp">
+      <Filter>95. Component\07. Particle\01. Rain</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Rain.cpp">
+      <Filter>02. Object\09. Rain</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DX11_StudyProject.rc">
@@ -317,6 +344,12 @@
       <Filter>97. fx</Filter>
     </FxCompile>
     <FxCompile Include="..\Shader\wave.fx">
+      <Filter>97. fx</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\SO_Rain.fx">
+      <Filter>97. fx</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shader\Particle_Rain.fx">
       <Filter>97. fx</Filter>
     </FxCompile>
   </ItemGroup>

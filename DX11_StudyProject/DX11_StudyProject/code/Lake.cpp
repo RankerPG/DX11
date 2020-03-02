@@ -39,7 +39,7 @@ void CLake::Init()
 	// 트랜스폼 생성
 	m_pTransform = static_cast<CTransform*>(m_pMapComponent->find("Transform")->second->Clone());
 	m_pTransform->Set_Scale(XMVectorSet(4.f, 4.f, 4.f, 0.f));
-	m_pTransform->Set_Trans(XMVectorSet(0.f, -0.9f, 0.f, 1.f));
+	m_pTransform->Set_Trans(XMVectorSet(0.f, -2.f, 0.f, 1.f));
 
 	m_pTransform->Set_TexScale(XMVectorSet(2.f, 2.f, 0.f, 0.f));
 	m_pTransform->Update_Transform();
@@ -74,10 +74,10 @@ void CLake::Init()
 void CLake::Update(float p_deltaTime)
 {
 	//m_vecTexTrans[0].x += p_deltaTime * 0.02f;
-	m_vecTexTrans[0].y += p_deltaTime * 0.02f;
+	m_vecTexTrans[0].y += p_deltaTime * 0.1f;
 					   
-	//m_vecTexTrans[1].x -= p_deltaTime * 0.01f;
-	m_vecTexTrans[1].y -= p_deltaTime * 0.01f;
+	m_vecTexTrans[1].x -= p_deltaTime * 0.005f;
+	m_vecTexTrans[1].y -= p_deltaTime * 0.005f;
 
 	m_pTransform->Set_TexTrans(XMVectorSet(m_vecTexTrans[0].x, m_vecTexTrans[0].y, 0.f, 0.f));
 	m_pTransform->Update_Transform();

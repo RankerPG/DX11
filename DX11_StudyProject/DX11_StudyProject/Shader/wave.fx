@@ -92,7 +92,7 @@ VertexOut vs_main(VertexIn i)
 
 	o.tanW = mul(i.tan, (float3x3)g_matWorldInvT);
 
-	o.uv = -mul(float4(i.uv, 0.f, 1.f), g_matTex).xy;
+	o.uv = mul(float4(i.uv, 0.f, 1.f), g_matTex).xy;
 
 	o.uv2 = mul(float4(i.uv, 0.f, 1.f), g_matTex2).xy;
 
@@ -178,7 +178,7 @@ DomainOut DS(PatchTess patchTess, float3 bary : SV_DomainLocation, const OutputP
 	float h0 = g_NormalMapTex.SampleLevel(smpLinear, uv, mipLevel).a;
 	float h1 = g_NormalMapTex_2.SampleLevel(smpLinear, uv2, mipLevel).a;
 
-	o.posW.xyz += (h0 * 0.4 + h1) * o.nrmW;
+	o.posW.xyz += ((h0 * 0.01) + (h1 * 2)) * o.nrmW;
 
 	o.pos = mul(o.posW, g_matViewProj);
 

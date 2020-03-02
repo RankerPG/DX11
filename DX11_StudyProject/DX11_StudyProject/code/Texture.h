@@ -4,6 +4,7 @@
 
 class CTexture : public CComponent
 {
+private:
 	struct TEXINFO
 	{
 		wchar_t pTexName[64];
@@ -30,9 +31,12 @@ public:
 	HRESULT Load_Texture(LPCWSTR pTexName, BOOL p_isWIC);
 	HRESULT Load_Texture_Array(LPCWSTR pTexName, BOOL p_isWIC, UINT p_Cnt);
 	HRESULT Load_TextureDesc();
+	
+	HRESULT Create_RandomTexture();
 
 public:
 	static CTexture* Create_Texture(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, LPCWSTR pTexName, BOOL p_isWIC = TRUE, UINT p_Cnt = 1);
+	static CTexture* Create_Texture(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context);
 
 private:
 	vector<TEXINFO>*	m_pVecTexInfo;

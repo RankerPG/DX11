@@ -121,6 +121,65 @@ HRESULT CTexture::Load_TextureDesc()
 	return hr;
 }
 
+HRESULT CTexture::Create_RandomTexture()
+{
+	m_pVecTexInfo = new vector<TEXINFO>(1);
+
+	XMFLOAT4 vRandomValues[512];
+
+	for (int i = 0; i < 512; ++i)
+	{
+		vRandomValues[i].x = (float)rand() / RAND_MAX;
+		vRandomValues[i].y = (float)rand() / RAND_MAX;
+		vRandomValues[i].z = (float)rand() / RAND_MAX;
+		vRandomValues[i].w = (float)rand() / RAND_MAX;
+	}
+
+	D3D11_SUBRESOURCE_DATA initData;
+	initData.pSysMem = vRandomValues;
+	initData.SysMemPitch = 512 * sizeof(XMFLOAT4);
+	initData.SysMemSlicePitch = 0;
+
+	D3D11_TEXTURE1D_DESC texDesc;
+	texDesc.Width = 512;
+	texDesc.MipLevels = 1;
+	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	texDesc.Usage = D3D11_USAGE_IMMUTABLE;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = 0;
+	texDesc.ArraySize = 1;
+
+	ID3D11Texture1D* pTexture = nullptr;
+
+	if (FAILED(m_pDevice->CreateTexture1D(&texDesc, &initData, &pTexture)))
+	{
+		MessageBox(g_hWnd, L"Random Texture Create Failed!!", 0, 0);
+		return E_FAIL;
+	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
+	viewDesc.Format = texDesc.Format;
+	viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+	viewDesc.Texture1D.MipLevels = 1;
+	viewDesc.Texture1D.MostDetailedMip = 0;
+
+	TEXINFO texinfo;
+
+	if (FAILED(m_pDevice->CreateShaderResourceView(pTexture, &viewDesc, &texinfo.pTexRV)))
+	{
+		MessageBox(g_hWnd, L"Random SRV Create Failed!!", 0, 0);
+		SAFE_RELEASE(pTexture);
+		return E_FAIL;
+	}
+
+	SAFE_RELEASE(pTexture);
+
+	m_pVecTexInfo->push_back(texinfo);
+
+	return S_OK;
+}
+
 CTexture* CTexture::Create_Texture(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context, LPCWSTR pTexName, BOOL p_isWIC, UINT p_Cnt)
 {
 	CTexture* pInstance = new CTexture(p_Device, p_Context);
@@ -142,6 +201,20 @@ CTexture* CTexture::Create_Texture(ID3D11Device* p_Device, ID3D11DeviceContext* 
 			SAFE_DELETE(pInstance);
 			return nullptr;
 		}
+	}
+
+	return pInstance;
+}
+
+CTexture* CTexture::Create_Texture(ID3D11Device* p_Device, ID3D11DeviceContext* p_Context)
+{
+	CTexture* pInstance = new CTexture(p_Device, p_Context);
+
+	if (FAILED(pInstance->Create_RandomTexture()))
+	{
+		MessageBox(g_hWnd, L"CTexture Create Failed!!", 0, 0);
+		SAFE_DELETE(pInstance);
+		return nullptr;
 	}
 
 	return pInstance;
